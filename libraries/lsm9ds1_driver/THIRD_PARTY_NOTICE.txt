@@ -1,0 +1,10 @@
+Third-party component: STMicroelectronics lsm9ds1-pid
+Source: https://github.com/STMicroelectronics/lsm9ds1-pid
+Pinned commit: d1bfeedbf87c8096429aead36b88aa8933695579
+License: BSD-3-Clause (see LICENSE.ST-lsm9ds1-pid.txt)
+Imported on: 2026-03-01
+
+Compliance notes:
+- Keep copyright + license notice in redistributions.
+- Do not use STMicroelectronics name for endorsement without permission.
+- Component is provided "AS IS", without warranties.

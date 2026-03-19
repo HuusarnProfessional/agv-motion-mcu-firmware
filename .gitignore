@@ -1,0 +1,13 @@
+build/
+targets/**/build/
+targets/**/_build*
+.vscode/
+.settings/
+*.elf
+*.map
+*.obj
+*.o
+*.d
+*.bin
+*.hex
+compile_commands.json
