@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <cstddef>
 #include <cstdint>
@@ -8,21 +8,9 @@
 #include "core/api/imu_api.hpp"
 #include "core/api/voltage_monitor_api.hpp"
 #include "core/api/obstacle_api.hpp"
-#include "core/api/comm_api_ai.hpp"
 
 namespace platform_stm32_hal
 {
-  struct uart_diag_snapshot
-  {
-    std::uint32_t bytes_rx = 0U;
-    std::uint32_t ring_overflow = 0U;
-    std::uint32_t err_overrun = 0U;
-    std::uint32_t err_noise = 0U;
-    std::uint32_t err_framing = 0U;
-    std::uint32_t err_parity = 0U;
-    std::uint32_t sentinels = 0U;
-  };
-
   const motor_api::pwm_ops *get_pwm_ops(void);
   const encoder_api::capture_operations *get_encoder_capture_ops(void);
 
@@ -80,8 +68,8 @@ namespace platform_stm32_hal
                                    std::uint32_t &pulse_width_us_out,
                                    std::uint32_t &time_ms_out);
 
-  const comm_api_ai::transport_ops *get_uart_transport_ops(void);
-  void set_default_uart_transport_ctx(void *ctx);
-  void *get_default_uart_transport_ctx(void);
-  void get_uart_diag_snapshot(uart_diag_snapshot &out);
+  bool comm_uart_configure(void *platform_handle, std::uint16_t tx_pin_id, std::uint16_t rx_pin_id, std::uint32_t baud_rate);
+  bool comm_uart_tx_bytes(void *platform_handle, const std::uint8_t *data, std::size_t length);
+  std::size_t comm_uart_rx_bytes(void *platform_handle, std::uint8_t *data_out, std::size_t capacity);
 }
+

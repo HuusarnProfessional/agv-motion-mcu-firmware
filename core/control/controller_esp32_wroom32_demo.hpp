@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-// 0 = ESP32-S3 (current path), 1 = ESP32-WROOM32 demo path
 extern uint8_t g_pick_controller;
 
 #ifdef __cplusplus

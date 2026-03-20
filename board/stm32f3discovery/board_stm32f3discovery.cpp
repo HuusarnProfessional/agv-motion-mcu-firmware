@@ -105,19 +105,6 @@ namespace
 
   static constexpr std::size_t k_encoder_count = sizeof(k_encoders) / sizeof(k_encoders[0]);
 
-  // UART mapping for ESP32 link:
-  // USART2 TX: PD5
-  // USART2 RX: PD6
-  static void *get_uart_esp32_hal_handle(void)
-  {
-    const std::uintptr_t uart2_addr = reinterpret_cast<std::uintptr_t>(USART2);
-    if (uart2_addr == 0U)
-    {
-      return nullptr;
-    }
-    return reinterpret_cast<void *>(uart2_addr);
-  }
-
   static constexpr app_drive_defaults k_drive_defaults =
   {
     63,  // wheel_diameter_mm
@@ -127,7 +114,6 @@ namespace
 
 extern "C" void board_init(void)
 {
-  platform_stm32_hal::set_default_uart_transport_ctx(get_uart_esp32_hal_handle());
   motor_api::init(k_motors, k_motor_count);
   encoder_api::init(k_encoders, k_encoder_count);
   app_init();

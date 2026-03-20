@@ -47,14 +47,13 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../app/app_entry.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32f3discovery/board_stm32f3discovery.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/comm_api_ai.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/comm_uart_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/encoder_api.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/middleware_api_ai.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/motor_api.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_robot_future.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl_ai.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/encoder_as5600_pwm_impl.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/middleware_impl_ai.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/motor_drv8871_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/state/agv_state.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/system_select/system_select.cpp
@@ -63,7 +62,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/imu_spi_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/voltage_adc_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/obstacle_hcsr04_platform_stm32.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/uart_transport_ai_platform_stm32.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/comm_uart_platform_stm32.cpp
 )
 
 # Add include paths

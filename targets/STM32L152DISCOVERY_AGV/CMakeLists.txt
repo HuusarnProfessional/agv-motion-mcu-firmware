@@ -52,21 +52,20 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32l152discovery/imu_board_stm32l152discovery.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32l152discovery/voltage_monitor_board_stm32l152discovery.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32l152discovery/obstacle_board_stm32l152discovery.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/comm_api_ai.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32l152discovery/comm_uart_board_stm32l152discovery.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/comm_uart_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/encoder_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/imu_api.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/middleware_api_ai.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/motor_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/obstacle_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/voltage_monitor_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_esp32_wroom32_demo.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_robot_future.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control_ai.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl_ai.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/encoder_as5600_pwm_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/imu_lsm9ds1_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/voltage_monitor_adc_impl.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/middleware_impl_ai.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/motor_drv8871_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/obstacle_hcsr04_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../libraries/lsm9ds1_driver/lsm9ds1_reg.c
@@ -77,7 +76,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/imu_spi_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/voltage_adc_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/obstacle_hcsr04_platform_stm32.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/uart_transport_ai_platform_stm32.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/comm_uart_platform_stm32.cpp
 )
 
 # Add include paths

@@ -110,12 +110,12 @@ int main(void)
 
   if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET)
   {
-    // esp32s3 (AI) mode
+    // future robot controller path
     g_pick_controller = 0U;
   }
   else
   {
-    // esp32_wroom32 mode
+    // esp32_wroom32 demo path
     g_pick_controller = 1U;
   }
 
