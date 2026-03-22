@@ -21,3 +21,6 @@ Board-specific and platform-specific dependencies are kept in separate layers.
 - `impl` should only use generic wrappers exposed from `platform`.
 - `board` defines resources and mapping, not control logic.
 - `system_select` decides which implementation is used (for example DRV8871 vs custom H-bridge).
+
+## Deferred Work
+- `docs/deferred_issues.md`: issues we intentionally postpone but want to track.

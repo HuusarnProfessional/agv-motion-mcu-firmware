@@ -4,6 +4,11 @@ add_library(agv_core STATIC
   api/obstacle_api.cpp
   api/voltage_monitor_api.cpp
   control/controller_esp32_wroom32_demo.cpp
+  control/local_positioning/encoder_model_pipeline.cpp
+  control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
+  control/local_positioning/encoder_model/delta_estimation_encoders.cpp
+  control/local_positioning/encoder_model/input_storage_encoders.cpp
+  control/local_positioning/encoder_model/motion_model_encoders.cpp
   control/controller_robot_future.cpp
   control/robot_control.cpp
   impl/comm_uart_impl.cpp
