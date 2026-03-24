@@ -61,6 +61,16 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/voltage_monitor_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_esp32_wroom32_demo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_robot_future.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_solve_and_set.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_stop_and_sample_tare.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/encoder_model_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/delta_estimation_encoders.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/input_storage_encoders.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/motion_model_encoders.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/imu_model/delta_estimation_imu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/encoder_as5600_pwm_impl.cpp

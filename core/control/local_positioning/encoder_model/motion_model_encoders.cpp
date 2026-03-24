@@ -1,5 +1,5 @@
 #include "core/control/local_positioning/encoder_model/motion_model_encoders.hpp"
-#include "core/control/local_positioning/encoder_model_tuning.hpp"
+#include "core/control/local_positioning/encoder_model/encoder_model_tuning.hpp"
 #include "core/mechanical_config/mechanical_config.hpp"
 #include <cmath>
 

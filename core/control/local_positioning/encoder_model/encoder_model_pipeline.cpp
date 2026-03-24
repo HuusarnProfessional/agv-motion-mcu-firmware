@@ -1,4 +1,4 @@
-#include "core/control/local_positioning/encoder_model_pipeline.hpp"
+#include "core/control/local_positioning/encoder_model/encoder_model_pipeline.hpp"
 
 namespace local_positioning
 {
