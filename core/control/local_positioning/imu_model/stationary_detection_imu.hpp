@@ -8,6 +8,10 @@ namespace stationary_detection_imu
 {
   struct stationary_snapshot
   {
+    std::int32_t filtered_gyroscope_z_mdps = 0;
+    std::int32_t filtered_accelerometer_x_mg = 0;
+    std::int32_t filtered_accelerometer_y_mg = 0;
+    bool has_filter_state = false;
     bool is_stationary = false;
     bool has_stationary_detection = false;
   };

@@ -71,6 +71,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/input_storage_encoders.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/motion_model_encoders.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/imu_model/delta_estimation_imu.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/imu_model/motion_model_imu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/encoder_as5600_pwm_impl.cpp

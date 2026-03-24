@@ -23,4 +23,14 @@ namespace imu_model_tuning
   struct motion_model_tuning
   {
   };
+
+  inline constexpr std::uint32_t k_stationary_noise_scale_percent = 120u;
+  inline constexpr std::uint32_t k_stationary_low_pass_alpha_percent = 20u;
+  inline constexpr std::int32_t k_stationary_gyro_z_min_limit_mdps = 5000;
+  inline constexpr std::int32_t k_stationary_acc_x_min_limit_mg = 50;
+  inline constexpr std::int32_t k_stationary_acc_y_min_limit_mg = 50;
+  inline constexpr std::int64_t k_motion_confidence_max = 1000;
+  inline constexpr std::int32_t k_motion_gyro_z_noise_floor_mdps = 1;
+  inline constexpr std::int32_t k_motion_acc_x_noise_floor_mg = 1;
+  inline constexpr std::int64_t k_um_per_mg_per_s2 = 9807;
 }

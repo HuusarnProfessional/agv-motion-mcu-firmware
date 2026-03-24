@@ -32,6 +32,7 @@ namespace imu_calibration
     imu_drive_sample_step_state forward_step_state = {};
     imu_drive_sample_step_state backward_step_state = {};
     imu_api::imu_tare_values tare_values = {};
+    imu_api::imu_noise_profile noise_profile = {};
     imu_drive_sample_values forward_values = {};
     imu_drive_sample_values backward_values = {};
     imu_drive_sample_mean_values forward_mean_values = {};

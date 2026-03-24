@@ -70,7 +70,7 @@ namespace imu_calibration
 
       case step::build_tare:
       {
-        if (tick_build_tare_values(imu_calibration_state.tare_step_state, imu_id, imu_calibration_state.tare_values))
+        if (tick_build_tare_values(imu_calibration_state.tare_step_state, imu_id, imu_calibration_state.tare_values, imu_calibration_state.noise_profile))
         {
           imu_calibration_state.current_step = step::drive_forward;
         }
@@ -120,7 +120,7 @@ namespace imu_calibration
             imu_calibration_state.backward_mean_values.has_mean)
         {
           solve_alignment_matrix(imu_calibration_state.forward_mean_values, imu_calibration_state.backward_mean_values, imu_calibration_state.tare_values);
-          set_calibration_profile_to_imu(imu_id, imu_calibration_state.tare_values);
+          set_calibration_profile_to_imu(imu_id, imu_calibration_state.tare_values, imu_calibration_state.noise_profile);
         }
 
         imu_calibration_state.current_step = step::done;

@@ -10,6 +10,7 @@ add_library(agv_core STATIC
   control/local_positioning/encoder_model/input_storage_encoders.cpp
   control/local_positioning/encoder_model/motion_model_encoders.cpp
   control/local_positioning/imu_model/delta_estimation_imu.cpp
+  control/local_positioning/imu_model/motion_model_imu.cpp
   control/imu_calibration/imu_calibration_pipeline.cpp
   control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp
   control/imu_calibration/imu_calibration_solve_and_set.cpp

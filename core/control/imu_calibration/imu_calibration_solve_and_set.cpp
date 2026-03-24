@@ -108,7 +108,7 @@ void solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_val
   io_tare_values.r33 = static_cast<std::int32_t>(z_axis_imu.z * k_matrix_scale);
 }
 
-void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_values, imu_api::imu_calibration_profile &out_profile)
+void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values, imu_api::imu_calibration_profile &out_profile)
 {
   out_profile = {};
 
@@ -118,14 +118,15 @@ void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_va
   }
 
   out_profile.tare = tare_values;
+  out_profile.noise = noise_values;
   out_profile.remove_gravity = false;
   out_profile.has_calibration = true;
 }
 
-void set_calibration_profile_to_imu(std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values)
+void set_calibration_profile_to_imu(std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values)
 {
   imu_api::imu_calibration_profile calibration_profile = {};
-  build_calibration_profile_from_tare(tare_values, calibration_profile);
+  build_calibration_profile_from_tare(tare_values, noise_values, calibration_profile);
 
   if (!calibration_profile.has_calibration)
   {

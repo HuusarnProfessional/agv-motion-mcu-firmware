@@ -21,5 +21,5 @@ struct imu_drive_sample_mean_values
 
 void build_mean_values_from_drive_samples(const imu_drive_sample_values &sample_values, imu_drive_sample_mean_values &out_mean_values);
 void solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_values, const imu_drive_sample_mean_values &backward_mean_values, imu_api::imu_tare_values &io_tare_values);
-void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_values, imu_api::imu_calibration_profile &out_profile);
-void set_calibration_profile_to_imu(std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values);
+void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values, imu_api::imu_calibration_profile &out_profile);
+void set_calibration_profile_to_imu(std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values);

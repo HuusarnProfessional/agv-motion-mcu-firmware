@@ -62,9 +62,21 @@ namespace imu_api
         std::int32_t r33 = 1000000;
     };
 
+    struct imu_noise_profile
+    {
+        std::int32_t gyroscope_x_p_proc_mdps = 0;
+        std::int32_t gyroscope_y_p_proc_mdps = 0;
+        std::int32_t gyroscope_z_p_proc_mdps = 0;
+        std::int32_t accelerometer_x_p_proc_mg = 0;
+        std::int32_t accelerometer_y_p_proc_mg = 0;
+        std::int32_t accelerometer_z_p_proc_mg = 0;
+        bool has_noise_profile = false;
+    };
+
     struct imu_calibration_profile
     {
         imu_tare_values tare = {};
+        imu_noise_profile noise = {};
         bool remove_gravity = true;
         bool has_calibration = false;
     };

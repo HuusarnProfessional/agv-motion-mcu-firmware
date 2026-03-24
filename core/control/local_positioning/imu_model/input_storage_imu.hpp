@@ -8,6 +8,7 @@ namespace imu_input_storage
 {
   struct imu_sample_snapshot
   {
+    std::uint8_t imu_id = 0u;
     std::uint32_t previous_tick_id = 0u;
     std::uint32_t current_tick_id = 0u;
     std::uint32_t previous_time_ms = 0u;
@@ -15,6 +16,10 @@ namespace imu_input_storage
     imu_api::imu_sample previous_sample = {};
     imu_api::imu_sample current_sample = {};
     bool has_input = false;
+    bool has_previous = false;
+    bool can_use_gyro = false;
+    bool can_use_accelerometer = false;
+
   };
 
   void reset(imu_sample_snapshot &state);
