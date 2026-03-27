@@ -17,10 +17,7 @@ namespace
 
   std::int64_t compute_delta_rotation_urad(std::int32_t gyroscope_z_calibrated_mdps, std::uint32_t dt_ms)
   {
-    return (static_cast<std::int64_t>(gyroscope_z_calibrated_mdps) *
-            static_cast<std::int64_t>(dt_ms) *
-            k_urad_per_degree) /
-           k_mdps_dt_scale;
+    return (static_cast<std::int64_t>(gyroscope_z_calibrated_mdps) *static_cast<std::int64_t>(dt_ms) *k_urad_per_degree) /k_mdps_dt_scale;
   }
 }
 
