@@ -57,6 +57,9 @@ namespace motion_model_imu
       return false;
     }
 
+    out.is_stationary = delta_snapshot.is_stationary;
+    out.gyroscope_z_calibrated_mdps = delta_snapshot.gyroscope_z_calibrated_mdps;
+
     imu_api::imu_calibration_profile calibration_profile = {};
 
     std::int32_t gyro_z_noise_limit_mdps = imu_model_tuning::k_motion_gyro_z_noise_floor_mdps;
@@ -95,3 +98,5 @@ namespace motion_model_imu
     return true;
   }
 }
+
+

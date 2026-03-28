@@ -91,39 +91,70 @@ namespace motion_model_encoders
     const std::int64_t delta_rr_um = delta_snapshot.wheel_delta_motion[3u].wheel_delta_distance_um;
     compute_confidences(confidence_snapshot, delta_fl_um, delta_fr_um, delta_rl_um, delta_rr_um, out.confidence_translation, out.confidence_rotation);
 
-    if (!confidence_snapshot.can_estimate_rotation)
+    if (!confidence_snapshot.can_estimate_translation)
     {
       return false;
     }
 
-    const std::int64_t wheel_separation_um =
-        static_cast<std::int64_t>(drivetrain.wheel_separation_mm) * tuning.um_per_mm;
+    const std::int64_t wheel_separation_um = static_cast<std::int64_t>(drivetrain.wheel_separation_mm) * tuning.um_per_mm;
 
     
-    // Motion model math
+    // motion model math
     std::int64_t numerator = tuning.weight_fl*delta_fl_um + tuning.weight_rl*delta_rl_um;
     std::int64_t denominator  = tuning.weight_fl*confidence_snapshot.meas_enable_fl + tuning.weight_rl*confidence_snapshot.meas_enable_rl;
 
-    if(denominator == 0u)
+    bool has_left_delta = false;
+    std::int64_t delta_left = 0;
+    if (denominator != 0u)
     {
-      return false;
+      delta_left = numerator / denominator;
+      has_left_delta = true;
     }
-    std::int64_t delta_left = numerator/denominator;
+
 
     numerator = tuning.weight_fr*delta_fr_um + tuning.weight_rr*delta_rr_um;
     denominator  = tuning.weight_fr*confidence_snapshot.meas_enable_fr + tuning.weight_rr*confidence_snapshot.meas_enable_rr;
 
-    if(denominator == 0u)
+    bool has_right_delta = false;
+    std::int64_t delta_right = 0;
+    if(denominator != 0u)
+    {
+      delta_right = numerator/denominator;
+      has_right_delta = true;
+    }
+    
+    if (has_left_delta && has_right_delta)
+    {
+      out.translation = (delta_left + delta_right) / 2;
+    }
+    else if (has_left_delta)
+    {
+      out.translation = delta_left;
+    }
+    else if (has_right_delta)
+    {
+      out.translation = delta_right;
+    }
+    else
     {
       return false;
     }
-    std::int64_t delta_right = numerator/denominator;
 
-     if(wheel_separation_um == 0u)
+
+    if (!confidence_snapshot.can_estimate_rotation)
+    {
+      out.rotation = 0;
+      out.confidence_rotation = 0;
+      out.has_motion_model = true;
+      return true;
+    }
+    if (wheel_separation_um == 0u)
     {
       return false;
     }
-    out.translation = (delta_left + delta_right)/2;
+
+    
+
     out.rotation = ((delta_right - delta_left) * 1000000LL) / wheel_separation_um;
     out.has_motion_model = true;
     return true;
