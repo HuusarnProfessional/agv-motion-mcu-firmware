@@ -7,6 +7,14 @@
 
 namespace sensorfusion_rotation
 {
+  struct rotation_state
+  {
+    bool is_initialized = false;
+    double theta_estimate_urad = 0.0;
+    double theta_encoder_accumulated_urad = 0.0;
+    double p_heading_urad2 = 0.0;
+  };
+
   struct rotation_snapshot
   {
     bool has_fused_rotation = false;
@@ -28,6 +36,8 @@ namespace sensorfusion_rotation
     std::int64_t gyro_weight_rotation = 0;
   };
 
+  void reset(rotation_state &state);
   void reset(rotation_snapshot &state);
-  bool fuse_rotation(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, rotation_snapshot &out);
+  bool fuse_rotation(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, rotation_state &state, rotation_snapshot &out);
 }
+
