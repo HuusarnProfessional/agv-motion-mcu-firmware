@@ -1,7 +1,7 @@
 #include "core/control/local_positioning/sensorfusion/rotation/sensorfusion_rotation.hpp"
 #include "core/control/local_positioning/sensorfusion/rotation/encoder/sensorfusion_rotation_encoder.hpp"
 #include "core/control/local_positioning/sensorfusion/rotation/imu/sensorfusion_rotation_imu.hpp"
-#include "core/control/local_positioning/sensorfusion/rotation/sensorfusion_tuning.hpp"
+#include "core/control/local_positioning/sensorfusion/sensorfusion_tuning.hpp"
 
 namespace
 {
@@ -59,6 +59,34 @@ namespace
     const double variance = max_variance - confidence_normalized * variance_range;
 
     return variance;
+  }
+
+  std::int64_t map_heading_variance_to_fused_confidence(double heading_variance_urad2)
+  {
+    double variance_normalized = 0.0;
+    const double min_variance = sensorfusion_tuning::k_rotation_fused_variance_confidence_min_urad2;
+    const double max_variance = sensorfusion_tuning::k_rotation_fused_variance_confidence_max_urad2;
+    const double variance_range = max_variance - min_variance;
+
+    if (variance_range > 0.0)
+    {
+      variance_normalized = (heading_variance_urad2 - min_variance) / variance_range;
+    }
+
+    if (variance_normalized < 0.0)
+    {
+      variance_normalized = 0.0;
+    }
+
+    if (variance_normalized > 1.0)
+    {
+      variance_normalized = 1.0;
+    }
+
+    const double confidence_normalized = 1.0 - variance_normalized;
+    const double confidence_scaled = confidence_normalized * sensorfusion_tuning::k_confidence_max;
+
+    return static_cast<std::int64_t>(confidence_scaled);
   }
 
   void initialize_state_if_needed(sensorfusion_rotation::rotation_state &state)
@@ -129,7 +157,7 @@ namespace
 
       const double measurement_variance =
           map_encoder_confidence_to_measurement_variance(out.encoder_confidence_rotation_final);
-      const double innovation =
+      const double measurement_residual =
           state.theta_encoder_accumulated_urad -
           predicted_estimate.theta_urad;
       const double innovation_variance =
@@ -141,7 +169,7 @@ namespace
 
       corrected_estimate.theta_urad =
           predicted_estimate.theta_urad +
-          kalman_gain * innovation;
+          kalman_gain * measurement_residual;
       corrected_estimate.p_urad2 =
           (1.0 - kalman_gain) *
           predicted_estimate.p_urad2;
@@ -160,20 +188,8 @@ namespace
         previous_theta_estimate_urad;
 
     out.rotation = static_cast<std::int64_t>(fused_rotation_urad);
-    out.confidence_rotation = 0;
-
-    if (out.has_encoder_rotation)
-    {
-      out.confidence_rotation = out.encoder_confidence_rotation_final;
-    }
-
-    if (out.has_gyro_rotation)
-    {
-      if (out.confidence_rotation < out.gyro_confidence_rotation_final)
-      {
-        out.confidence_rotation = out.gyro_confidence_rotation_final;
-      }
-    }
+    out.confidence_rotation =
+        map_heading_variance_to_fused_confidence(corrected_estimate.p_urad2);
 
     out.has_fused_rotation = true;
   }

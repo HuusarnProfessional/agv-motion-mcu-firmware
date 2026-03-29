@@ -18,6 +18,9 @@ add_library(agv_core STATIC
   control/local_positioning/sensorfusion/rotation/sensorfusion_rotation.cpp
   control/local_positioning/sensorfusion/rotation/encoder/sensorfusion_rotation_encoder.cpp
   control/local_positioning/sensorfusion/rotation/imu/sensorfusion_rotation_imu.cpp
+  control/local_positioning/sensorfusion/translation/sensorfusion_translation.cpp
+  control/local_positioning/sensorfusion/translation/encoder/sensorfusion_translation_encoder.cpp
+  control/local_positioning/sensorfusion/translation/imu/sensorfusion_translation_imu.cpp
   control/imu_calibration/imu_calibration_pipeline.cpp
   control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp
   control/imu_calibration/imu_calibration_solve_and_set.cpp

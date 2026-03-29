@@ -1,5 +1,5 @@
 #include "core/control/local_positioning/sensorfusion/rotation/imu/sensorfusion_rotation_imu.hpp"
-#include "core/control/local_positioning/sensorfusion/rotation/sensorfusion_tuning.hpp"
+#include "core/control/local_positioning/sensorfusion/sensorfusion_tuning.hpp"
 
 #include <cmath>
 
