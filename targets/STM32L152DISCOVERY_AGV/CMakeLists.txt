@@ -76,6 +76,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/imu_model/motion_model_imu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/imu_model/imu_model_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/sensorfusion_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/local_positioning.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/rotation/sensorfusion_rotation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/rotation/encoder/sensorfusion_rotation_encoder.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/rotation/imu/sensorfusion_rotation_imu.cpp

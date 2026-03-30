@@ -41,5 +41,5 @@ namespace imu_calibration
 
   void reset(state &imu_calibration_state);
   void start(state &imu_calibration_state);
-  bool tick(state &imu_calibration_state, const local_positioning::state &encoder_model_state, std::uint8_t imu_id);
+  bool tick(state &imu_calibration_state, const encoder_motion::state &encoder_model_state, std::uint8_t imu_id);
 }

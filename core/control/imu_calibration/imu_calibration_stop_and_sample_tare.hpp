@@ -39,5 +39,5 @@ struct imu_tare_step_state
 };
 
 void stop_motor();
-bool is_still_from_encoder_model(const local_positioning::state &encoder_model_state);
+bool is_still_from_encoder_model(const encoder_motion::state &encoder_model_state);
 bool tick_build_tare_values(imu_tare_step_state &tare_step_state, std::uint8_t imu_id, imu_api::imu_tare_values &out_tare, imu_api::imu_noise_profile &out_noise);

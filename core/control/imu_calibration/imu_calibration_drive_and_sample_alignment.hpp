@@ -32,5 +32,5 @@ struct imu_drive_sample_step_state
   std::uint32_t tick_count = 0u;
 };
 
-bool tick_drive_forward_and_sample(imu_drive_sample_step_state &drive_step_state, const local_positioning::state &encoder_model_state, std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, imu_drive_sample_values &out_values);
-bool tick_drive_backward_and_sample(imu_drive_sample_step_state &drive_step_state, const local_positioning::state &encoder_model_state, std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, imu_drive_sample_values &out_values);
+bool tick_drive_forward_and_sample(imu_drive_sample_step_state &drive_step_state, const encoder_motion::state &encoder_model_state, std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, imu_drive_sample_values &out_values);
+bool tick_drive_backward_and_sample(imu_drive_sample_step_state &drive_step_state, const encoder_motion::state &encoder_model_state, std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, imu_drive_sample_values &out_values);

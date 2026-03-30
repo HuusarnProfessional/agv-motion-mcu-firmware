@@ -39,7 +39,7 @@ namespace imu_calibration
     imu_calibration_state.current_step = step::stop_before_tare;
   }
 
-  bool tick(state &imu_calibration_state, const local_positioning::state &encoder_model_state, std::uint8_t imu_id)
+  bool tick(state &imu_calibration_state, const encoder_motion::state &encoder_model_state, std::uint8_t imu_id)
   {
     if (imu_calibration_state.current_step == step::done)
     {

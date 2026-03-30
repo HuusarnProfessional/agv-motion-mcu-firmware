@@ -1,6 +1,6 @@
 #include "core/control/local_positioning/encoder_model/encoder_model_pipeline.hpp"
 
-namespace local_positioning
+namespace encoder_motion
 {
   void reset(state &local_positioning_state)
   {

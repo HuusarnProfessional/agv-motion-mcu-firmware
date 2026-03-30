@@ -15,6 +15,7 @@ add_library(agv_core STATIC
   control/local_positioning/imu_model/motion_model_imu.cpp
   control/local_positioning/imu_model/imu_model_pipeline.cpp
   control/local_positioning/sensorfusion/sensorfusion_pipeline.cpp
+  control/local_positioning/local_positioning.cpp
   control/local_positioning/sensorfusion/rotation/sensorfusion_rotation.cpp
   control/local_positioning/sensorfusion/rotation/encoder/sensorfusion_rotation_encoder.cpp
   control/local_positioning/sensorfusion/rotation/imu/sensorfusion_rotation_imu.cpp

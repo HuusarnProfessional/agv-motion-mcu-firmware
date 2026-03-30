@@ -7,7 +7,7 @@
 #include "core/control/local_positioning/encoder_model/input_storage_encoders.hpp"
 #include "core/control/local_positioning/encoder_model/motion_model_encoders.hpp"
 
-namespace local_positioning
+namespace encoder_motion
 {
   struct state
   {

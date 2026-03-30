@@ -212,7 +212,7 @@ void stop_motor()
   }
 }
 
-bool is_still_from_encoder_model(const local_positioning::state &encoder_model_state)
+bool is_still_from_encoder_model(const encoder_motion::state &encoder_model_state)
 {
   const motion_model_encoders::motion_model_snapshot &motion = encoder_model_state.encoder_motion_snapshot;
 
