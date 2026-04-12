@@ -26,10 +26,22 @@ namespace
     {
       const stm_esp_outgoing_payloads::encoder_debug_sample &sample = payload.encoders[encoder_index];
 
-      if (!writer.write_u16(sample.angle_raw_12bit) ||
-          !writer.write_u32(sample.angle_mdeg) ||
-          !writer.write_u32(sample.time_ms) ||
-          !writer.write_u8(sample.status))
+      if (!writer.write_u16(sample.angle_raw_12bit))
+      {
+        return false;
+      }
+
+      if (!writer.write_u32(sample.angle_mdeg))
+      {
+        return false;
+      }
+
+      if (!writer.write_u32(sample.time_ms))
+      {
+        return false;
+      }
+
+      if (!writer.write_u8(sample.status))
       {
         return false;
       }

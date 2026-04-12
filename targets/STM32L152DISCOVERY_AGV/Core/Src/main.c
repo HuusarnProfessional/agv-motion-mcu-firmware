@@ -457,9 +457,6 @@ static void MX_USART3_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART3_Init 2 */
-  // Enable RX and error interrupts so ingress is drained quickly in ISR.
-  SET_BIT(huart3.Instance->CR1, USART_CR1_RXNEIE);
-  SET_BIT(huart3.Instance->CR3, USART_CR3_EIE);
 
   /* USER CODE END USART3_Init 2 */
 

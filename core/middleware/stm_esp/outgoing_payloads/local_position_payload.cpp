@@ -17,14 +17,42 @@ namespace
     const stm_esp_outgoing_payloads::local_position_payload_data &payload = state.local_position;
     stm_esp::binary_packing::writer writer(payload_out, capacity);
 
-    if (!writer.write_bool(payload.has_pose) ||
-        !writer.write_i64(payload.x_um) ||
-        !writer.write_i64(payload.y_um) ||
-        !writer.write_i32(payload.heading_urad) ||
-        !writer.write_u16(payload.confidence_position) ||
-        !writer.write_u16(payload.confidence_heading) ||
-        !writer.write_u8(payload.pose_id) ||
-        !writer.write_u8(payload.branch_id))
+    if (!writer.write_bool(payload.has_pose))
+    {
+      return false;
+    }
+
+    if (!writer.write_i64(payload.x_um))
+    {
+      return false;
+    }
+
+    if (!writer.write_i64(payload.y_um))
+    {
+      return false;
+    }
+
+    if (!writer.write_i32(payload.heading_urad))
+    {
+      return false;
+    }
+
+    if (!writer.write_u16(payload.confidence_position))
+    {
+      return false;
+    }
+
+    if (!writer.write_u16(payload.confidence_heading))
+    {
+      return false;
+    }
+
+    if (!writer.write_u8(payload.pose_id))
+    {
+      return false;
+    }
+
+    if (!writer.write_u8(payload.branch_id))
     {
       return false;
     }

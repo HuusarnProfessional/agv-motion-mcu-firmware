@@ -17,7 +17,17 @@ namespace platform_stm32_hal
       return false;
     }
 
-    HAL_GPIO_WritePin(static_cast<GPIO_TypeDef *>(selected_pin->port), selected_pin->pin, is_high ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    GPIO_PinState level = GPIO_PIN_RESET;
+
+    if (is_high)
+    {
+      level = GPIO_PIN_SET;
+    }
+
+    HAL_GPIO_WritePin(
+      static_cast<GPIO_TypeDef *>(selected_pin->port),
+      selected_pin->pin,
+      level);
     return true;
   }
 

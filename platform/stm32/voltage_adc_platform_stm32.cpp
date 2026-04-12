@@ -22,7 +22,12 @@ namespace platform_stm32_hal
 
 #if defined(HAL_ADC_MODULE_ENABLED)
     ADC_HandleTypeDef *adc_handle = static_cast<ADC_HandleTypeDef *>(adc_bus->adc_handle);
-    const std::uint32_t timeout_ms = (adc_bus->transfer_timeout_ms == 0U) ? 5U : adc_bus->transfer_timeout_ms;
+    std::uint32_t timeout_ms = adc_bus->transfer_timeout_ms;
+
+    if (timeout_ms == 0U)
+    {
+      timeout_ms = 5U;
+    }
 
     if (HAL_ADC_Start(adc_handle) != HAL_OK)
     {

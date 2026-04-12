@@ -14,7 +14,17 @@ namespace stm_esp::binary_packing
     {
     }
 
-    bool write_bool(bool value) { return write_u8(value ? 1U : 0U); }
+    bool write_bool(bool value)
+    {
+      std::uint8_t stored_value = 0U;
+
+      if (value)
+      {
+        stored_value = 1U;
+      }
+
+      return write_u8(stored_value);
+    }
     bool write_u8(std::uint8_t value) { return write_value<std::uint8_t>(value); }
     bool write_u16(std::uint16_t value) { return write_value<std::uint16_t>(value); }
     bool write_u32(std::uint32_t value) { return write_value<std::uint32_t>(value); }

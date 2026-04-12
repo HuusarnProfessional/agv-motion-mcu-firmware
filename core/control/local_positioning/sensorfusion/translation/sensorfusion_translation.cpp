@@ -140,8 +140,12 @@ namespace
 
     if (imu_motion.is_stationary)
     {
-      const std::int64_t encoder_translation_abs =
-          encoder_motion.translation >= 0 ? encoder_motion.translation : -encoder_motion.translation;
+      std::int64_t encoder_translation_abs = encoder_motion.translation;
+
+      if (encoder_translation_abs < 0)
+      {
+        encoder_translation_abs = -encoder_translation_abs;
+      }
 
       if (encoder_translation_abs <= 1)
       {

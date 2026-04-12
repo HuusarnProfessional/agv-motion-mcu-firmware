@@ -10,10 +10,22 @@ namespace
     stm_esp::binary_packing::reader reader(payload_data, payload_length);
     stm_esp_incoming_payloads::motion_command_payload_data payload = {};
 
-    if (!reader.read_bool(payload.drive_enabled) ||
-        !reader.read_i16(payload.linear_velocity_mm_s) ||
-        !reader.read_i16(payload.yaw_rate_mdeg_s) ||
-        !reader.is_finished())
+    if (!reader.read_bool(payload.drive_enabled))
+    {
+      return false;
+    }
+
+    if (!reader.read_i16(payload.linear_velocity_mm_s))
+    {
+      return false;
+    }
+
+    if (!reader.read_i16(payload.yaw_rate_mdeg_s))
+    {
+      return false;
+    }
+
+    if (!reader.is_finished())
     {
       return false;
     }

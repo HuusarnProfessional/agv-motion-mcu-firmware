@@ -22,7 +22,8 @@
 #include "stm32l1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-extern void platform_stm32_hal_uart3_irq_handler(void);
+extern void platform_stm32_hal_uart_irq_handler(void *platform_handle);
+extern UART_HandleTypeDef huart3;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -215,7 +216,7 @@ void USART3_IRQHandler(void)
   /* USER CODE BEGIN USART3_IRQn 0 */
 
   /* USER CODE END USART3_IRQn 0 */
-  platform_stm32_hal_uart3_irq_handler();
+  platform_stm32_hal_uart_irq_handler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
 
   /* USER CODE END USART3_IRQn 1 */

@@ -17,8 +17,12 @@ namespace
     const stm_esp_outgoing_payloads::safety_status_payload_data &payload = state.safety_status;
     stm_esp::binary_packing::writer writer(payload_out, capacity);
 
-    if (!writer.write_bool(payload.collision_blocked) ||
-        !writer.write_u32(payload.time_ms))
+    if (!writer.write_bool(payload.collision_blocked))
+    {
+      return false;
+    }
+
+    if (!writer.write_u32(payload.time_ms))
     {
       return false;
     }

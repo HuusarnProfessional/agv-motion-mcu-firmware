@@ -3,10 +3,6 @@
         {
             "name": "repo",
             "path": "."
-        },
-        {
-            "name": "STM32L152DISCOVERY_AGV",
-            "path": "targets/STM32L152DISCOVERY_AGV"
         }
     ],
     "settings": {

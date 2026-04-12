@@ -55,7 +55,12 @@ namespace
 
   bool convert_level_to_pressed(const button_api::button_input &selected_button, bool is_high)
   {
-    return selected_button.pressed_is_high ? is_high : !is_high;
+    if (selected_button.pressed_is_high)
+    {
+      return is_high;
+    }
+
+    return !is_high;
   }
 
   void apply_gpio_event(const button_api::button_input &selected_button, button_runtime &selected_button_runtime, const button_api::gpio_event &selected_event)

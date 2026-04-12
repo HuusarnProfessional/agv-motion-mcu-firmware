@@ -42,7 +42,12 @@ namespace platform_stm32_hal
     }
 
     SPI_HandleTypeDef *spi_handle = static_cast<SPI_HandleTypeDef *>(bus->spi_handle);
-    const std::uint32_t timeout_ms = (bus->transfer_timeout_ms == 0U) ? 10U : bus->transfer_timeout_ms;
+    std::uint32_t timeout_ms = bus->transfer_timeout_ms;
+
+    if (timeout_ms == 0U)
+    {
+      timeout_ms = 10U;
+    }
 
     std::uint8_t command = static_cast<std::uint8_t>(register_address | 0x80U);
     if (length > 1U)
@@ -77,7 +82,12 @@ namespace platform_stm32_hal
     }
 
     SPI_HandleTypeDef *spi_handle = static_cast<SPI_HandleTypeDef *>(bus->spi_handle);
-    const std::uint32_t timeout_ms = (bus->transfer_timeout_ms == 0U) ? 10U : bus->transfer_timeout_ms;
+    std::uint32_t timeout_ms = bus->transfer_timeout_ms;
+
+    if (timeout_ms == 0U)
+    {
+      timeout_ms = 10U;
+    }
 
     std::uint8_t command = static_cast<std::uint8_t>(register_address & 0x7FU);
     if (length > 1U)

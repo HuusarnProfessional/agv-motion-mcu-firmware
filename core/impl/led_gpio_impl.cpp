@@ -51,12 +51,23 @@ namespace
 
   bool convert_gpio_level_to_is_on(const led_api::led_output &selected_output, bool is_high)
   {
-    return selected_output.active_is_high ? is_high : !is_high;
+    if (selected_output.active_is_high)
+    {
+      return is_high;
+    }
+
+    return !is_high;
   }
 
   bool write_selected_output(const led_api::led_output &selected_output, bool is_on)
   {
-    const bool is_high = selected_output.active_is_high ? is_on : !is_on;
+    bool is_high = !is_on;
+
+    if (selected_output.active_is_high)
+    {
+      is_high = is_on;
+    }
+
     return selected_output.platform_operations->write_gpio_level(selected_output.platform_handle, is_high);
   }
 

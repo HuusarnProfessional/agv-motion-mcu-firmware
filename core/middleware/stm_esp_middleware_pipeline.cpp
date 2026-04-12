@@ -176,7 +176,13 @@ namespace
     }
 
     const comm_uart_api::comm_uart_status status = comm_uart_api::write_bytes(g_state.comm_uart_id, packet_bytes.data(), payload_length + 3U);
-    return (status == comm_uart_api::comm_uart_status::ok) ? send_result::sent : send_result::failed;
+
+    if (status == comm_uart_api::comm_uart_status::ok)
+    {
+      return send_result::sent;
+    }
+
+    return send_result::failed;
   }
 }
 
@@ -309,8 +315,7 @@ namespace stm_esp_middleware_pipeline
 
     for (std::size_t stream_index = 0U; stream_index < stm_esp_middleware_streams::outgoing_stream_count; ++stream_index)
     {
-      if (stm_esp_middleware_streams::outgoing_streams[stream_index].payload == nullptr ||
-          stm_esp_middleware_streams::outgoing_streams[stream_index].payload->payload_id != payload_id)
+      if (stm_esp_middleware_streams::outgoing_streams[stream_index].payload == nullptr || stm_esp_middleware_streams::outgoing_streams[stream_index].payload->payload_id != payload_id)
       {
         continue;
       }
@@ -332,8 +337,7 @@ namespace stm_esp_middleware_pipeline
   {
     for (std::size_t stream_index = 0U; stream_index < stm_esp_middleware_streams::outgoing_stream_count; ++stream_index)
     {
-      if (stm_esp_middleware_streams::outgoing_streams[stream_index].payload == nullptr ||
-          stm_esp_middleware_streams::outgoing_streams[stream_index].payload->payload_id != payload_id)
+      if (stm_esp_middleware_streams::outgoing_streams[stream_index].payload == nullptr || stm_esp_middleware_streams::outgoing_streams[stream_index].payload->payload_id != payload_id)
       {
         continue;
       }

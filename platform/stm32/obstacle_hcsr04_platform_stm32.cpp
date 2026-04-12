@@ -347,7 +347,14 @@ namespace platform_stm32_hal
       return false;
     }
 
-    return write_gpio_level(selected_sensor->trigger, is_high ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    GPIO_PinState level = GPIO_PIN_RESET;
+
+    if (is_high)
+    {
+      level = GPIO_PIN_SET;
+    }
+
+    return write_gpio_level(selected_sensor->trigger, level);
   }
 
   bool obstacle_schedule_alarm_us(void *platform_handle, std::uint32_t delay_us)

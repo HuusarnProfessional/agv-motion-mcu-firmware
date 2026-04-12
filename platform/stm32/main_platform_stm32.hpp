@@ -7,6 +7,7 @@
 #include "core/api/encoder_api.hpp"
 #include "core/api/imu_api.hpp"
 #include "core/api/voltage_monitor_api.hpp"
+#include "core/api/comm_uart_api.hpp"
 #include "core/api/led_api.hpp"
 #include "core/api/obstacle_api.hpp"
 #include "core/api/button_api.hpp"
@@ -72,7 +73,8 @@ namespace platform_stm32_hal
   bool button_read_gpio_event(void *platform_handle, button_api::gpio_event &event_out);
 
   bool comm_uart_configure(void *platform_handle, std::uint16_t tx_pin_id, std::uint16_t rx_pin_id, std::uint32_t baud_rate);
-  bool comm_uart_tx_bytes(void *platform_handle, const std::uint8_t *data, std::size_t length);
-  std::size_t comm_uart_rx_bytes(void *platform_handle, std::uint8_t *data_out, std::size_t capacity);
+  bool comm_uart_register_event_callback(void *platform_handle, comm_uart_api::platform_event_callback_fn event_callback, void *event_context);
+  bool comm_uart_enable_receive(void *platform_handle);
+  bool comm_uart_transmit_byte(void *platform_handle, std::uint8_t byte);
 }
 

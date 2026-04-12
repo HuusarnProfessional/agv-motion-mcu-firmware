@@ -164,7 +164,13 @@ namespace motor_drv8871_impl
 		}
 
 		const std::uint32_t top = top_a;
-		const std::uint16_t abs_u = static_cast<std::uint16_t>(u < 0 ? -u : u); //make it to abs value as +- is rotation direction value
+		std::int16_t signed_abs_u = u;
+		if (u < 0)
+		{
+			signed_abs_u = static_cast<std::int16_t>(-u);
+		}
+
+		const std::uint16_t abs_u = static_cast<std::uint16_t>(signed_abs_u); //make it to abs value as +- is rotation direction value
 		const std::uint32_t ccr = u_to_ccr(top, abs_u); // compare value(~duty)
 
 		if (u > 0) // forward: pwm_a active, pwm_b low

@@ -20,18 +20,8 @@ namespace
   static constexpr std::uint16_t k_comm_uart_rx_pin_id = 11u; // USART3_RX on PC11
   static constexpr std::uint32_t k_comm_uart_baud_rate = 115200u;
 
-  static const comm_uart_api::uart_operations k_uart_operations =
-  {
-    platform_stm32_hal::comm_uart_configure,
-    platform_stm32_hal::comm_uart_tx_bytes,
-    platform_stm32_hal::comm_uart_rx_bytes
-  };
-
-  static const comm_uart_api::comm_uart_input k_comm_uart_inputs[] =
-  {
-    { get_comm_uart_handle(), k_comm_uart_tx_pin_id, k_comm_uart_rx_pin_id, k_comm_uart_baud_rate, &k_uart_operations }
-  };
-
+  static const comm_uart_api::uart_operations k_uart_operations = { platform_stm32_hal::comm_uart_configure, platform_stm32_hal::comm_uart_register_event_callback, platform_stm32_hal::comm_uart_enable_receive, platform_stm32_hal::comm_uart_transmit_byte };
+  static const comm_uart_api::comm_uart_input k_comm_uart_inputs[] = { { get_comm_uart_handle(), k_comm_uart_tx_pin_id, k_comm_uart_rx_pin_id, k_comm_uart_baud_rate, &k_uart_operations } };
   static constexpr std::size_t k_comm_uart_count = sizeof(k_comm_uart_inputs) / sizeof(k_comm_uart_inputs[0]);
 }
 

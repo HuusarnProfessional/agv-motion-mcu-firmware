@@ -17,9 +17,17 @@ namespace
     const stm_esp_outgoing_payloads::power_status_payload_data &payload = state.power_status;
     stm_esp::binary_packing::writer writer(payload_out, capacity);
 
-    if (!writer.write_u32(payload.voltage_mv) ||
-        !writer.write_u32(payload.time_ms) ||
-        !writer.write_u8(payload.status))
+    if (!writer.write_u32(payload.voltage_mv))
+    {
+      return false;
+    }
+
+    if (!writer.write_u32(payload.time_ms))
+    {
+      return false;
+    }
+
+    if (!writer.write_u8(payload.status))
     {
       return false;
     }

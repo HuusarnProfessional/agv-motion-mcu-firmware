@@ -26,9 +26,17 @@ namespace
     {
       const stm_esp_outgoing_payloads::obstacle_debug_sample &sample = payload.sensors[sensor_index];
 
-      if (!writer.write_u32(sample.distance_mm) ||
-          !writer.write_u32(sample.time_ms) ||
-          !writer.write_u8(sample.status))
+      if (!writer.write_u32(sample.distance_mm))
+      {
+        return false;
+      }
+
+      if (!writer.write_u32(sample.time_ms))
+      {
+        return false;
+      }
+
+      if (!writer.write_u8(sample.status))
       {
         return false;
       }

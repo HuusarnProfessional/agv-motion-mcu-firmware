@@ -10,9 +10,17 @@ namespace
     stm_esp::binary_packing::reader reader(payload_data, payload_length);
     stm_esp_incoming_payloads::debug_stream_control_payload_data payload = {};
 
-    if (!reader.read_u8(payload.target_payload_id) ||
-        !reader.read_bool(payload.is_enabled) ||
-        !reader.is_finished())
+    if (!reader.read_u8(payload.target_payload_id))
+    {
+      return false;
+    }
+
+    if (!reader.read_bool(payload.is_enabled))
+    {
+      return false;
+    }
+
+    if (!reader.is_finished())
     {
       return false;
     }
