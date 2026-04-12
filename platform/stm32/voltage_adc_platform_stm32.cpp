@@ -3,10 +3,7 @@
 
 namespace platform_stm32_hal
 {
-  bool voltage_read_adc_raw(void *platform_handle,
-                            std::uint8_t channel,
-                            std::uint16_t &raw_adc_out,
-                            std::uint32_t &time_ms_out)
+  bool voltage_read_adc_raw(void *platform_handle, std::uint8_t channel, std::uint16_t &raw_adc_out, std::uint32_t &time_ms_out)
   {
     (void)channel;
     raw_adc_out = 0U;

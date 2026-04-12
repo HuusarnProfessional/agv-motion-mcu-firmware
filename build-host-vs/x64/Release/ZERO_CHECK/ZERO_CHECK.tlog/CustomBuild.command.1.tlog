@@ -1,0 +1,10 @@
+^D:\KANDIDAT_PROJ\AGV-MOTION-MCU-FIRMWARE\BUILD-HOST-VS\CMAKEFILES\A9923BA48FCEAD6FC688A1E8370FB16D\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/kandidat_proj/agv-motion-mcu-firmware -BD:/kandidat_proj/agv-motion-mcu-firmware/build-host-vs --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/kandidat_proj/agv-motion-mcu-firmware/build-host-vs/agv_firmware.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -6,9 +6,19 @@ extern "C"
   extern UART_HandleTypeDef huart3;
 }
 
+extern "C" void platform_stm32_hal_comm_uart_irq_handler(void *platform_handle)
+{
+  if (platform_handle == nullptr)
+  {
+    return;
+  }
+
+  HAL_UART_IRQHandler(static_cast<UART_HandleTypeDef *>(platform_handle));
+}
+
 extern "C" void platform_stm32_hal_uart3_irq_handler(void)
 {
-  HAL_UART_IRQHandler(&huart3);
+  platform_stm32_hal_comm_uart_irq_handler(&huart3);
 }
 
 namespace platform_stm32_hal
@@ -31,10 +41,7 @@ namespace platform_stm32_hal
   {
     UART_HandleTypeDef *uart_handle = static_cast<UART_HandleTypeDef *>(platform_handle);
 
-    return HAL_UART_Transmit(uart_handle,
-                             const_cast<std::uint8_t *>(data),
-                             static_cast<std::uint16_t>(length),
-                             10u) == HAL_OK;
+    return HAL_UART_Transmit(uart_handle, const_cast<std::uint8_t *>(data), static_cast<std::uint16_t>(length), 10u) == HAL_OK;
   }
 
   std::size_t comm_uart_rx_bytes(void *platform_handle, std::uint8_t *data_out, std::size_t capacity)

@@ -1,0 +1,4 @@
+D:/kandidat_proj/agv-motion-mcu-firmware/build-host-vs/CMakeFiles/host_smoke.dir
+D:/kandidat_proj/agv-motion-mcu-firmware/build-host-vs/CMakeFiles/ALL_BUILD.dir
+D:/kandidat_proj/agv-motion-mcu-firmware/build-host-vs/CMakeFiles/ZERO_CHECK.dir
+D:/kandidat_proj/agv-motion-mcu-firmware/build-host-vs/core/CMakeFiles/agv_core.dir

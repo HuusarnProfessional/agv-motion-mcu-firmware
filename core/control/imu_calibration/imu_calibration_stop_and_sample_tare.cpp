@@ -103,8 +103,7 @@ namespace
     {
       const double desired_delta = state.desired_positions[i] - static_cast<double>(state.marker_positions[i]);
 
-      if (desired_delta >= 1.0 &&
-          (state.marker_positions[i + 1u] - state.marker_positions[i]) > 1)
+      if (desired_delta >= 1.0 && (state.marker_positions[i + 1u] - state.marker_positions[i]) > 1)
       {
         const double marker_delta = 1.0;
         const double left_position = static_cast<double>(state.marker_positions[i - 1u]);
@@ -114,11 +113,7 @@ namespace
         const double current_height = state.marker_heights[i];
         const double right_height = state.marker_heights[i + 1u];
 
-        const double parabolic_height =
-            current_height +
-            (marker_delta / (right_position - left_position)) *
-                (((current_position - left_position + marker_delta) * (right_height - current_height) / (right_position - current_position)) +
-                 ((right_position - current_position - marker_delta) * (current_height - left_height) / (current_position - left_position)));
+        const double parabolic_height = current_height + (marker_delta / (right_position - left_position)) * (((current_position - left_position + marker_delta) * (right_height - current_height) / (right_position - current_position)) + ((right_position - current_position - marker_delta) * (current_height - left_height) / (current_position - left_position)));
 
         if (left_height < parabolic_height && parabolic_height < right_height)
         {
@@ -126,15 +121,12 @@ namespace
         }
         else
         {
-          state.marker_heights[i] =
-              current_height +
-              ((state.marker_heights[i + 1u] - current_height) / (right_position - current_position));
+          state.marker_heights[i] = current_height + ((state.marker_heights[i + 1u] - current_height) / (right_position - current_position));
         }
 
         ++state.marker_positions[i];
       }
-      else if (desired_delta <= -1.0 &&
-               (state.marker_positions[i - 1u] - state.marker_positions[i]) < -1)
+      else if (desired_delta <= -1.0 && (state.marker_positions[i - 1u] - state.marker_positions[i]) < -1)
       {
         const double marker_delta = -1.0;
         const double left_position = static_cast<double>(state.marker_positions[i - 1u]);
@@ -144,11 +136,7 @@ namespace
         const double current_height = state.marker_heights[i];
         const double right_height = state.marker_heights[i + 1u];
 
-        const double parabolic_height =
-            current_height +
-            (marker_delta / (right_position - left_position)) *
-                (((current_position - left_position + marker_delta) * (right_height - current_height) / (right_position - current_position)) +
-                 ((right_position - current_position - marker_delta) * (current_height - left_height) / (current_position - left_position)));
+        const double parabolic_height = current_height + (marker_delta / (right_position - left_position)) * (((current_position - left_position + marker_delta) * (right_height - current_height) / (right_position - current_position)) + ((right_position - current_position - marker_delta) * (current_height - left_height) / (current_position - left_position)));
 
         if (left_height < parabolic_height && parabolic_height < right_height)
         {
@@ -156,9 +144,7 @@ namespace
         }
         else
         {
-          state.marker_heights[i] =
-              current_height -
-              ((state.marker_heights[i - 1u] - current_height) / (left_position - current_position));
+          state.marker_heights[i] = current_height - ((state.marker_heights[i - 1u] - current_height) / (left_position - current_position));
         }
 
         --state.marker_positions[i];

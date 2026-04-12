@@ -54,11 +54,25 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32l152discovery/obstacle_board_stm32l152discovery.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../board/stm32l152discovery/comm_uart_board_stm32l152discovery.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/comm_uart_api.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/button_api.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/api/led_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/encoder_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/imu_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/motor_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/obstacle_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/voltage_monitor_api.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp_middleware_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/local_position_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/safety_status_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/power_status_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/encoder_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/imu_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/obstacle_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/outgoing_payloads/voltage_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/incoming_payloads/motion_command_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/incoming_payloads/start_imu_calibration_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/incoming_payloads/clear_imu_calibration_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/stm_esp/incoming_payloads/debug_stream_control_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_esp32_wroom32_demo.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_robot_future.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_pipeline.cpp
@@ -85,6 +99,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/translation/imu/sensorfusion_translation_imu.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/button_gpio_impl.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/led_gpio_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/encoder_as5600_pwm_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/imu_lsm9ds1_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/voltage_monitor_adc_impl.cpp
@@ -93,11 +109,14 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../libraries/lsm9ds1_driver/lsm9ds1_reg.c
     ${CMAKE_CURRENT_LIST_DIR}/../../core/state/agv_state.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/system_select/system_select.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/main_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/motor_pwm_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/encoder_capture_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/imu_spi_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/voltage_adc_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/obstacle_hcsr04_platform_stm32.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/button_gpio_platform_stm32.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/led_gpio_platform_stm32.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../platform/stm32/comm_uart_platform_stm32.cpp
 )
 

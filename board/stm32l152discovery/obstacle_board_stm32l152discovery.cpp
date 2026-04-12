@@ -10,10 +10,7 @@ extern "C"
 
 namespace
 {
-  static const obstacle_api::ultrasonic_operations k_ultrasonic_ops =
-  {
-    platform_stm32_hal::obstacle_read_echo_pulse_us
-  };
+  static const obstacle_api::ultrasonic_operations k_ultrasonic_ops = { platform_stm32_hal::obstacle_register_event_callback, platform_stm32_hal::obstacle_set_trigger_level, platform_stm32_hal::obstacle_schedule_alarm_us, platform_stm32_hal::obstacle_cancel_alarm, platform_stm32_hal::obstacle_read_time_ms };
 
   static const platform_stm32_hal::obstacle_pin_map k_obstacle_pin_map[] =
   {
@@ -22,18 +19,12 @@ namespace
     { { nullptr, 0U }, { nullptr, 0U } }  // rear
   };
 
-  static platform_stm32_hal::obstacle_hcsr04_handle k_obstacle_handle =
-  {
-    k_obstacle_pin_map,
-    sizeof(k_obstacle_pin_map) / sizeof(k_obstacle_pin_map[0]),
-    30000U
-  };
+  static platform_stm32_hal::obstacle_hcsr04_handle k_obstacle_handle = { k_obstacle_pin_map, sizeof(k_obstacle_pin_map) / sizeof(k_obstacle_pin_map[0]), nullptr };
 
   static const obstacle_api::obstacle_input k_obstacle_sensors[] =
   {
-    // todo: replace channel/handle when trigger+echo pin mapping is ready
-    { static_cast<void *>(&k_obstacle_handle), 0u, &k_ultrasonic_ops }, // front
-    { static_cast<void *>(&k_obstacle_handle), 1u, &k_ultrasonic_ops }  // rear
+    { static_cast<void *>(&k_obstacle_handle), 0u, 30000U, &k_ultrasonic_ops },
+    { static_cast<void *>(&k_obstacle_handle), 1u, 30000U, &k_ultrasonic_ops }
   };
 
   static constexpr std::size_t k_obstacle_sensor_count = sizeof(k_obstacle_sensors) / sizeof(k_obstacle_sensors[0]);

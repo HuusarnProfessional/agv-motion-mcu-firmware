@@ -21,12 +21,7 @@ namespace platform_stm32_hal
     return __HAL_TIM_GET_AUTORELOAD(htim);
   }
 
-  static const motor_api::pwm_ops k_ops =
-  {
-    pwm_start,
-    pwm_set_compare,
-    pwm_get_period
-  };
+  static const motor_api::pwm_ops k_ops = { pwm_start, pwm_set_compare, pwm_get_period };
 
   const motor_api::pwm_ops *get_pwm_ops(void)
   {

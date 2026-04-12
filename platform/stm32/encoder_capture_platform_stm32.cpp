@@ -41,9 +41,7 @@ namespace
     }
   }
 
-  static bool active_channel_to_index_and_channel(std::uint32_t active_channel,
-                                                  std::size_t &index,
-                                                  std::uint32_t &tim_channel)
+  static bool active_channel_to_index_and_channel(std::uint32_t active_channel, std::size_t &index, std::uint32_t &tim_channel)
   {
     switch (active_channel)
     {
@@ -158,11 +156,7 @@ extern "C" void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 namespace platform_stm32_hal
 {
-  static bool encoder_read_capture(void *ctx,
-                                   std::uint8_t channel,
-                                   std::uint32_t &high_ticks,
-                                   std::uint32_t &period_ticks,
-                                   std::uint32_t &time_ms)
+  static bool encoder_read_capture(void *ctx, std::uint8_t channel, std::uint32_t &high_ticks, std::uint32_t &period_ticks, std::uint32_t &time_ms)
   {
     high_ticks = 0U;
     period_ticks = 0U;
@@ -226,10 +220,7 @@ namespace platform_stm32_hal
     return true;
   }
 
-  static const encoder_api::capture_operations k_encoder_capture_ops =
-  {
-    encoder_read_capture
-  };
+  static const encoder_api::capture_operations k_encoder_capture_ops = { encoder_read_capture };
 
   const encoder_api::capture_operations *get_encoder_capture_ops(void)
   {

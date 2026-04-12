@@ -1,56 +1,49 @@
-# Middleware Design Notes (No Code Yet)
+# Middleware Design Notes
 
 ## Purpose
-- Middleware is the protocol layer between `comm_uart` and controller logic.
-- Middleware is platform-independent.
-- Middleware does not contain hardware access code.
+- Middleware sits above `comm_uart_api`.
+- Middleware is controller-side logic, not board/platform logic.
+- Middleware owns packet framing, stream scheduling and incoming command parsing.
 
-## Responsibilities
-- Read incoming bytes from `comm_uart_api`.
-- Build complete text lines (newline-terminated framing).
-- Parse command name and argument payload.
-- Dispatch parsed commands to registered handlers.
-- Send outgoing status/messages through `comm_uart_api`.
-- Track protocol/runtime errors (overflow, invalid format, unknown command).
+## Top-Level Files
+- `core/middleware/stm_esp_middleware_pipeline.*`
+- `core/middleware/stm_esp_middleware_streams.hpp`
 
-## Non-Responsibilities
-- No HAL access.
-- No board/platform pin configuration.
-- No direct motor/encoder/imu control logic.
-- No blocking delays.
+## Structure Rules
+- `comm_uart_api` is the only UART abstraction layer.
+- Middleware does not talk to board, platform or HAL.
+- Top-level files stay clean:
+  - pipeline = flow
+  - streams = what gets scheduled
+- Each payload has its own file under:
+  - `core/middleware/stm_esp/outgoing_payloads/`
+  - `core/middleware/stm_esp/incoming_payloads/`
 
-## Runtime Model
-- Middleware runs from the superloop (`tick` style).
-- Each tick:
-- Pull available RX bytes (non-blocking).
-- Assemble one or more complete lines.
-- Parse and dispatch each line.
-- Flush queued TX messages (non-blocking best effort).
+## Stream Rules
+- Stream order in the array is priority order.
+- Stream names do not contain `ms`.
+- Period is configured only through `period_ms`.
+- `phase_offset_ms` is used to spread streams in time.
+- One stream sends one payload.
+- If two payloads should run at the same rate, they still get separate stream rows.
 
-## Command Model
-- Incoming route table:
-- Maps command name to handler callback.
-- Outgoing route table:
-- Maps symbolic event/status name to formatter/sender helper.
-- No separate response-routing layer is required for now.
+## Packet Rules
+- Binary framing.
+- Current packet format:
+  - `sync`
+  - `payload_id`
+  - `payload_length`
+  - `payload_bytes`
+- No CRC yet.
 
-## Error Handling Plan
-- Invalid line format -> reject + optional error message.
-- Unknown command -> reject + optional error message.
-- RX overflow -> drop current line and mark overflow event.
-- TX failure -> return status so controller can retry/log.
+## Outgoing Model
+- Middleware stores latest outgoing payload data.
+- Controller code updates that data through setter functions.
+- Streams decide when a payload is sent.
 
-## Data Ownership Plan
-- Middleware owns RX assembly buffer.
-- Middleware owns parse scratch buffer.
-- Handler receives parsed command view/copies only.
-- Middleware should avoid dynamic allocation.
-
-## Suggested Next Implementation Steps
-1. Define middleware public interface (header only).
-2. Define route entry types and handler signature.
-3. Implement RX line assembly.
-4. Implement parser and dispatcher.
-5. Implement TX helper path.
-6. Add simple command tests using host build.
+## Incoming Model
+- Middleware parses incoming packets and stores latest values or pending actions.
+- Motion command is latest-value wins.
+- Start/clear IMU calibration are consumable action flags.
+- Debug stream control updates middleware stream enable state.
 

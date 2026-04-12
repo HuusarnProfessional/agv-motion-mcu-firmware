@@ -57,16 +57,18 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define user_button___GPIO_Input_Pin GPIO_PIN_13
-#define user_button___GPIO_Input_GPIO_Port GPIOC
+#define user_button__GPIO_EXTI13_Pin GPIO_PIN_13
+#define user_button__GPIO_EXTI13_GPIO_Port GPIOC
+#define user_button__GPIO_EXTI13_EXTI_IRQn EXTI15_10_IRQn
 #define RCC_OSC32_IN_Pin GPIO_PIN_14
 #define RCC_OSC32_IN_GPIO_Port GPIOC
 #define RCC_OSC32_OUT_Pin GPIO_PIN_15
 #define RCC_OSC32_OUT_GPIO_Port GPIOC
-#define hc_f_echo_GPIO_INPUT_Pin GPIO_PIN_0
-#define hc_f_echo_GPIO_INPUT_GPIO_Port GPIOF
-#define hc_f_trig_GPIO_OUTPUT_Pin GPIO_PIN_1
-#define hc_f_trig_GPIO_OUTPUT_GPIO_Port GPIOF
+#define hc_f_echo__GPIO_EXTI0_Pin GPIO_PIN_0
+#define hc_f_echo__GPIO_EXTI0_GPIO_Port GPIOF
+#define hc_f_echo__GPIO_EXTI0_EXTI_IRQn EXTI0_IRQn
+#define hc_f_trig__GPIO_OUTPUT_Pin GPIO_PIN_1
+#define hc_f_trig__GPIO_OUTPUT_GPIO_Port GPIOF
 #define pwm_l1_a___TIM1_CH1_Pin GPIO_PIN_0
 #define pwm_l1_a___TIM1_CH1_GPIO_Port GPIOC
 #define pwm_l1_b___TIM1_CH2_Pin GPIO_PIN_1
@@ -107,10 +109,11 @@ void Error_Handler(void);
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
 #define T_SWCLK_GPIO_Port GPIOA
-#define hc_b_trig___GPIO_Output_Pin GPIO_PIN_10
-#define hc_b_trig___GPIO_Output_GPIO_Port GPIOC
-#define hc_b_echo_GPIO_Input_Pin GPIO_PIN_11
-#define hc_b_echo_GPIO_Input_GPIO_Port GPIOC
+#define hc_b_trig__GPIO_OUTPUT_Pin GPIO_PIN_10
+#define hc_b_trig__GPIO_OUTPUT_GPIO_Port GPIOC
+#define hc_b_echo_GPIO_EXTI11_Pin GPIO_PIN_11
+#define hc_b_echo_GPIO_EXTI11_GPIO_Port GPIOC
+#define hc_b_echo_GPIO_EXTI11_EXTI_IRQn EXTI15_10_IRQn
 #define led_01___GPIO_Output_Pin GPIO_PIN_2
 #define led_01___GPIO_Output_GPIO_Port GPIOD
 #define T_SWO_Pin GPIO_PIN_3

@@ -1,4 +1,5 @@
 #include "core/control/controller_esp32_wroom32_demo.hpp"
+#include "core/api/comm_uart_api.hpp"
 #include "core/api/encoder_api.hpp"
 #include "core/api/motor_api.hpp"
 #include "main.h"
@@ -8,7 +9,6 @@
 extern "C"
 {
   uint8_t g_pick_controller = 0U;
-  extern UART_HandleTypeDef huart3;
 }
 
 namespace controller_esp32_wroom32_demo
@@ -24,7 +24,6 @@ namespace controller_esp32_wroom32_demo
     {
       motor_api::set_u(id, 0);
     }
-    __HAL_UART_DISABLE_IT(&huart3, UART_IT_RXNE); //get uart comm, cheat for demo.
   }
 
   static void handle_forward_command_line(const char *command_line)
@@ -50,7 +49,7 @@ namespace controller_esp32_wroom32_demo
 
     uint8_t received_byte = 0U;
 
-    while (HAL_UART_Receive(&huart3, &received_byte, 1U, 0U) == HAL_OK)
+    while (comm_uart_api::read_bytes(0U, &received_byte, 1U) == 1U)
     {
       if (received_byte == static_cast<uint8_t>('\r'))
       {

@@ -2,8 +2,10 @@
 #include "core/system_select/encoder_system_select.cpp"
 #include "core/system_select/imu_system_select.cpp"
 #include "core/system_select/voltage_monitor_system_select.cpp"
+#include "core/system_select/led_system_select.cpp"
 #include "core/system_select/obstacle_system_select.cpp"
 #include "core/system_select/comm_uart_system_select.cpp"
+#include "core/system_select/button_system_select.cpp"
 
 namespace system_select
 {
@@ -55,6 +57,22 @@ namespace system_select
     }
   }
 
+  void select_led_backend(led_api::backend_operation &backend)
+  {
+    backend.init_fn = nullptr;
+    backend.set_fn = nullptr;
+    backend.toggle_fn = nullptr;
+    backend.read_state_fn = nullptr;
+
+    if constexpr (k_led_impl == led_impl::gpio)
+    {
+      backend.init_fn = init_led_gpio;
+      backend.set_fn = set_led_gpio;
+      backend.toggle_fn = toggle_led_gpio;
+      backend.read_state_fn = read_led_gpio_state;
+    }
+  }
+
   void select_obstacle_backend(obstacle_api::backend_operation &backend)
   {
     backend.init_fn = nullptr;
@@ -78,6 +96,18 @@ namespace system_select
       backend.init_fn = init_comm_uart;
       backend.write_bytes_fn = tx_comm_uart;
       backend.read_bytes_fn = rx_comm_uart;
+    }
+  }
+
+  void select_button_backend(button_api::backend_operation &backend)
+  {
+    backend.init_fn = nullptr;
+    backend.read_sample_fn = nullptr;
+
+    if constexpr (k_button_impl == button_impl::gpio)
+    {
+      backend.init_fn = init_button_gpio;
+      backend.read_sample_fn = read_button_gpio;
     }
   }
 }

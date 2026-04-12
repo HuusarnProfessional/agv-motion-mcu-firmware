@@ -26,6 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "board/stm32g474re_agv/board_stm32g474re_agv.hpp"
 
 /* USER CODE END Includes */
 
@@ -96,7 +97,9 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+  board_init();
 
   /* USER CODE END 2 */
 
@@ -107,6 +110,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    board_tick();
   }
   /* USER CODE END 3 */
 }

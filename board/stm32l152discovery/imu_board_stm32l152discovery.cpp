@@ -21,14 +21,7 @@ namespace
     10U
   };
 
-  static const imu_api::imu_input k_imus[] =
-  {
-    {
-      static_cast<void *>(&k_imu_spi_bus),
-      platform_stm32_hal::imu_read_register_spi,
-      platform_stm32_hal::imu_write_register_spi
-    }
-  };
+  static const imu_api::imu_input k_imus[] = { { static_cast<void *>(&k_imu_spi_bus), platform_stm32_hal::imu_read_register_spi, platform_stm32_hal::imu_write_register_spi } };
 
   static constexpr std::size_t k_imu_count = sizeof(k_imus) / sizeof(k_imus[0]);
 }

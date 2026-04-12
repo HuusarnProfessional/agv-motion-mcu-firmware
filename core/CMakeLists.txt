@@ -3,7 +3,18 @@ add_library(agv_core STATIC
   api/motor_api.cpp
   api/obstacle_api.cpp
   api/voltage_monitor_api.cpp
-  control/controller_esp32_wroom32_demo.cpp
+  middleware/stm_esp_middleware_pipeline.cpp
+  middleware/stm_esp/outgoing_payloads/local_position_payload.cpp
+  middleware/stm_esp/outgoing_payloads/safety_status_payload.cpp
+  middleware/stm_esp/outgoing_payloads/power_status_payload.cpp
+  middleware/stm_esp/outgoing_payloads/encoder_debug_payload.cpp
+  middleware/stm_esp/outgoing_payloads/imu_debug_payload.cpp
+  middleware/stm_esp/outgoing_payloads/obstacle_debug_payload.cpp
+  middleware/stm_esp/outgoing_payloads/voltage_debug_payload.cpp
+  middleware/stm_esp/incoming_payloads/motion_command_payload.cpp
+  middleware/stm_esp/incoming_payloads/start_imu_calibration_payload.cpp
+  middleware/stm_esp/incoming_payloads/clear_imu_calibration_payload.cpp
+  middleware/stm_esp/incoming_payloads/debug_stream_control_payload.cpp
   control/local_positioning/encoder_model/encoder_model_pipeline.cpp
   control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
   control/local_positioning/encoder_model/delta_estimation_encoders.cpp
@@ -32,7 +43,6 @@ add_library(agv_core STATIC
   impl/motor_drv8871_impl.cpp
   impl/obstacle_hcsr04_impl.cpp
   impl/voltage_monitor_adc_impl.cpp
-  ../libraries/lsm9ds1_driver/lsm9ds1_reg.c
   state/agv_state.cpp
 )
 

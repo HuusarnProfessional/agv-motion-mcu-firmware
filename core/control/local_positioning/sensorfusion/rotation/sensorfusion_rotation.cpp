@@ -133,14 +133,10 @@ namespace
 
     if (out.has_gyro_rotation)
     {
-      predicted_estimate.theta_urad =
-          state.theta_estimate_urad +
-          static_cast<double>(imu_motion.rotation);
+      predicted_estimate.theta_urad = state.theta_estimate_urad + static_cast<double>(imu_motion.rotation);
     }
 
-    predicted_estimate.p_urad2 =
-        state.p_heading_urad2 +
-        process_variance;
+    predicted_estimate.p_urad2 = state.p_heading_urad2 + process_variance;
 
     return predicted_estimate;
   }
@@ -151,28 +147,14 @@ namespace
 
     if (out.has_encoder_rotation)
     {
-      state.theta_encoder_accumulated_urad =
-          state.theta_encoder_accumulated_urad +
-          static_cast<double>(encoder_motion.rotation);
+      state.theta_encoder_accumulated_urad = state.theta_encoder_accumulated_urad + static_cast<double>(encoder_motion.rotation);
+      const double measurement_variance = map_encoder_confidence_to_measurement_variance(out.encoder_confidence_rotation_final);
+      const double measurement_residual = state.theta_encoder_accumulated_urad - predicted_estimate.theta_urad;
+      const double innovation_variance = predicted_estimate.p_urad2 + measurement_variance;
+      const double kalman_gain = predicted_estimate.p_urad2 / innovation_variance;
 
-      const double measurement_variance =
-          map_encoder_confidence_to_measurement_variance(out.encoder_confidence_rotation_final);
-      const double measurement_residual =
-          state.theta_encoder_accumulated_urad -
-          predicted_estimate.theta_urad;
-      const double innovation_variance =
-          predicted_estimate.p_urad2 +
-          measurement_variance;
-      const double kalman_gain =
-          predicted_estimate.p_urad2 /
-          innovation_variance;
-
-      corrected_estimate.theta_urad =
-          predicted_estimate.theta_urad +
-          kalman_gain * measurement_residual;
-      corrected_estimate.p_urad2 =
-          (1.0 - kalman_gain) *
-          predicted_estimate.p_urad2;
+      corrected_estimate.theta_urad = predicted_estimate.theta_urad + kalman_gain * measurement_residual;
+      corrected_estimate.p_urad2 = (1.0 - kalman_gain) * predicted_estimate.p_urad2;
     }
 
     return corrected_estimate;
@@ -183,13 +165,10 @@ namespace
     state.theta_estimate_urad = corrected_estimate.theta_urad;
     state.p_heading_urad2 = corrected_estimate.p_urad2;
 
-    const double fused_rotation_urad =
-        corrected_estimate.theta_urad -
-        previous_theta_estimate_urad;
+    const double fused_rotation_urad = corrected_estimate.theta_urad - previous_theta_estimate_urad;
 
     out.rotation = static_cast<std::int64_t>(fused_rotation_urad);
-    out.confidence_rotation =
-        map_heading_variance_to_fused_confidence(corrected_estimate.p_urad2);
+    out.confidence_rotation = map_heading_variance_to_fused_confidence(corrected_estimate.p_urad2);
 
     out.has_fused_rotation = true;
   }
@@ -235,10 +214,8 @@ namespace sensorfusion_rotation
     }
 
     const double previous_theta_estimate_urad = state.theta_estimate_urad;
-    const heading_estimate predicted_estimate =
-        predict_with_gyro(imu_motion, out, state);
-    const heading_estimate corrected_estimate =
-        correct_predicted_heading_with_encoder(encoder_motion, out, state, predicted_estimate);
+    const heading_estimate predicted_estimate = predict_with_gyro(imu_motion, out, state);
+    const heading_estimate corrected_estimate = correct_predicted_heading_with_encoder(encoder_motion, out, state, predicted_estimate);
 
     write_rotation_output(corrected_estimate, previous_theta_estimate_urad, state, out);
     return true;

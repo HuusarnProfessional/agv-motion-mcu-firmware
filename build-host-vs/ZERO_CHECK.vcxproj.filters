@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\kandidat_proj\agv-motion-mcu-firmware\build-host-vs\CMakeFiles\a9923ba48fcead6fc688a1e8370fb16d\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5AF3BB03-3CA0-3161-8A49-015A2E006CE6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

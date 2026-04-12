@@ -3,9 +3,7 @@
 
 namespace
 {
-  static const platform_stm32_hal::gpio_pin_handle &select_chip_select_pin(
-      const platform_stm32_hal::imu_spi_bus_handle &bus,
-      imu_api::imu_target target)
+  static const platform_stm32_hal::gpio_pin_handle &select_chip_select_pin(const platform_stm32_hal::imu_spi_bus_handle &bus, imu_api::imu_target target)
   {
     if (target == imu_api::imu_target::accelerometer_gyroscope)
     {
@@ -30,11 +28,7 @@ namespace
 
 namespace platform_stm32_hal
 {
-  bool imu_read_register_spi(void *platform_handle,
-                             imu_api::imu_target target,
-                             std::uint8_t register_address,
-                             std::uint8_t *data_out,
-                             std::size_t length)
+  bool imu_read_register_spi(void *platform_handle, imu_api::imu_target target, std::uint8_t register_address, std::uint8_t *data_out, std::size_t length)
   {
     if (platform_handle == nullptr || data_out == nullptr || length == 0U)
     {
@@ -69,11 +63,7 @@ namespace platform_stm32_hal
     return (tx_status == HAL_OK) && (rx_status == HAL_OK);
   }
 
-  bool imu_write_register_spi(void *platform_handle,
-                              imu_api::imu_target target,
-                              std::uint8_t register_address,
-                              const std::uint8_t *data_in,
-                              std::size_t length)
+  bool imu_write_register_spi(void *platform_handle, imu_api::imu_target target, std::uint8_t register_address, const std::uint8_t *data_in, std::size_t length)
   {
     if (platform_handle == nullptr || data_in == nullptr || length == 0U)
     {
