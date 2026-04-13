@@ -8,6 +8,7 @@ namespace
 
   constexpr std::int32_t k_library_status_ok = 0;
   constexpr std::int32_t k_library_status_error = -1;
+  constexpr lsm9ds1_imu_odr_t k_imu_data_rate = LSM9DS1_IMU_238Hz;
 
   struct lsm9ds1_library_context
   {
@@ -194,6 +195,7 @@ namespace imu_lsm9ds1_impl
       (void)lsm9ds1_gy_full_scale_set(&ag_context, LSM9DS1_245dps);
 
       (void)lsm9ds1_xl_full_scale_set(&ag_context, LSM9DS1_2g);
+      (void)lsm9ds1_imu_data_rate_set(&ag_context, k_imu_data_rate);
 
       (void)lsm9ds1_mag_full_scale_set(&magnetometer_context, LSM9DS1_4Ga);
     }

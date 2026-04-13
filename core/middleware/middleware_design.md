@@ -6,8 +6,9 @@
 - Middleware owns packet framing, stream scheduling and incoming command parsing.
 
 ## Top-Level Files
-- `core/middleware/stm_esp_middleware_pipeline.*`
-- `core/middleware/stm_esp_middleware_streams.hpp`
+- `core/middleware/incoming_middleware_pipeline.*`
+- `core/middleware/outgoing_middleware_pipeline.*`
+- `core/middleware/middleware_streams.hpp`
 
 ## Structure Rules
 - `comm_uart_api` is the only UART abstraction layer.
@@ -16,8 +17,8 @@
   - pipeline = flow
   - streams = what gets scheduled
 - Each payload has its own file under:
-  - `core/middleware/stm_esp/outgoing_payloads/`
-  - `core/middleware/stm_esp/incoming_payloads/`
+  - `core/middleware/outgoing_payloads/`
+  - `core/middleware/incoming_payloads/`
 
 ## Stream Rules
 - Stream order in the array is priority order.
@@ -37,8 +38,7 @@
 - No CRC yet.
 
 ## Outgoing Model
-- Middleware stores latest outgoing payload data.
-- Controller code updates that data through setter functions.
+- Outgoing payloads read source data directly from control pipelines or subsystem APIs.
 - Streams decide when a payload is sent.
 
 ## Incoming Model

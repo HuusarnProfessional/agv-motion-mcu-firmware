@@ -22,24 +22,11 @@ namespace imu_calibration
     done
   };
 
-  struct state
-  {
-    bool in_progress = false;
-    step current_step = step::idle;
-    bool stop_before_tare_command_sent = false;
-    bool stop_before_backward_command_sent = false;
-    imu_tare_step_state tare_step_state = {};
-    imu_drive_sample_step_state forward_step_state = {};
-    imu_drive_sample_step_state backward_step_state = {};
-    imu_api::imu_tare_values tare_values = {};
-    imu_api::imu_noise_profile noise_profile = {};
-    imu_drive_sample_values forward_values = {};
-    imu_drive_sample_values backward_values = {};
-    imu_drive_sample_mean_values forward_mean_values = {};
-    imu_drive_sample_mean_values backward_mean_values = {};
-  };
-
-  void reset(state &imu_calibration_state);
-  void start(state &imu_calibration_state);
-  bool tick(state &imu_calibration_state, const encoder_motion::state &encoder_model_state, std::uint8_t imu_id);
+  void init(void);
+  void start(void);
+  bool tick(const encoder_motion::state &encoder_model_state, std::uint8_t imu_id);
+  void request_start(void);
+  void request_clear(void);
+  bool consume_start_request(void);
+  bool consume_clear_request(void);
 }

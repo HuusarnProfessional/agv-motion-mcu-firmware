@@ -1,0 +1,17 @@
+#pragma once
+
+#include <cstdint>
+
+#include "core/control/local_positioning/encoder_model/encoder_model_pipeline.hpp"
+#include "core/control/local_positioning/imu_model/imu_model_pipeline.hpp"
+#include "core/control/local_positioning/local_positioning.hpp"
+#include "core/control/local_positioning/sensorfusion/sensorfusion_pipeline.hpp"
+
+namespace local_positioning_pipeline
+{
+  void init(void);
+  void tick(std::uint32_t now_ms);
+  void read_snapshot(local_positioning::snapshot &out);
+  void read_encoder_motion_state(encoder_motion::state &out);
+  std::uint8_t read_imu_id(void);
+}

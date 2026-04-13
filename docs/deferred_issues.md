@@ -25,13 +25,4 @@ Use this file for problems we discover now but intentionally postpone.
   - `app/app_entry.hpp`
   - `board/stm32f3discovery/board_stm32f3discovery.cpp`
 
-### ISSUE-002
-- status: open
-- scope: imu/local_positioning
-- problem: LSM9DS1 init sets full-scale values, but does not set an explicit output data rate for gyro or accelerometer.
-- risk: local positioning tick rate may be chosen from assumptions instead of a known sensor rate, and sensor behavior may depend on reset defaults instead of firmware intent.
-- target: set explicit LSM9DS1 output data rate in IMU init and align local positioning tick with that chosen rate.
-- refs:
-  - `core/impl/imu_lsm9ds1_impl.cpp`
-  - `core/control/controller_robot_future.cpp`
 

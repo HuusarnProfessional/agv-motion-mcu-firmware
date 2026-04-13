@@ -3,18 +3,20 @@ add_library(agv_core STATIC
   api/motor_api.cpp
   api/obstacle_api.cpp
   api/voltage_monitor_api.cpp
-  middleware/stm_esp_middleware_pipeline.cpp
-  middleware/stm_esp/outgoing_payloads/local_position_payload.cpp
-  middleware/stm_esp/outgoing_payloads/safety_status_payload.cpp
-  middleware/stm_esp/outgoing_payloads/power_status_payload.cpp
-  middleware/stm_esp/outgoing_payloads/encoder_debug_payload.cpp
-  middleware/stm_esp/outgoing_payloads/imu_debug_payload.cpp
-  middleware/stm_esp/outgoing_payloads/obstacle_debug_payload.cpp
-  middleware/stm_esp/outgoing_payloads/voltage_debug_payload.cpp
-  middleware/stm_esp/incoming_payloads/motion_command_payload.cpp
-  middleware/stm_esp/incoming_payloads/start_imu_calibration_payload.cpp
-  middleware/stm_esp/incoming_payloads/clear_imu_calibration_payload.cpp
-  middleware/stm_esp/incoming_payloads/debug_stream_control_payload.cpp
+  middleware/middleware_shared_state.cpp
+  middleware/incoming_middleware_pipeline.cpp
+  middleware/outgoing_middleware_pipeline.cpp
+  middleware/outgoing_payloads/local_position_payload.cpp
+  middleware/outgoing_payloads/safety_status_payload.cpp
+  middleware/outgoing_payloads/power_status_payload.cpp
+  middleware/outgoing_payloads/encoder_debug_payload.cpp
+  middleware/outgoing_payloads/imu_debug_payload.cpp
+  middleware/outgoing_payloads/obstacle_debug_payload.cpp
+  middleware/outgoing_payloads/voltage_debug_payload.cpp
+  middleware/incoming_payloads/motion_command_payload.cpp
+  middleware/incoming_payloads/start_imu_calibration_payload.cpp
+  middleware/incoming_payloads/clear_imu_calibration_payload.cpp
+  middleware/incoming_payloads/debug_stream_control_payload.cpp
   control/local_positioning/encoder_model/encoder_model_pipeline.cpp
   control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
   control/local_positioning/encoder_model/delta_estimation_encoders.cpp
@@ -37,8 +39,10 @@ add_library(agv_core STATIC
   control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp
   control/imu_calibration/imu_calibration_solve_and_set.cpp
   control/imu_calibration/imu_calibration_stop_and_sample_tare.cpp
-  control/controller_robot_future.cpp
+  control/collision_prediction/collision_prediction_pipeline.cpp
+  control/drive_control/drive_control_pipeline.cpp
   control/robot_control.cpp
+  control/local_positioning/local_positioning_pipeline.cpp
   impl/comm_uart_impl.cpp
   impl/motor_drv8871_impl.cpp
   impl/obstacle_hcsr04_impl.cpp

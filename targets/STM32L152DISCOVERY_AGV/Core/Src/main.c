@@ -22,7 +22,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "board/stm32l152discovery/main_board_stm32l152discovery.hpp"
-#include "core/control/controller_esp32_wroom32_demo.hpp"
 
 /* USER CODE END Includes */
 
@@ -107,18 +106,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
  
   HAL_Delay(150);
-
-  if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET)
-  {
-    // future robot controller path
-    g_pick_controller = 0U;
-  }
-  else
-  {
-    // esp32_wroom32 demo path
-    g_pick_controller = 1U;
-  }
-
 
   board_init();
 

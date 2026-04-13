@@ -50,7 +50,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/comm_uart_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/encoder_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/motor_api.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/controller_robot_future.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/drive_control_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/local_positioning_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/robot_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/comm_uart_impl.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/impl/encoder_as5600_pwm_impl.cpp

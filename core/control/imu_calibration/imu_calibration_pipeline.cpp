@@ -25,109 +25,157 @@ IMU_CALIBRATION - PLAN (engangsprocedur)
 #include "core/control/imu_calibration/imu_calibration_solve_and_set.hpp"
 #include "core/control/imu_calibration/imu_calibration_stop_and_sample_tare.hpp"
 
+namespace
+{
+  struct pipeline_state
+  {
+    bool in_progress = false;
+    bool start_requested = false;
+    bool clear_requested = false;
+    imu_calibration::step current_step = imu_calibration::step::idle;
+    bool stop_before_tare_command_sent = false;
+    bool stop_before_backward_command_sent = false;
+    imu_tare_step_state tare_step_state = {};
+    imu_drive_sample_step_state forward_step_state = {};
+    imu_drive_sample_step_state backward_step_state = {};
+    imu_api::imu_tare_values tare_values = {};
+    imu_api::imu_noise_profile noise_profile = {};
+    imu_drive_sample_values forward_values = {};
+    imu_drive_sample_values backward_values = {};
+    imu_drive_sample_mean_values forward_mean_values = {};
+    imu_drive_sample_mean_values backward_mean_values = {};
+  };
+
+  pipeline_state g_pipeline_state = {};
+}
+
 namespace imu_calibration
 {
-  void reset(state &imu_calibration_state)
+  void init(void)
   {
-    imu_calibration_state = {};
+    g_pipeline_state = {};
   }
 
-  void start(state &imu_calibration_state)
+  void start(void)
   {
-    reset(imu_calibration_state);
-    imu_calibration_state.in_progress = true;
-    imu_calibration_state.current_step = step::stop_before_tare;
+    init();
+    g_pipeline_state.in_progress = true;
+    g_pipeline_state.current_step = step::stop_before_tare;
   }
 
-  bool tick(state &imu_calibration_state, const encoder_motion::state &encoder_model_state, std::uint8_t imu_id)
+  void request_start(void)
   {
-    if (imu_calibration_state.current_step == step::done)
+    g_pipeline_state.start_requested = true;
+  }
+
+  void request_clear(void)
+  {
+    g_pipeline_state.clear_requested = true;
+  }
+
+  bool consume_start_request(void)
+  {
+    const bool has_request = g_pipeline_state.start_requested;
+    g_pipeline_state.start_requested = false;
+    return has_request;
+  }
+
+  bool consume_clear_request(void)
+  {
+    const bool has_request = g_pipeline_state.clear_requested;
+    g_pipeline_state.clear_requested = false;
+    return has_request;
+  }
+
+  bool tick(const encoder_motion::state &encoder_model_state, std::uint8_t imu_id)
+  {
+    if (g_pipeline_state.current_step == step::done)
     {
       return true;
     }
 
-    if (!imu_calibration_state.in_progress)
+    if (!g_pipeline_state.in_progress)
     {
       return false;
     }
 
-    switch (imu_calibration_state.current_step)
+    switch (g_pipeline_state.current_step)
     {
       case step::stop_before_tare:
       {
-        if (!imu_calibration_state.stop_before_tare_command_sent)
+        if (!g_pipeline_state.stop_before_tare_command_sent)
         {
           stop_motor();
-          imu_calibration_state.stop_before_tare_command_sent = true;
+          g_pipeline_state.stop_before_tare_command_sent = true;
         }
 
         if (is_still_from_encoder_model(encoder_model_state))
         {
-          imu_calibration_state.current_step = step::build_tare;
+          g_pipeline_state.current_step = step::build_tare;
         }
         break;
       }
 
       case step::build_tare:
       {
-        if (tick_build_tare_values(imu_calibration_state.tare_step_state, imu_id, imu_calibration_state.tare_values, imu_calibration_state.noise_profile))
+        if (tick_build_tare_values(g_pipeline_state.tare_step_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.noise_profile))
         {
-          imu_calibration_state.current_step = step::drive_forward;
+          g_pipeline_state.current_step = step::drive_forward;
         }
         break;
       }
 
       case step::drive_forward:
       {
-        if (tick_drive_forward_and_sample(imu_calibration_state.forward_step_state, encoder_model_state, imu_id, imu_calibration_state.tare_values, imu_calibration_state.forward_values))
+        if (tick_drive_forward_and_sample(g_pipeline_state.forward_step_state, encoder_model_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.forward_values))
         {
-          imu_calibration_state.current_step = step::stop_before_backward;
+          g_pipeline_state.current_step = step::stop_before_backward;
         }
         break;
       }
 
       case step::stop_before_backward:
       {
-        if (!imu_calibration_state.stop_before_backward_command_sent)
+        if (!g_pipeline_state.stop_before_backward_command_sent)
         {
           stop_motor();
-          imu_calibration_state.stop_before_backward_command_sent = true;
+          g_pipeline_state.stop_before_backward_command_sent = true;
         }
 
         if (is_still_from_encoder_model(encoder_model_state))
         {
-          imu_calibration_state.current_step = step::drive_backward;
+          g_pipeline_state.current_step = step::drive_backward;
         }
         break;
       }
 
       case step::drive_backward:
       {
-        if (tick_drive_backward_and_sample(imu_calibration_state.backward_step_state, encoder_model_state, imu_id, imu_calibration_state.tare_values, imu_calibration_state.backward_values))
+        if (tick_drive_backward_and_sample(g_pipeline_state.backward_step_state, encoder_model_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.backward_values))
         {
-          imu_calibration_state.current_step = step::solve_and_set;
+          g_pipeline_state.current_step = step::solve_and_set;
         }
         break;
       }
 
       case step::solve_and_set:
       {
-        build_mean_values_from_drive_samples(imu_calibration_state.forward_values, imu_calibration_state.forward_mean_values);
-        build_mean_values_from_drive_samples(imu_calibration_state.backward_values, imu_calibration_state.backward_mean_values);
+        build_mean_values_from_drive_samples(g_pipeline_state.forward_values, g_pipeline_state.forward_mean_values);
+        build_mean_values_from_drive_samples(g_pipeline_state.backward_values, g_pipeline_state.backward_mean_values);
 
-        if (imu_calibration_state.tare_values.has_tare &&
-            imu_calibration_state.forward_mean_values.has_mean &&
-            imu_calibration_state.backward_mean_values.has_mean)
+        if (g_pipeline_state.tare_values.has_tare &&
+            g_pipeline_state.forward_mean_values.has_mean &&
+            g_pipeline_state.backward_mean_values.has_mean)
         {
-          solve_alignment_matrix(imu_calibration_state.forward_mean_values, imu_calibration_state.backward_mean_values, imu_calibration_state.tare_values);
-          set_calibration_profile_to_imu(imu_id, imu_calibration_state.tare_values, imu_calibration_state.noise_profile);
+          solve_alignment_matrix(g_pipeline_state.forward_mean_values, g_pipeline_state.backward_mean_values, g_pipeline_state.tare_values);
+          set_calibration_profile_to_imu(imu_id, g_pipeline_state.tare_values, g_pipeline_state.noise_profile);
         }
 
-        imu_calibration_state.current_step = step::done;
-        imu_calibration_state.in_progress = false;
-        return imu_calibration_state.tare_values.has_tare &&
-               imu_calibration_state.forward_mean_values.has_mean &&
-               imu_calibration_state.backward_mean_values.has_mean;
+        g_pipeline_state.current_step = step::done;
+        g_pipeline_state.in_progress = false;
+        return g_pipeline_state.tare_values.has_tare &&
+               g_pipeline_state.forward_mean_values.has_mean &&
+               g_pipeline_state.backward_mean_values.has_mean;
       }
 
       case step::done:
