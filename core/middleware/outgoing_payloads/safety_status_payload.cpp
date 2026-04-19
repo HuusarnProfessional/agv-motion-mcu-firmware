@@ -1,6 +1,6 @@
 #include "core/middleware/outgoing_payloads/safety_status_payload.hpp"
 
-#include "core/control/collision_prediction/collision_prediction_pipeline.hpp"
+#include "core/control/safe_guard/safe_guard_pipeline.hpp"
 #include "core/middleware/binary_packing.hpp"
 #include "core/middleware/middleware_state.hpp"
 
@@ -8,18 +8,18 @@ namespace
 {
   bool build_payload_bytes(const middleware::middleware_state &state, std::uint8_t *payload_out, std::size_t capacity, std::size_t &payload_length_out)
   {
-    collision_prediction::snapshot payload = {};
-    payload_length_out = 0U;
+    safe_guard::snapshot payload = {};
+    payload_length_out = 0u;
 
     if (payload_out == nullptr)
     {
       return false;
     }
 
-    collision_prediction::read_snapshot(payload);
+    safe_guard::read_snapshot(payload);
     middleware::binary_packing::writer writer(payload_out, capacity);
 
-    if (!writer.write_bool(payload.collision_blocked))
+    if (!writer.write_bool(payload.fault_latched))
     {
       return false;
     }

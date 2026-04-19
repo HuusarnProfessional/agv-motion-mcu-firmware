@@ -29,4 +29,10 @@ namespace drive_control
     (void)g_pipeline_state;
     (void)now_ms;
   }
+
+  void read_snapshot(snapshot &out)
+  {
+    out.has_motion_command = g_pipeline_state.has_motion_command;
+    out.latest_motion_command = g_pipeline_state.latest_motion_command;
+  }
 }

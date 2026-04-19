@@ -5,6 +5,7 @@
 #include "core/control/drive_control/drive_control_pipeline.hpp"
 #include "core/control/imu_calibration/imu_calibration_pipeline.hpp"
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
+#include "core/control/safe_guard/safe_guard_pipeline.hpp"
 #include "core/middleware/incoming_middleware_pipeline.hpp"
 #include "core/middleware/outgoing_middleware_pipeline.hpp"
 
@@ -12,7 +13,7 @@ namespace robot_control
 {
   namespace
   {
-    constexpr std::uint8_t k_comm_uart_id = 0U;
+    constexpr std::uint8_t k_comm_uart_id = 0u;
   }
 
   void init(void)
@@ -21,6 +22,7 @@ namespace robot_control
     outgoing_middleware_pipeline::init();
     local_positioning_pipeline::init();
     collision_prediction::init();
+    safe_guard::init();
     drive_control::init();
     imu_calibration::init();
   }
@@ -28,6 +30,7 @@ namespace robot_control
   void tick(std::uint32_t now_ms)
   {
     encoder_motion::state encoder_motion_state = {};
+    collision_prediction::snapshot collision_prediction_snapshot = {};
     incoming_middleware_pipeline::tick(now_ms);
 
     if (imu_calibration::consume_clear_request())
@@ -45,6 +48,14 @@ namespace robot_control
     local_positioning_pipeline::read_encoder_motion_state(encoder_motion_state);
     imu_calibration::tick(encoder_motion_state, local_positioning_pipeline::read_imu_id());
     collision_prediction::tick(now_ms);
+    collision_prediction::read_snapshot(collision_prediction_snapshot);
+
+    if (collision_prediction_snapshot.collision_blocked)
+    {
+      safe_guard::trip();
+    }
+
+    safe_guard::tick(now_ms);
     drive_control::tick(now_ms);
     outgoing_middleware_pipeline::tick(now_ms);
   }

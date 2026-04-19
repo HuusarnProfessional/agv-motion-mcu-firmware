@@ -27,8 +27,9 @@ namespace middleware
 
   struct middleware_state
   {
-    std::uint8_t comm_uart_id = 0U;
-    std::uint32_t last_tick_time_ms = 0U;
+    std::uint8_t comm_uart_id = 0u;
+    std::uint32_t last_tick_time_ms = 0u;
+    bool has_trailer = false;
 
     incoming_packet_parser parser = {};
 
