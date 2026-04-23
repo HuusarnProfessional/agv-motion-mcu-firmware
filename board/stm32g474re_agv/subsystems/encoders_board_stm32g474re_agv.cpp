@@ -40,17 +40,17 @@ namespace
   static const encoder_api::capture_operations k_encoder_cap_normal = { read_capture_normal };
   static const encoder_api::capture_operations k_encoder_cap_inverted = { read_capture_inverted };
 
-  // encoder pwm-input mapping:
+  // encoder pwm input mapping:
   // encoder0: tim2_ch1 (pa0)
   // encoder1: tim2_ch3 (pb10)
   // encoder2: tim2_ch2 (pa1)
   // encoder3: tim2_ch4 (pb11)
   static const encoder_api::encoder_input k_encoders[] =
   {
-    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_1), &k_encoder_cap_normal },
     { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_3), &k_encoder_cap_normal },
     { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_2), &k_encoder_cap_inverted },
-    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_4), &k_encoder_cap_inverted }
+    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_4), &k_encoder_cap_normal },
+    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_1), &k_encoder_cap_inverted }
   };
 
   static constexpr std::size_t k_encoder_count = sizeof(k_encoders) / sizeof(k_encoders[0]);
