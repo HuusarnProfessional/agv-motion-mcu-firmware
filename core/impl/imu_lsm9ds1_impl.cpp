@@ -198,6 +198,15 @@ namespace imu_lsm9ds1_impl
       (void)lsm9ds1_imu_data_rate_set(&ag_context, k_imu_data_rate);
 
       (void)lsm9ds1_mag_full_scale_set(&magnetometer_context, LSM9DS1_4Ga);
+
+      // struct to enable
+      const lsm9ds1_gy_axis_t gyro_axes = {1u, 1u, 1u};
+      const lsm9ds1_xl_axis_t accel_axes = {1u, 1u, 1u};
+
+      // send enable
+      (void)lsm9ds1_gy_axis_set(&ag_context, gyro_axes);
+      (void)lsm9ds1_xl_axis_set(&ag_context, accel_axes);
+
     }
   }
 

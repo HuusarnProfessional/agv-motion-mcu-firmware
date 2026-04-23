@@ -122,7 +122,7 @@ void Error_Handler(void);
 #define pwm_r1_a___TIM3_CH1_GPIO_Port GPIOB
 #define pwm_r1_b___TIM3_CH2_Pin GPIO_PIN_5
 #define pwm_r1_b___TIM3_CH2_GPIO_Port GPIOB
-#define imu_spi_cs_ag___GPIO_Output_Pin GPIO_PIN_8
+#define imu_spi_cs_ag___GPIO_Output_Pin GPIO_PIN_9
 #define imu_spi_cs_ag___GPIO_Output_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
