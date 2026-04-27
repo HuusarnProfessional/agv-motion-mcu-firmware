@@ -41,7 +41,6 @@ namespace
     out.magnetometer_x_raw = impl_sample.magnetometer_x_raw;
     out.magnetometer_y_raw = impl_sample.magnetometer_y_raw;
     out.magnetometer_z_raw = impl_sample.magnetometer_z_raw;
-    out.magnetometer_sample_id = impl_sample.magnetometer_sample_id;
 
     out.gyroscope_state = static_cast<imu_api::gyroscope_status>(impl_sample.gyroscope_state);
     out.accelerometer_state = static_cast<imu_api::accelerometer_status>(impl_sample.accelerometer_state);

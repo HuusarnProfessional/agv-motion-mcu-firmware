@@ -57,7 +57,6 @@ namespace imu_lsm9ds1_impl
         std::int16_t magnetometer_x_raw;
         std::int16_t magnetometer_y_raw;
         std::int16_t magnetometer_z_raw;
-        std::uint32_t magnetometer_sample_id;
         magnetometer_status magnetometer_state;
 
         std::uint32_t time_ms;

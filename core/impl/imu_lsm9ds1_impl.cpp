@@ -15,7 +15,6 @@ namespace
   {
     std::uint32_t gyroscope_sample_id = 0u;
     std::uint32_t accelerometer_sample_id = 0u;
-    std::uint32_t magnetometer_sample_id = 0u;
   };
 
   imu_sample_id_counters g_sample_id_counters[k_max_imu_count] = {};
@@ -103,8 +102,23 @@ namespace
     return context;
   }
 
+  bool has_sample_id_state(std::uint8_t imu_id)
+  {
+    if (imu_id >= k_max_imu_count)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
   void update_gyroscope_sample_id(const stmdev_ctx_t &ag_context, std::uint8_t imu_id)
   {
+    if (!has_sample_id_state(imu_id))
+    {
+      return;
+    }
+
     uint8_t data_ready = 0u;
     const int32_t data_ready_status = lsm9ds1_gy_flag_data_ready_get(&ag_context, &data_ready);
 
@@ -123,6 +137,11 @@ namespace
 
   void update_accelerometer_sample_id(const stmdev_ctx_t &ag_context, std::uint8_t imu_id)
   {
+    if (!has_sample_id_state(imu_id))
+    {
+      return;
+    }
+
     uint8_t data_ready = 0u;
     const int32_t data_ready_status = lsm9ds1_xl_flag_data_ready_get(&ag_context, &data_ready);
 
@@ -137,24 +156,6 @@ namespace
     }
 
     g_sample_id_counters[imu_id].accelerometer_sample_id += 1u;
-  }
-
-  void update_magnetometer_sample_id(const stmdev_ctx_t &magnetometer_context, std::uint8_t imu_id)
-  {
-    uint8_t data_ready = 0u;
-    const int32_t data_ready_status = lsm9ds1_mag_flag_data_ready_get(&magnetometer_context, &data_ready);
-
-    if (data_ready_status != k_library_status_ok)
-    {
-      return;
-    }
-
-    if (data_ready == 0u)
-    {
-      return;
-    }
-
-    g_sample_id_counters[imu_id].magnetometer_sample_id += 1u;
   }
 
   bool read_gyroscope_sample(const stmdev_ctx_t &ag_context, std::uint8_t imu_id, imu_lsm9ds1_impl::sample &out)
@@ -177,7 +178,11 @@ namespace
     out.gyroscope_x_mdps = static_cast<std::int32_t>(lsm9ds1_from_fs245dps_to_mdps(gyroscope_raw[0]));
     out.gyroscope_y_mdps = static_cast<std::int32_t>(lsm9ds1_from_fs245dps_to_mdps(gyroscope_raw[1]));
     out.gyroscope_z_mdps = static_cast<std::int32_t>(lsm9ds1_from_fs245dps_to_mdps(gyroscope_raw[2]));
-    out.gyroscope_sample_id = g_sample_id_counters[imu_id].gyroscope_sample_id;
+
+    if (has_sample_id_state(imu_id))
+    {
+      out.gyroscope_sample_id = g_sample_id_counters[imu_id].gyroscope_sample_id;
+    }
 
     out.gyroscope_state = imu_lsm9ds1_impl::gyroscope_status::ok;
     return true;
@@ -203,16 +208,18 @@ namespace
     out.accelerometer_x_mg = static_cast<std::int32_t>(lsm9ds1_from_fs2g_to_mg(accelerometer_raw[0]));
     out.accelerometer_y_mg = static_cast<std::int32_t>(lsm9ds1_from_fs2g_to_mg(accelerometer_raw[1]));
     out.accelerometer_z_mg = static_cast<std::int32_t>(lsm9ds1_from_fs2g_to_mg(accelerometer_raw[2]));
-    out.accelerometer_sample_id = g_sample_id_counters[imu_id].accelerometer_sample_id;
+
+    if (has_sample_id_state(imu_id))
+    {
+      out.accelerometer_sample_id = g_sample_id_counters[imu_id].accelerometer_sample_id;
+    }
 
     out.accelerometer_state = imu_lsm9ds1_impl::accelerometer_status::ok;
     return true;
   }
 
-  bool read_magnetometer_sample(const stmdev_ctx_t &magnetometer_context, std::uint8_t imu_id, imu_lsm9ds1_impl::sample &out)
+  bool read_magnetometer_sample(const stmdev_ctx_t &magnetometer_context, imu_lsm9ds1_impl::sample &out)
   {
-    update_magnetometer_sample_id(magnetometer_context, imu_id);
-
     int16_t magnetometer_raw[3] = {0, 0, 0};
     const int32_t magnetometer_read_status = lsm9ds1_magnetic_raw_get(&magnetometer_context, magnetometer_raw);
 
@@ -229,7 +236,6 @@ namespace
     out.magnetometer_x_mgauss = static_cast<std::int32_t>(lsm9ds1_from_fs4gauss_to_mG(magnetometer_raw[0]));
     out.magnetometer_y_mgauss = static_cast<std::int32_t>(lsm9ds1_from_fs4gauss_to_mG(magnetometer_raw[1]));
     out.magnetometer_z_mgauss = static_cast<std::int32_t>(lsm9ds1_from_fs4gauss_to_mG(magnetometer_raw[2]));
-    out.magnetometer_sample_id = g_sample_id_counters[imu_id].magnetometer_sample_id;
 
     out.magnetometer_state = imu_lsm9ds1_impl::magnetometer_status::ok;
     return true;
@@ -306,11 +312,6 @@ namespace imu_lsm9ds1_impl
       return false;
     }
 
-    if (imu_id >= k_max_imu_count)
-    {
-      return false;
-    }
-
     const imu_api::imu_input &selected_imu = g_input[imu_id];
 
     if (selected_imu.read_register == nullptr)
@@ -326,7 +327,7 @@ namespace imu_lsm9ds1_impl
 
     const bool gyroscope_ok = read_gyroscope_sample(ag_context, imu_id, out);
     const bool accelerometer_ok = read_accelerometer_sample(ag_context, imu_id, out);
-    const bool magnetometer_ok = read_magnetometer_sample(magnetometer_context, imu_id, out);
+    const bool magnetometer_ok = read_magnetometer_sample(magnetometer_context, out);
     return gyroscope_ok || accelerometer_ok || magnetometer_ok;
   }
 }
