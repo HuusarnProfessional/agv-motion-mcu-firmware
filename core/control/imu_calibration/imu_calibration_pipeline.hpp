@@ -28,4 +28,6 @@ namespace imu_calibration
   void request_clear(void);
   bool consume_start_request(void);
   bool consume_clear_request(void);
+  bool is_in_progress(void);
+  void clear_pipeline_state(void);
 }

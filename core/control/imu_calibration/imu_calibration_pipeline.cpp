@@ -148,13 +148,18 @@ namespace
 
     return finish_pipeline(true);
   }
+
+  void reset_pipeline_state(void)
+  {
+    g_pipeline_state = {};
+  }
 }
 
 namespace imu_calibration
 {
   void init(void)
   {
-    g_pipeline_state = {};
+    reset_pipeline_state();
   }
 
   void start(void)
@@ -186,6 +191,26 @@ namespace imu_calibration
     const bool has_request = g_pipeline_state.clear_requested;
     g_pipeline_state.clear_requested = false;
     return has_request;
+  }
+
+  bool is_in_progress(void)
+  {
+    if (g_pipeline_state.current_step == step::idle)
+    {
+      return false;
+    }
+
+    if (g_pipeline_state.current_step == step::done)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  void clear_pipeline_state(void)
+  {
+    reset_pipeline_state();
   }
 
   bool tick(const encoder_motion::state &encoder_model_state, std::uint8_t imu_id)
