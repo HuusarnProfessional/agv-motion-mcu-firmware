@@ -20,7 +20,8 @@ namespace
 
 namespace middleware_incoming_payloads
 {
-  const incoming_payload_definition unlock_safe_guard_payload_definition = {
+  const incoming_payload_definition unlock_safe_guard_payload_definition = 
+  {
     "unlock_safe_guard",
     0x26u,
     apply_payload_bytes

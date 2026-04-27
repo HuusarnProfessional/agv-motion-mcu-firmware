@@ -16,6 +16,11 @@ namespace
 
   bool role_requires_coverage(const collision_input_builder::collision_prediction_input &input, collision_tuning::obstacle_sensor_role role)
   {
+    if (!input.obstacle_safety_enabled)
+    {
+      return false;
+    }
+
     if (input.has_trailer)
     {
       if (role == collision_tuning::obstacle_sensor_role::rear)
@@ -42,12 +47,12 @@ namespace collision_prediction_logic
     }
   }
 
-  void tick(state &logic_state, std::uint32_t now_ms, result &out)
+  void tick(state &logic_state, std::uint32_t now_ms, const collision_prediction::runtime_config &config, result &out)
   {
     collision_input_builder::collision_prediction_input input = {};
     bool front_has_valid_coverage = false;
     bool rear_has_valid_coverage = false;
-    collision_input_builder::build(now_ms, logic_state.vehicle_motion_state, input);
+    collision_input_builder::build(now_ms, logic_state.vehicle_motion_state, config, input);
     out = {};
 
     for (std::size_t sensor_index = 0u; sensor_index < collision_tuning::k_sensor_count; ++sensor_index)

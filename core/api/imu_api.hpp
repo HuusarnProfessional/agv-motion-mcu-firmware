@@ -93,6 +93,7 @@ namespace imu_api
         std::int16_t gyroscope_x_raw;
         std::int16_t gyroscope_y_raw;
         std::int16_t gyroscope_z_raw;
+        std::uint32_t gyroscope_sample_id = 0;
 
         gyroscope_status gyroscope_state;
 
@@ -104,6 +105,7 @@ namespace imu_api
         std::int16_t accelerometer_x_raw;
         std::int16_t accelerometer_y_raw;
         std::int16_t accelerometer_z_raw;
+        std::uint32_t accelerometer_sample_id = 0;
 
         accelerometer_status accelerometer_state;
 
@@ -115,6 +117,7 @@ namespace imu_api
         std::int16_t magnetometer_x_raw;
         std::int16_t magnetometer_y_raw;
         std::int16_t magnetometer_z_raw;
+        std::uint32_t magnetometer_sample_id = 0;
 
         magnetometer_status magnetometer_state;
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-
 #include "core/api/imu_api.hpp"
 #include "core/control/imu_calibration/imu_calibration_drive_and_sample_alignment.hpp"
 #include "core/control/imu_calibration/imu_calibration_solve_and_set.hpp"

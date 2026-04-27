@@ -22,6 +22,8 @@
 #include "stm32g4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+extern void platform_stm32_hal_uart_irq_handler(void *platform_handle);
+extern UART_HandleTypeDef huart1;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -236,7 +238,7 @@ void EXTI15_10_IRQHandler(void)
 
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(hc_b_echo_GPIO_EXTI11_Pin);
-  HAL_GPIO_EXTI_IRQHandler(user_button___GPIO_EXTI13_Pin);
+  HAL_GPIO_EXTI_IRQHandler(user_button__GPIO_EXTI13_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 
   /* USER CODE END EXTI15_10_IRQn 1 */
@@ -257,5 +259,12 @@ void TIM6_DAC_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  platform_stm32_hal_uart_irq_handler(&huart1);
+}
 
 /* USER CODE END 1 */

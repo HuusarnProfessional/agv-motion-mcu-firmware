@@ -1,6 +1,6 @@
-#include "core/middleware/incoming_payloads/start_imu_calibration_payload.hpp"
+#include "core/middleware/incoming_payloads/lock_safe_guard_payload.hpp"
 
-#include "core/control/imu_calibration/imu_calibration_pipeline.hpp"
+#include "core/control/safe_guard/safe_guard_pipeline.hpp"
 #include "core/middleware/middleware_state.hpp"
 
 namespace
@@ -12,7 +12,7 @@ namespace
       return false;
     }
 
-    imu_calibration::request_start();
+    safe_guard::trip();
     (void)state;
     return true;
   }
@@ -20,10 +20,9 @@ namespace
 
 namespace middleware_incoming_payloads
 {
-  const incoming_payload_definition start_imu_calibration_payload_definition = 
-  {
-    "start_imu_calibration",
-    0x22U,
+  const incoming_payload_definition lock_safe_guard_payload_definition = {
+    "lock_safe_guard",
+    0x27u,
     apply_payload_bytes
   };
 }

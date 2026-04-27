@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 
+#include "core/control/collision_prediction/collision_prediction_pipeline.hpp"
 #include "core/control/collision_prediction/collision_tuning.hpp"
 #include "core/control/collision_prediction/internal/obstacle_sensor_logic.hpp"
 #include "core/control/collision_prediction/internal/vehicle_motion_estimator.hpp"
@@ -22,5 +23,5 @@ namespace collision_prediction_logic
   };
 
   void reset(state &logic_state);
-  void tick(state &logic_state, std::uint32_t now_ms, result &out);
+  void tick(state &logic_state, std::uint32_t now_ms, const collision_prediction::runtime_config &config, result &out);
 }

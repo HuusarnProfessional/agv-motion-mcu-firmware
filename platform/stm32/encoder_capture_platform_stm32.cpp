@@ -66,6 +66,16 @@ namespace
     }
   }
 
+  static std::uint32_t elapsed_capture_ticks(std::uint32_t newer, std::uint32_t older, std::uint32_t counter_max)
+  {
+    if (newer >= older)
+    {
+      return newer - older;
+    }
+
+    return (counter_max - older) + newer + 1U;
+  }
+
   static void reset_capture_state(volatile encoder_capture_state &state, TIM_HandleTypeDef *owner)
   {
     state.owner = owner;
@@ -127,8 +137,9 @@ extern "C" void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
   {
     if (state.have_rise && state.have_fall_after_rise)
     {
-      const std::uint32_t period = captured - state.rise_ticks;
-      const std::uint32_t high = state.fall_ticks - state.rise_ticks;
+      const std::uint32_t counter_max = __HAL_TIM_GET_AUTORELOAD(htim);
+      const std::uint32_t period = elapsed_capture_ticks(captured, state.rise_ticks, counter_max);
+      const std::uint32_t high = elapsed_capture_ticks(state.fall_ticks, state.rise_ticks, counter_max);
 
       if (period != 0U && high <= period)
       {

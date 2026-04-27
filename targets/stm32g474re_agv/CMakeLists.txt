@@ -79,11 +79,14 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/debug_stream_control_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/trailer_status_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/unlock_safe_guard_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/lock_safe_guard_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/obstacle_safety_control_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_logic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/vehicle_motion_estimator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/collision_input_builder.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/obstacle_sensor_logic.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/AI_drive_control.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/drive_control_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp

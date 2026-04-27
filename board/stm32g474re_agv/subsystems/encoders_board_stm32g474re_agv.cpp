@@ -47,10 +47,10 @@ namespace
   // encoder3 = rear_right
   static const encoder_api::encoder_input k_encoders[] =
   {
+    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_3), &k_encoder_cap_normal },
     { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_2), &k_encoder_cap_inverted },
     { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_4), &k_encoder_cap_normal },
-    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_1), &k_encoder_cap_inverted },
-    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_3), &k_encoder_cap_normal }
+    { static_cast<void *>(k_tim2), static_cast<std::uint8_t>(TIM_CHANNEL_1), &k_encoder_cap_inverted }
   };
 
   static constexpr std::size_t k_encoder_count = sizeof(k_encoders) / sizeof(k_encoders[0]);

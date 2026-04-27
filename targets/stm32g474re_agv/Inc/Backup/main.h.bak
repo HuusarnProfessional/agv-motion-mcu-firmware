@@ -57,9 +57,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define user_button___GPIO_EXTI13_Pin GPIO_PIN_13
-#define user_button___GPIO_EXTI13_GPIO_Port GPIOC
-#define user_button___GPIO_EXTI13_EXTI_IRQn EXTI15_10_IRQn
+#define user_button__GPIO_EXTI13_Pin GPIO_PIN_13
+#define user_button__GPIO_EXTI13_GPIO_Port GPIOC
+#define user_button__GPIO_EXTI13_EXTI_IRQn EXTI15_10_IRQn
 #define RCC_OSC32_IN_Pin GPIO_PIN_14
 #define RCC_OSC32_IN_GPIO_Port GPIOC
 #define RCC_OSC32_OUT_Pin GPIO_PIN_15
@@ -122,7 +122,7 @@ void Error_Handler(void);
 #define pwm_r1_a___TIM3_CH1_GPIO_Port GPIOB
 #define pwm_r1_b___TIM3_CH2_Pin GPIO_PIN_5
 #define pwm_r1_b___TIM3_CH2_GPIO_Port GPIOB
-#define imu_spi_cs_ag___GPIO_Output_Pin GPIO_PIN_8
+#define imu_spi_cs_ag___GPIO_Output_Pin GPIO_PIN_9
 #define imu_spi_cs_ag___GPIO_Output_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */

@@ -1,0 +1,93 @@
+{
+    "folders": [
+        {
+            "name": "repo",
+            "path": "."
+        },
+        {
+            "name": "stm32g474re_agv",
+            "path": "targets/stm32g474re_agv"
+        }
+    ],
+    "settings": {
+        "cmake.sourceDirectory": "${workspaceFolder:stm32g474re_agv}",
+        "cmake.buildDirectory": "${workspaceFolder:stm32g474re_agv}/build/${buildType}",
+        "cmake.defaultConfigurePreset": "Debug",
+        "cmake.defaultBuildPreset": "Debug",
+        "cmake.cmakePath": "cmake",
+        "cmake.configureArgs": [
+            "-DCMAKE_COMMAND=cmake"
+        ],
+        "cmake.preferredGenerators": [
+            "Ninja"
+        ],
+        "C_Cpp.default.compileCommands": "${workspaceFolder:stm32g474re_agv}/build/Debug/compile_commands.json",
+        "C_Cpp.default.compilerPath": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-g++.exe",
+        "C_Cpp.default.cppStandard": "c++20",
+        "C_Cpp.errorSquiggles": "Disabled",
+        "stm32cube-ide-clangd.path": "cube",
+        "stm32cube-ide-clangd.arguments": [
+            "starm-clangd",
+            "--compile-commands-dir=${workspaceFolder:stm32g474re_agv}/build/Debug",
+            "--query-driver=C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-gcc.exe",
+            "--query-driver=C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.2 rel1/bin/arm-none-eabi-g++.exe"
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "STM32G474RE_AGV: build",
+                "type": "process",
+                "command": "powershell.exe",
+                "args": [
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder:repo}\\tools\\stm32g474re_agv\\build.ps1"
+                ],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "STM32G474RE_AGV: flash",
+                "type": "process",
+                "command": "powershell.exe",
+                "args": [
+                    "-NoProfile",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder:repo}\\tools\\stm32g474re_agv\\flash.ps1"
+                ],
+                "problemMatcher": []
+            }
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "STM32G474RE_AGV: STLink GDB Server",
+                "type": "stlinkgdbtarget",
+                "request": "launch",
+                "preLaunchTask": "STM32G474RE_AGV: build",
+                "cwd": "${workspaceFolder:stm32g474re_agv}",
+                "deviceName": "STM32G474RET6",
+                "runEntry": "main",
+                "serverInterface": "SWD",
+                "serverReset": "Software reset",
+                "imagesAndSymbols": [
+                    {
+                        "imageFileName": "${workspaceFolder:stm32g474re_agv}/build/Debug/stm32g474re_agv.elf",
+                        "symbolFileName": "${workspaceFolder:stm32g474re_agv}/build/Debug/stm32g474re_agv.elf"
+                    }
+                ]
+            }
+        ]
+    }
+}

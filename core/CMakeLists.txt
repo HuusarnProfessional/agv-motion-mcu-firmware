@@ -17,6 +17,7 @@ add_library(agv_core STATIC
   middleware/incoming_payloads/start_imu_calibration_payload.cpp
   middleware/incoming_payloads/clear_imu_calibration_payload.cpp
   middleware/incoming_payloads/debug_stream_control_payload.cpp
+  middleware/incoming_payloads/obstacle_safety_control_payload.cpp
   control/local_positioning/encoder_model/encoder_model_pipeline.cpp
   control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
   control/local_positioning/encoder_model/delta_estimation_encoders.cpp

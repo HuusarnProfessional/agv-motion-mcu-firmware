@@ -1,25 +1,3 @@
-/*
-IMU_CALIBRATION - PLAN (engangsprocedur)
-
-1) imu_calibration ska ta fram tare och transform fran IMU-referens till AGV-referens.
-
-2) Resultatet ska skrivas till imu_api sa att senare imu-samples kan lasas i AGV-referens.
-
-3) Flode:
-   - Stoppa motorer.
-   - Verifiera med encoder_model att AGV star still.
-   - Sampla manga IMU-samples och bygg tare som medelvarde.
-   - Kor framat och samla IMU-data i block.
-   - Stoppa framat nar blockmedel for acceleration faller under 25% av peak, eller nar encoder nar 500 mm.
-   - Stoppa och lat AGV bli still igen.
-   - Kor bakat och samla blockmedel pa samma satt.
-   - Anvand still + framat + bakat for att losa AGV-plan och riktningsmatris.
-   - Skriv tare + matris till imu_api.
-
-4) Pipeline-filen ska bara visa ordningen.
-   Hjalpfilerna ska bara gora deljobben.
-*/
-
 #include "core/control/imu_calibration/imu_calibration_pipeline.hpp"
 #include "core/control/imu_calibration/imu_calibration_drive_and_sample_alignment.hpp"
 #include "core/control/imu_calibration/imu_calibration_solve_and_set.hpp"
@@ -32,6 +10,7 @@ namespace
     bool in_progress = false;
     bool start_requested = false;
     bool clear_requested = false;
+    bool success = false;
     imu_calibration::step current_step = imu_calibration::step::idle;
     bool stop_before_tare_command_sent = false;
     bool stop_before_backward_command_sent = false;
@@ -47,6 +26,128 @@ namespace
   };
 
   pipeline_state g_pipeline_state = {};
+
+  bool finish_pipeline(bool success)
+  {
+    stop_motor();
+    g_pipeline_state.success = success;
+    g_pipeline_state.current_step = imu_calibration::step::done;
+    g_pipeline_state.in_progress = false;
+    return success;
+  }
+
+  bool tick_stop_before_tare(const encoder_motion::state &encoder_model_state)
+  {
+    if (!g_pipeline_state.stop_before_tare_command_sent)
+    {
+      stop_motor();
+      g_pipeline_state.stop_before_tare_command_sent = true;
+    }
+
+    if (is_still_from_encoder_model(encoder_model_state))
+    {
+      g_pipeline_state.current_step = imu_calibration::step::build_tare;
+    }
+
+    return false;
+  }
+
+  bool tick_build_tare(std::uint8_t imu_id)
+  {
+    if (!tick_build_tare_values(g_pipeline_state.tare_step_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.noise_profile))
+    {
+      return false;
+    }
+
+    if (g_pipeline_state.tare_step_state.failed)
+    {
+      return finish_pipeline(false);
+    }
+
+    g_pipeline_state.current_step = imu_calibration::step::drive_forward;
+    return false;
+  }
+
+  bool tick_drive_forward(const encoder_motion::state &encoder_model_state, std::uint8_t imu_id)
+  {
+    if (!tick_drive_forward_and_sample(g_pipeline_state.forward_step_state, encoder_model_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.forward_values))
+    {
+      return false;
+    }
+
+    if (g_pipeline_state.forward_step_state.failed)
+    {
+      return finish_pipeline(false);
+    }
+
+    g_pipeline_state.current_step = imu_calibration::step::stop_before_backward;
+    return false;
+  }
+
+  bool tick_stop_before_backward(const encoder_motion::state &encoder_model_state)
+  {
+    if (!g_pipeline_state.stop_before_backward_command_sent)
+    {
+      stop_motor();
+      g_pipeline_state.stop_before_backward_command_sent = true;
+    }
+
+    if (is_still_from_encoder_model(encoder_model_state))
+    {
+      g_pipeline_state.current_step = imu_calibration::step::drive_backward;
+    }
+
+    return false;
+  }
+
+  bool tick_drive_backward(const encoder_motion::state &encoder_model_state, std::uint8_t imu_id)
+  {
+    if (!tick_drive_backward_and_sample(g_pipeline_state.backward_step_state, encoder_model_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.backward_values))
+    {
+      return false;
+    }
+
+    if (g_pipeline_state.backward_step_state.failed)
+    {
+      return finish_pipeline(false);
+    }
+
+    g_pipeline_state.current_step = imu_calibration::step::solve_and_set;
+    return false;
+  }
+
+  bool tick_solve_and_set(std::uint8_t imu_id)
+  {
+    build_mean_values_from_drive_samples(g_pipeline_state.forward_values, g_pipeline_state.forward_mean_values);
+    build_mean_values_from_drive_samples(g_pipeline_state.backward_values, g_pipeline_state.backward_mean_values);
+
+    if (!g_pipeline_state.tare_values.has_tare)
+    {
+      return finish_pipeline(false);
+    }
+
+    if (!g_pipeline_state.forward_mean_values.has_mean)
+    {
+      return finish_pipeline(false);
+    }
+
+    if (!g_pipeline_state.backward_mean_values.has_mean)
+    {
+      return finish_pipeline(false);
+    }
+
+    if (!solve_alignment_matrix(g_pipeline_state.forward_mean_values, g_pipeline_state.backward_mean_values, g_pipeline_state.tare_values))
+    {
+      return finish_pipeline(false);
+    }
+
+    if (!set_calibration_profile_to_imu(imu_id, g_pipeline_state.tare_values, g_pipeline_state.noise_profile))
+    {
+      return finish_pipeline(false);
+    }
+
+    return finish_pipeline(true);
+  }
 }
 
 namespace imu_calibration
@@ -91,7 +192,7 @@ namespace imu_calibration
   {
     if (g_pipeline_state.current_step == step::done)
     {
-      return true;
+      return g_pipeline_state.success;
     }
 
     if (!g_pipeline_state.in_progress)
@@ -103,86 +204,32 @@ namespace imu_calibration
     {
       case step::stop_before_tare:
       {
-        if (!g_pipeline_state.stop_before_tare_command_sent)
-        {
-          stop_motor();
-          g_pipeline_state.stop_before_tare_command_sent = true;
-        }
-
-        if (is_still_from_encoder_model(encoder_model_state))
-        {
-          g_pipeline_state.current_step = step::build_tare;
-        }
-        break;
+        return tick_stop_before_tare(encoder_model_state);
       }
-
       case step::build_tare:
       {
-        if (tick_build_tare_values(g_pipeline_state.tare_step_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.noise_profile))
-        {
-          g_pipeline_state.current_step = step::drive_forward;
-        }
-        break;
+        return tick_build_tare(imu_id);
       }
-
       case step::drive_forward:
       {
-        if (tick_drive_forward_and_sample(g_pipeline_state.forward_step_state, encoder_model_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.forward_values))
-        {
-          g_pipeline_state.current_step = step::stop_before_backward;
-        }
-        break;
+        return tick_drive_forward(encoder_model_state, imu_id);
       }
-
       case step::stop_before_backward:
       {
-        if (!g_pipeline_state.stop_before_backward_command_sent)
-        {
-          stop_motor();
-          g_pipeline_state.stop_before_backward_command_sent = true;
-        }
-
-        if (is_still_from_encoder_model(encoder_model_state))
-        {
-          g_pipeline_state.current_step = step::drive_backward;
-        }
-        break;
+        return tick_stop_before_backward(encoder_model_state);
       }
-
       case step::drive_backward:
       {
-        if (tick_drive_backward_and_sample(g_pipeline_state.backward_step_state, encoder_model_state, imu_id, g_pipeline_state.tare_values, g_pipeline_state.backward_values))
-        {
-          g_pipeline_state.current_step = step::solve_and_set;
-        }
-        break;
+        return tick_drive_backward(encoder_model_state, imu_id);
       }
-
       case step::solve_and_set:
       {
-        build_mean_values_from_drive_samples(g_pipeline_state.forward_values, g_pipeline_state.forward_mean_values);
-        build_mean_values_from_drive_samples(g_pipeline_state.backward_values, g_pipeline_state.backward_mean_values);
-
-        if (g_pipeline_state.tare_values.has_tare &&
-            g_pipeline_state.forward_mean_values.has_mean &&
-            g_pipeline_state.backward_mean_values.has_mean)
-        {
-          solve_alignment_matrix(g_pipeline_state.forward_mean_values, g_pipeline_state.backward_mean_values, g_pipeline_state.tare_values);
-          set_calibration_profile_to_imu(imu_id, g_pipeline_state.tare_values, g_pipeline_state.noise_profile);
-        }
-
-        g_pipeline_state.current_step = step::done;
-        g_pipeline_state.in_progress = false;
-        return g_pipeline_state.tare_values.has_tare &&
-               g_pipeline_state.forward_mean_values.has_mean &&
-               g_pipeline_state.backward_mean_values.has_mean;
+        return tick_solve_and_set(imu_id);
       }
-
       case step::done:
       {
-        return true;
+        return g_pipeline_state.success;
       }
-
       case step::idle:
       default:
       {

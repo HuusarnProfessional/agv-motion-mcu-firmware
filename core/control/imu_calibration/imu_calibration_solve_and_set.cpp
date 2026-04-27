@@ -1,5 +1,5 @@
 #include "core/control/imu_calibration/imu_calibration_solve_and_set.hpp"
-
+#include "core/control/imu_calibration/imu_calibration_tuning.hpp"
 #include <cmath>
 
 namespace
@@ -21,6 +21,7 @@ namespace
   bool normalize(vector3 &v)
   {
     const double length = vector_length(v);
+
     if (length <= 0.0)
     {
       return false;
@@ -46,28 +47,23 @@ void build_mean_values_from_drive_samples(const imu_drive_sample_values &sample_
 {
   out_mean_values = {};
 
-  if (sample_values.sample_count <= 0)
+  if (sample_values.sample_count == 0U)
   {
     return;
   }
 
-  out_mean_values.gyroscope_x_raw = static_cast<std::int32_t>(sample_values.gyroscope_x_raw_sum / sample_values.sample_count);
-  out_mean_values.gyroscope_y_raw = static_cast<std::int32_t>(sample_values.gyroscope_y_raw_sum / sample_values.sample_count);
-  out_mean_values.gyroscope_z_raw = static_cast<std::int32_t>(sample_values.gyroscope_z_raw_sum / sample_values.sample_count);
-  out_mean_values.accelerometer_x_raw = static_cast<std::int32_t>(sample_values.accelerometer_x_raw_sum / sample_values.sample_count);
-  out_mean_values.accelerometer_y_raw = static_cast<std::int32_t>(sample_values.accelerometer_y_raw_sum / sample_values.sample_count);
-  out_mean_values.accelerometer_z_raw = static_cast<std::int32_t>(sample_values.accelerometer_z_raw_sum / sample_values.sample_count);
-  out_mean_values.magnetometer_x_raw = static_cast<std::int32_t>(sample_values.magnetometer_x_raw_sum / sample_values.sample_count);
-  out_mean_values.magnetometer_y_raw = static_cast<std::int32_t>(sample_values.magnetometer_y_raw_sum / sample_values.sample_count);
-  out_mean_values.magnetometer_z_raw = static_cast<std::int32_t>(sample_values.magnetometer_z_raw_sum / sample_values.sample_count);
+  const std::int64_t sample_count = static_cast<std::int64_t>(sample_values.sample_count);
+  out_mean_values.accelerometer_x_raw = static_cast<std::int32_t>(sample_values.accelerometer_x_raw_sum / sample_count);
+  out_mean_values.accelerometer_y_raw = static_cast<std::int32_t>(sample_values.accelerometer_y_raw_sum / sample_count);
+  out_mean_values.accelerometer_z_raw = static_cast<std::int32_t>(sample_values.accelerometer_z_raw_sum / sample_count);
   out_mean_values.has_mean = true;
 }
 
-void solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_values, const imu_drive_sample_mean_values &backward_mean_values, imu_api::imu_tare_values &io_tare_values)
+bool solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_values, const imu_drive_sample_mean_values &backward_mean_values, imu_api::imu_tare_values &io_tare_values)
 {
   if (!io_tare_values.has_tare || !forward_mean_values.has_mean || !backward_mean_values.has_mean)
   {
-    return;
+    return false;
   }
 
   vector3 z_axis_imu = {};
@@ -80,21 +76,33 @@ void solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_val
   x_axis_imu.y = static_cast<double>(forward_mean_values.accelerometer_y_raw - backward_mean_values.accelerometer_y_raw);
   x_axis_imu.z = static_cast<double>(forward_mean_values.accelerometer_z_raw - backward_mean_values.accelerometer_z_raw);
 
-  if (!normalize(z_axis_imu) || !normalize(x_axis_imu))
+  if (vector_length(x_axis_imu) < static_cast<double>(imu_calibration_tuning::k_min_alignment_axis_delta_raw))
   {
-    return;
+    return false;
+  }
+
+  if (!normalize(z_axis_imu))
+  {
+    return false;
+  }
+
+  if (!normalize(x_axis_imu))
+  {
+    return false;
   }
 
   vector3 y_axis_imu = cross_product(z_axis_imu, x_axis_imu);
+
   if (!normalize(y_axis_imu))
   {
-    return;
+    return false;
   }
 
   x_axis_imu = cross_product(y_axis_imu, z_axis_imu);
+
   if (!normalize(x_axis_imu))
   {
-    return;
+    return false;
   }
 
   io_tare_values.r11 = static_cast<std::int32_t>(x_axis_imu.x * k_matrix_scale);
@@ -106,6 +114,7 @@ void solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_val
   io_tare_values.r31 = static_cast<std::int32_t>(z_axis_imu.x * k_matrix_scale);
   io_tare_values.r32 = static_cast<std::int32_t>(z_axis_imu.y * k_matrix_scale);
   io_tare_values.r33 = static_cast<std::int32_t>(z_axis_imu.z * k_matrix_scale);
+  return true;
 }
 
 void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values, imu_api::imu_calibration_profile &out_profile)
@@ -123,15 +132,16 @@ void build_calibration_profile_from_tare(const imu_api::imu_tare_values &tare_va
   out_profile.has_calibration = true;
 }
 
-void set_calibration_profile_to_imu(std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values)
+bool set_calibration_profile_to_imu(std::uint8_t imu_id, const imu_api::imu_tare_values &tare_values, const imu_api::imu_noise_profile &noise_values)
 {
   imu_api::imu_calibration_profile calibration_profile = {};
   build_calibration_profile_from_tare(tare_values, noise_values, calibration_profile);
 
   if (!calibration_profile.has_calibration)
   {
-    return;
+    return false;
   }
 
   imu_api::set_calibration(imu_id, calibration_profile);
+  return true;
 }

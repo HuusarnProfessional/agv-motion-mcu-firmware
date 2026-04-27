@@ -6,7 +6,7 @@
 
 namespace collision_input_builder
 {
-  void build(std::uint32_t now_ms, vehicle_motion_estimator::state &motion_state, collision_prediction_input &out)
+  void build(std::uint32_t now_ms, vehicle_motion_estimator::state &motion_state, const collision_prediction::runtime_config &config, collision_prediction_input &out)
   {
     local_positioning::snapshot local_positioning_snapshot = {};
     drive_control::snapshot drive_control_snapshot = {};
@@ -15,6 +15,7 @@ namespace collision_input_builder
     out = {};
     out.now_ms = now_ms;
     out.has_trailer = middleware::g_middleware_state.has_trailer;
+    out.obstacle_safety_enabled = config.obstacle_safety_enabled;
 
     local_positioning_pipeline::read_snapshot(local_positioning_snapshot);
     drive_control::read_snapshot(drive_control_snapshot);
@@ -29,6 +30,11 @@ namespace collision_input_builder
     for (std::size_t sensor_index = 0u; sensor_index < collision_tuning::k_sensor_count; ++sensor_index)
     {
       out.sensor_inputs[sensor_index].config = collision_tuning::k_sensor_configs[sensor_index];
+
+      if (!out.obstacle_safety_enabled)
+      {
+        out.sensor_inputs[sensor_index].config.is_enabled = false;
+      }
 
       if (out.has_trailer)
       {

@@ -73,8 +73,6 @@ void Error_Handler(void);
 #define pwm_l1_a___TIM1_CH1_GPIO_Port GPIOC
 #define pwm_l1_b___TIM1_CH2_Pin GPIO_PIN_1
 #define pwm_l1_b___TIM1_CH2_GPIO_Port GPIOC
-#define pwm_l2_a___TIM1_CH3_Pin GPIO_PIN_2
-#define pwm_l2_a___TIM1_CH3_GPIO_Port GPIOC
 #define pwm_l2_b___TIM1_CH4_Pin GPIO_PIN_3
 #define pwm_l2_b___TIM1_CH4_GPIO_Port GPIOC
 #define encoder_l1___TIM2_CH1_Pin GPIO_PIN_0
@@ -105,6 +103,8 @@ void Error_Handler(void);
 #define pwm_r2_a___TIM3_CH3_GPIO_Port GPIOC
 #define pwm_r2_b___TIM3_CH4_Pin GPIO_PIN_9
 #define pwm_r2_b___TIM3_CH4_GPIO_Port GPIOC
+#define pwm_l2_a___TIM1_CH3_Pin GPIO_PIN_10
+#define pwm_l2_a___TIM1_CH3_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14

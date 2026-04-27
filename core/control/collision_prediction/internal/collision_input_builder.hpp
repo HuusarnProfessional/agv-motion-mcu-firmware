@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "core/api/obstacle_api.hpp"
+#include "core/control/collision_prediction/collision_prediction_pipeline.hpp"
 #include "core/control/collision_prediction/collision_tuning.hpp"
 #include "core/control/collision_prediction/internal/vehicle_motion_estimator.hpp"
 
@@ -19,9 +20,10 @@ namespace collision_input_builder
   {
     std::uint32_t now_ms = 0u;
     bool has_trailer = false;
+    bool obstacle_safety_enabled = true;
     vehicle_motion_estimator::output motion = {};
     std::array<sensor_input, collision_tuning::k_sensor_count> sensor_inputs = {};
   };
 
-  void build(std::uint32_t now_ms, vehicle_motion_estimator::state &motion_state, collision_prediction_input &out);
+  void build(std::uint32_t now_ms, vehicle_motion_estimator::state &motion_state, const collision_prediction::runtime_config &config, collision_prediction_input &out);
 }

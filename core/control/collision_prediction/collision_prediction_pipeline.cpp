@@ -8,6 +8,7 @@ namespace
   {
     collision_prediction::snapshot output_snapshot = {};
     collision_prediction_logic::state logic_state = {};
+    collision_prediction::runtime_config config = {};
   };
 
   pipeline_state g_pipeline_state = {};
@@ -18,18 +19,29 @@ namespace collision_prediction
   void init(void)
   {
     g_pipeline_state = {};
+    g_pipeline_state.config.obstacle_safety_enabled = true;
     collision_prediction_logic::reset(g_pipeline_state.logic_state);
   }
 
   void tick(std::uint32_t now_ms)
   {
     collision_prediction_logic::result logic_result = {};
-    collision_prediction_logic::tick(g_pipeline_state.logic_state, now_ms, logic_result);
+    collision_prediction_logic::tick(g_pipeline_state.logic_state, now_ms, g_pipeline_state.config, logic_result);
     g_pipeline_state.output_snapshot.collision_blocked = logic_result.collision_blocked;
   }
 
   void read_snapshot(snapshot &out)
   {
     out = g_pipeline_state.output_snapshot;
+  }
+
+  void set_obstacle_safety_enabled(bool enabled)
+  {
+    g_pipeline_state.config.obstacle_safety_enabled = enabled;
+  }
+
+  bool is_obstacle_safety_enabled(void)
+  {
+    return g_pipeline_state.config.obstacle_safety_enabled;
   }
 }

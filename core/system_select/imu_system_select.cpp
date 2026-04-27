@@ -23,6 +23,7 @@ namespace
     out.gyroscope_x_raw = impl_sample.gyroscope_x_raw;
     out.gyroscope_y_raw = impl_sample.gyroscope_y_raw;
     out.gyroscope_z_raw = impl_sample.gyroscope_z_raw;
+    out.gyroscope_sample_id = impl_sample.gyroscope_sample_id;
 
     out.accelerometer_x_mg = impl_sample.accelerometer_x_mg;
     out.accelerometer_y_mg = impl_sample.accelerometer_y_mg;
@@ -31,6 +32,7 @@ namespace
     out.accelerometer_x_raw = impl_sample.accelerometer_x_raw;
     out.accelerometer_y_raw = impl_sample.accelerometer_y_raw;
     out.accelerometer_z_raw = impl_sample.accelerometer_z_raw;
+    out.accelerometer_sample_id = impl_sample.accelerometer_sample_id;
 
     out.magnetometer_x_mgauss = impl_sample.magnetometer_x_mgauss;
     out.magnetometer_y_mgauss = impl_sample.magnetometer_y_mgauss;
@@ -39,6 +41,7 @@ namespace
     out.magnetometer_x_raw = impl_sample.magnetometer_x_raw;
     out.magnetometer_y_raw = impl_sample.magnetometer_y_raw;
     out.magnetometer_z_raw = impl_sample.magnetometer_z_raw;
+    out.magnetometer_sample_id = impl_sample.magnetometer_sample_id;
 
     out.gyroscope_state = static_cast<imu_api::gyroscope_status>(impl_sample.gyroscope_state);
     out.accelerometer_state = static_cast<imu_api::accelerometer_status>(impl_sample.accelerometer_state);

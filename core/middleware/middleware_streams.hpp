@@ -6,7 +6,9 @@
 #include "core/middleware/incoming_payloads/clear_imu_calibration_payload.hpp"
 #include "core/middleware/incoming_payloads/debug_stream_control_payload.hpp"
 #include "core/middleware/incoming_payloads/incoming_payload_definition.hpp"
+#include "core/middleware/incoming_payloads/lock_safe_guard_payload.hpp"
 #include "core/middleware/incoming_payloads/motion_command_payload.hpp"
+#include "core/middleware/incoming_payloads/obstacle_safety_control_payload.hpp"
 #include "core/middleware/incoming_payloads/start_imu_calibration_payload.hpp"
 #include "core/middleware/incoming_payloads/trailer_status_payload.hpp"
 #include "core/middleware/incoming_payloads/unlock_safe_guard_payload.hpp"
@@ -48,6 +50,8 @@ namespace middleware_streams
     &middleware_incoming_payloads::clear_imu_calibration_payload_definition,
     &middleware_incoming_payloads::debug_stream_control_payload_definition,
     &middleware_incoming_payloads::unlock_safe_guard_payload_definition,
+    &middleware_incoming_payloads::lock_safe_guard_payload_definition,
+    &middleware_incoming_payloads::obstacle_safety_control_payload_definition,
     &middleware_incoming_payloads::trailer_status_payload_definition,
   };
 

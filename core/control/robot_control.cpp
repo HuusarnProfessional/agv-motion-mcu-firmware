@@ -14,6 +14,28 @@ namespace robot_control
   namespace
   {
     constexpr std::uint8_t k_comm_uart_id = 0u;
+
+    enum class active_controller : std::uint8_t
+    {
+      safe_guard = 0u,
+      imu_calibration,
+      drive
+    };
+
+    active_controller select_active_controller(void)
+    {
+      if (safe_guard::is_latched())
+      {
+        return active_controller::safe_guard;
+      }
+
+      if (imu_calibration::is_in_progress())
+      {
+        return active_controller::imu_calibration;
+      }
+
+      return active_controller::drive;
+    }
   }
 
   void init(void)
@@ -31,12 +53,13 @@ namespace robot_control
   {
     encoder_motion::state encoder_motion_state = {};
     collision_prediction::snapshot collision_prediction_snapshot = {};
+    const std::uint8_t imu_id = local_positioning_pipeline::read_imu_id();
     incoming_middleware_pipeline::tick(now_ms);
 
     if (imu_calibration::consume_clear_request())
     {
-      imu_api::clear_calibration(local_positioning_pipeline::read_imu_id());
-      imu_calibration::init();
+      imu_api::clear_calibration(imu_id);
+      imu_calibration::clear_pipeline_state();
     }
 
     if (imu_calibration::consume_start_request())
@@ -46,7 +69,6 @@ namespace robot_control
 
     local_positioning_pipeline::tick(now_ms);
     local_positioning_pipeline::read_encoder_motion_state(encoder_motion_state);
-    imu_calibration::tick(encoder_motion_state, local_positioning_pipeline::read_imu_id());
     collision_prediction::tick(now_ms);
     collision_prediction::read_snapshot(collision_prediction_snapshot);
 
@@ -56,7 +78,17 @@ namespace robot_control
     }
 
     safe_guard::tick(now_ms);
-    drive_control::tick(now_ms);
+    const active_controller controller = select_active_controller();
+
+    if (controller == active_controller::imu_calibration)
+    {
+      imu_calibration::tick(encoder_motion_state, imu_id);
+    }
+    else if (controller == active_controller::drive)
+    {
+      drive_control::tick(now_ms);
+    }
+
     outgoing_middleware_pipeline::tick(now_ms);
   }
 
