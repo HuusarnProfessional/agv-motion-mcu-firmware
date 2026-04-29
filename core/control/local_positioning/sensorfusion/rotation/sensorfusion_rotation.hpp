@@ -22,6 +22,8 @@ namespace sensorfusion_rotation
     bool has_gyro_rotation = false;
 
     std::int64_t rotation = 0;
+    std::int64_t encoder_rotation = 0;
+    std::int64_t gyro_rotation = 0;
     std::int64_t confidence_rotation = 0;
 
     std::int64_t encoder_confidence_rotation_raw = 0;

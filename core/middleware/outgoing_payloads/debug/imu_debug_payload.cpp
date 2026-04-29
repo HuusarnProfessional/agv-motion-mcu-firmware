@@ -1,9 +1,9 @@
-#include "core/middleware/outgoing_payloads/imu_debug_payload.hpp"
+#include "core/middleware/outgoing_payloads/debug/imu_debug_payload.hpp"
 
 #include "core/api/imu_api.hpp"
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
-#include "core/middleware/binary_packing.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -178,7 +178,7 @@ namespace middleware_outgoing_payloads
 {
   const outgoing_payload_definition imu_debug_payload_definition = {
     "imu_debug",
-    0x12U,
+
     build_payload_bytes
   };
 }

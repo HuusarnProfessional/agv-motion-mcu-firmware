@@ -1,7 +1,7 @@
-#include "core/middleware/incoming_payloads/lock_safe_guard_payload.hpp"
+#include "core/middleware/incoming_payloads/service/unlock_safe_guard_payload.hpp"
 
 #include "core/control/safe_guard/safe_guard_pipeline.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -12,7 +12,7 @@ namespace
       return false;
     }
 
-    safe_guard::trip();
+    safe_guard::request_unlock();
     (void)state;
     return true;
   }
@@ -20,9 +20,10 @@ namespace
 
 namespace middleware_incoming_payloads
 {
-  const incoming_payload_definition lock_safe_guard_payload_definition = {
-    "lock_safe_guard",
-    0x27u,
+  const incoming_payload_definition unlock_safe_guard_payload_definition = 
+  {
+    "unlock_safe_guard",
+
     apply_payload_bytes
   };
 }

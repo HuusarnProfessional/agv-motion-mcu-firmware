@@ -3,21 +3,24 @@ add_library(agv_core STATIC
   api/motor_api.cpp
   api/obstacle_api.cpp
   api/voltage_monitor_api.cpp
-  middleware/middleware_shared_state.cpp
-  middleware/incoming_middleware_pipeline.cpp
-  middleware/outgoing_middleware_pipeline.cpp
-  middleware/outgoing_payloads/local_position_payload.cpp
-  middleware/outgoing_payloads/safety_status_payload.cpp
-  middleware/outgoing_payloads/power_status_payload.cpp
-  middleware/outgoing_payloads/encoder_debug_payload.cpp
-  middleware/outgoing_payloads/imu_debug_payload.cpp
-  middleware/outgoing_payloads/obstacle_debug_payload.cpp
-  middleware/outgoing_payloads/voltage_debug_payload.cpp
-  middleware/incoming_payloads/motion_command_payload.cpp
-  middleware/incoming_payloads/start_imu_calibration_payload.cpp
-  middleware/incoming_payloads/clear_imu_calibration_payload.cpp
-  middleware/incoming_payloads/debug_stream_control_payload.cpp
-  middleware/incoming_payloads/obstacle_safety_control_payload.cpp
+  middleware/middleware_runtime.cpp
+  middleware/incoming_payloads/incoming_middleware_pipeline.cpp
+  middleware/outgoing_payloads/outgoing_middleware_pipeline.cpp
+  middleware/outgoing_payloads/runtime/local_position_payload.cpp
+  middleware/outgoing_payloads/runtime/safety_status_payload.cpp
+  middleware/outgoing_payloads/runtime/power_status_payload.cpp
+  middleware/outgoing_payloads/debug/encoder_debug_payload.cpp
+  middleware/outgoing_payloads/debug/imu_debug_payload.cpp
+  middleware/outgoing_payloads/debug/obstacle_debug_payload.cpp
+  middleware/outgoing_payloads/debug/voltage_debug_payload.cpp
+  middleware/incoming_payloads/runtime/motion_command_payload.cpp
+  middleware/incoming_payloads/service/start_imu_calibration_payload.cpp
+  middleware/incoming_payloads/service/clear_imu_calibration_payload.cpp
+  middleware/incoming_payloads/debug/debug_stream_control_payload.cpp
+  middleware/incoming_payloads/service/trailer_status_payload.cpp
+  middleware/incoming_payloads/service/unlock_safe_guard_payload.cpp
+  middleware/incoming_payloads/service/lock_safe_guard_payload.cpp
+  middleware/incoming_payloads/service/obstacle_safety_control_payload.cpp
   control/local_positioning/encoder_model/encoder_model_pipeline.cpp
   control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
   control/local_positioning/encoder_model/delta_estimation_encoders.cpp

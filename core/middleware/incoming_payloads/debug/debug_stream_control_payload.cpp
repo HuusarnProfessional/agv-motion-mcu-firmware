@@ -1,7 +1,7 @@
-#include "core/middleware/incoming_payloads/debug_stream_control_payload.hpp"
+#include "core/middleware/incoming_payloads/debug/debug_stream_control_payload.hpp"
 
-#include "core/middleware/binary_packing.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -35,7 +35,7 @@ namespace middleware_incoming_payloads
 {
   const incoming_payload_definition debug_stream_control_payload_definition = {
     "debug_stream_control",
-    0x24U,
+
     apply_payload_bytes
   };
 }

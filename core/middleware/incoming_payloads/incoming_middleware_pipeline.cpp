@@ -1,12 +1,12 @@
-#include "core/middleware/incoming_middleware_pipeline.hpp"
+#include "core/middleware/incoming_payloads/incoming_middleware_pipeline.hpp"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 
 #include "core/api/comm_uart_api.hpp"
-#include "core/middleware/middleware_streams.hpp"
-#include "core/middleware/middleware_shared_state.hpp"
+#include "core/middleware/middleware_routes.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -23,11 +23,12 @@ namespace
 
   bool apply_incoming_payload(std::uint8_t payload_id, const std::uint8_t *payload_data, std::size_t payload_length, std::uint32_t received_time_ms)
   {
-    for (std::size_t payload_index = 0U; payload_index < middleware_streams::incoming_payload_count; ++payload_index)
+    for (std::size_t payload_index = 0U; payload_index < middleware_routes::incoming_route_count; ++payload_index)
     {
-      const middleware_incoming_payloads::incoming_payload_definition *payload = middleware_streams::incoming_payloads[payload_index];
+      const middleware_routes::incoming_route_registration &registration = middleware_routes::incoming_routes[payload_index];
+      const middleware_incoming_payloads::incoming_payload_definition *payload = registration.payload;
 
-      if (payload == nullptr || payload->payload_id != payload_id || payload->apply_payload_bytes == nullptr)
+      if (payload == nullptr || registration.payload_id != payload_id || payload->apply_payload_bytes == nullptr)
       {
         continue;
       }

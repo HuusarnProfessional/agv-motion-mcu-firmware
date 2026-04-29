@@ -1,7 +1,7 @@
-#include "core/middleware/incoming_payloads/obstacle_safety_control_payload.hpp"
+#include "core/middleware/incoming_payloads/service/obstacle_safety_control_payload.hpp"
 
 #include "core/control/collision_prediction/collision_prediction_pipeline.hpp"
-#include "core/middleware/binary_packing.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
 
 namespace
 {
@@ -30,7 +30,7 @@ namespace middleware_incoming_payloads
 {
   const incoming_payload_definition obstacle_safety_control_payload_definition = {
     "obstacle_safety_control",
-    0x28u,
+
     apply_payload_bytes
   };
 }

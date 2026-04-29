@@ -5,7 +5,7 @@
 
 namespace
 {
-  struct translation_estimate
+  struct translation_state_estimate
   {
     double s_um = 0.0;
     double p_um2 = 0.0;
@@ -89,7 +89,7 @@ namespace
     return static_cast<std::int64_t>(confidence_scaled);
   }
 
-  void initialize_state_if_needed(sensorfusion_translation::translation_state &state)
+  void initialize_translation_state_if_needed(sensorfusion_translation::translation_state &state)
   {
     if (!state.is_initialized)
     {
@@ -100,7 +100,7 @@ namespace
     }
   }
 
-  void update_sensor_confidences(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, sensorfusion_translation::translation_snapshot &out)
+  void update_translation_sensor_confidences(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, sensorfusion_translation::translation_snapshot &out)
   {
     if (out.has_encoder_translation)
     {
@@ -123,17 +123,17 @@ namespace
     }
   }
 
-  translation_estimate predict_with_imu(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, const sensorfusion_translation::translation_snapshot &out, const sensorfusion_translation::translation_state &state)
+  translation_state_estimate build_imu_advanced_translation(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, const sensorfusion_translation::translation_snapshot &out, const sensorfusion_translation::translation_state &state)
   {
     const double process_variance = map_imu_confidence_to_process_variance(out.imu_confidence_translation_final);
-    translation_estimate predicted_estimate;
+    translation_state_estimate imu_advanced_translation;
 
-    predicted_estimate.s_um = state.s_estimate_um;
-    predicted_estimate.p_um2 = state.p_translation_um2;
+    imu_advanced_translation.s_um = state.s_estimate_um;
+    imu_advanced_translation.p_um2 = state.p_translation_um2;
 
     if (out.has_imu_translation)
     {
-      predicted_estimate.s_um =
+      imu_advanced_translation.s_um =
           state.s_estimate_um +
           static_cast<double>(imu_motion.translation);
     }
@@ -149,20 +149,20 @@ namespace
 
       if (encoder_translation_abs <= 1)
       {
-        predicted_estimate.s_um = state.s_estimate_um;
+        imu_advanced_translation.s_um = state.s_estimate_um;
       }
     }
 
-    predicted_estimate.p_um2 =
+    imu_advanced_translation.p_um2 =
         state.p_translation_um2 +
         process_variance;
 
-    return predicted_estimate;
+    return imu_advanced_translation;
   }
 
-  translation_estimate correct_predicted_translation_with_encoder(const motion_model_encoders::motion_model_snapshot &encoder_motion, const sensorfusion_translation::translation_snapshot &out, sensorfusion_translation::translation_state &state, const translation_estimate &predicted_estimate)
+  translation_state_estimate apply_encoder_translation_correction(const motion_model_encoders::motion_model_snapshot &encoder_motion, const sensorfusion_translation::translation_snapshot &out, sensorfusion_translation::translation_state &state, const translation_state_estimate &imu_advanced_translation)
   {
-    translation_estimate corrected_estimate = predicted_estimate;
+    translation_state_estimate encoder_corrected_translation = imu_advanced_translation;
 
     if (out.has_encoder_translation)
     {
@@ -174,37 +174,37 @@ namespace
           map_encoder_confidence_to_measurement_variance(out.encoder_confidence_translation_final);
       const double measurement_residual =
           state.s_encoder_accumulated_um -
-          predicted_estimate.s_um;
+          imu_advanced_translation.s_um;
       const double innovation_variance =
-          predicted_estimate.p_um2 +
+          imu_advanced_translation.p_um2 +
           measurement_variance;
       const double kalman_gain =
-          predicted_estimate.p_um2 /
+          imu_advanced_translation.p_um2 /
           innovation_variance;
 
-      corrected_estimate.s_um =
-          predicted_estimate.s_um +
+      encoder_corrected_translation.s_um =
+          imu_advanced_translation.s_um +
           kalman_gain * measurement_residual;
-      corrected_estimate.p_um2 =
+      encoder_corrected_translation.p_um2 =
           (1.0 - kalman_gain) *
-          predicted_estimate.p_um2;
+          imu_advanced_translation.p_um2;
     }
 
-    return corrected_estimate;
+    return encoder_corrected_translation;
   }
 
-  void write_translation_output(const translation_estimate &corrected_estimate, double previous_s_estimate_um, sensorfusion_translation::translation_state &state, sensorfusion_translation::translation_snapshot &out)
+  void write_fused_translation_output(const translation_state_estimate &encoder_corrected_translation, double previous_fused_translation_sum_um, sensorfusion_translation::translation_state &state, sensorfusion_translation::translation_snapshot &out)
   {
-    state.s_estimate_um = corrected_estimate.s_um;
-    state.p_translation_um2 = corrected_estimate.p_um2;
+    state.s_estimate_um = encoder_corrected_translation.s_um;
+    state.p_translation_um2 = encoder_corrected_translation.p_um2;
 
     const double fused_translation_um =
-        corrected_estimate.s_um -
-        previous_s_estimate_um;
+        encoder_corrected_translation.s_um -
+        previous_fused_translation_sum_um;
 
     out.translation = static_cast<std::int64_t>(fused_translation_um);
     out.confidence_translation =
-        map_translation_variance_to_fused_confidence(corrected_estimate.p_um2);
+        map_translation_variance_to_fused_confidence(encoder_corrected_translation.p_um2);
 
     out.has_fused_translation = true;
   }
@@ -241,21 +241,21 @@ namespace sensorfusion_translation
       return false;
     }
 
-    initialize_state_if_needed(state);
-    update_sensor_confidences(encoder_motion, imu_motion, out);
+    initialize_translation_state_if_needed(state);
+    update_translation_sensor_confidences(encoder_motion, imu_motion, out);
 
     if (!out.has_encoder_translation && !out.has_imu_translation)
     {
       return false;
     }
 
-    const double previous_s_estimate_um = state.s_estimate_um;
-    const translation_estimate predicted_estimate =
-        predict_with_imu(encoder_motion, imu_motion, out, state);
-    const translation_estimate corrected_estimate =
-        correct_predicted_translation_with_encoder(encoder_motion, out, state, predicted_estimate);
+    const double previous_fused_translation_sum_um = state.s_estimate_um;
+    const translation_state_estimate imu_advanced_translation =
+        build_imu_advanced_translation(encoder_motion, imu_motion, out, state);
+    const translation_state_estimate encoder_corrected_translation =
+        apply_encoder_translation_correction(encoder_motion, out, state, imu_advanced_translation);
 
-    write_translation_output(corrected_estimate, previous_s_estimate_um, state, out);
+    write_fused_translation_output(encoder_corrected_translation, previous_fused_translation_sum_um, state, out);
     return true;
   }
 }

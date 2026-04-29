@@ -22,6 +22,19 @@ namespace
 
     return static_cast<std::int32_t>(confidence_scaled);
   }
+
+  std::int32_t combine_radius_and_slip_confidence(std::int32_t radius_confidence, std::int64_t slip_confidence)
+  {
+    if (radius_confidence <= 0 || slip_confidence <= 0)
+    {
+      return 0;
+    }
+
+    const std::int64_t confidence_product = static_cast<std::int64_t>(radius_confidence) * slip_confidence;
+    const std::int64_t combined_confidence = confidence_product / sensorfusion_tuning::k_confidence_max;
+
+    return static_cast<std::int32_t>(combined_confidence);
+  }
 }
 
 namespace sensorfusion_rotation_encoder
@@ -29,7 +42,8 @@ namespace sensorfusion_rotation_encoder
   void update_rotation_confidence(const motion_model_encoders::motion_model_snapshot &encoder_motion, sensorfusion_rotation::rotation_snapshot &out)
   {
     out.encoder_confidence_rotation_raw = encoder_motion.confidence_rotation;
-    out.encoder_confidence_rotation_math_model = compute_encoder_rotation_math_model_confidence(encoder_motion);
+    const std::int32_t radius_confidence = compute_encoder_rotation_math_model_confidence(encoder_motion);
+    out.encoder_confidence_rotation_math_model = combine_radius_and_slip_confidence(radius_confidence, encoder_motion.confidence_slip);
 
     if (out.encoder_confidence_rotation_raw < out.encoder_confidence_rotation_math_model)
     {

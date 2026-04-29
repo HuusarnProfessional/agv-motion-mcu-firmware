@@ -5,7 +5,9 @@
 
 namespace
 {
-  struct heading_estimate
+  constexpr std::int64_t k_zero_encoder_rotation_with_active_gyro_threshold_urad = 200;
+
+  struct heading_state_estimate
   {
     double theta_urad = 0.0;
     double p_urad2 = 0.0;
@@ -89,7 +91,7 @@ namespace
     return static_cast<std::int64_t>(confidence_scaled);
   }
 
-  void initialize_state_if_needed(sensorfusion_rotation::rotation_state &state)
+  void initialize_heading_state_if_needed(sensorfusion_rotation::rotation_state &state)
   {
     if (!state.is_initialized)
     {
@@ -100,7 +102,7 @@ namespace
     }
   }
 
-  void update_sensor_confidences(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, sensorfusion_rotation::rotation_snapshot &out)
+  void update_rotation_sensor_confidences(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, sensorfusion_rotation::rotation_snapshot &out)
   {
     if (out.has_encoder_rotation)
     {
@@ -121,54 +123,72 @@ namespace
     {
       out.has_gyro_rotation = false;
     }
+
+    if (out.has_encoder_rotation &&
+        out.has_gyro_rotation &&
+        encoder_motion.rotate_in_spot_flag)
+    {
+      out.encoder_confidence_rotation_final = 0;
+      out.has_encoder_rotation = false;
+    }
+
+    if (out.has_encoder_rotation &&
+        out.has_gyro_rotation &&
+        encoder_motion.rotation == 0 &&
+        ((imu_motion.rotation >= 0) ? imu_motion.rotation : -imu_motion.rotation) >= k_zero_encoder_rotation_with_active_gyro_threshold_urad)
+    {
+      out.encoder_confidence_rotation_final = 0;
+      out.has_encoder_rotation = false;
+    }
   }
 
-  heading_estimate predict_with_gyro(const motion_model_imu::motion_model_snapshot &imu_motion, const sensorfusion_rotation::rotation_snapshot &out, const sensorfusion_rotation::rotation_state &state)
+  heading_state_estimate build_gyro_advanced_heading(const motion_model_imu::motion_model_snapshot &imu_motion, const sensorfusion_rotation::rotation_snapshot &out, const sensorfusion_rotation::rotation_state &state)
   {
     const double process_variance = map_gyro_confidence_to_process_variance(out.gyro_confidence_rotation_final);
-    heading_estimate predicted_estimate;
+    heading_state_estimate gyro_advanced_heading;
 
-    predicted_estimate.theta_urad = state.theta_estimate_urad;
-    predicted_estimate.p_urad2 = state.p_heading_urad2;
+    gyro_advanced_heading.theta_urad = state.theta_estimate_urad;
+    gyro_advanced_heading.p_urad2 = state.p_heading_urad2;
 
     if (out.has_gyro_rotation)
     {
-      predicted_estimate.theta_urad = state.theta_estimate_urad + static_cast<double>(imu_motion.rotation);
+      gyro_advanced_heading.theta_urad = state.theta_estimate_urad + static_cast<double>(imu_motion.rotation);
     }
 
-    predicted_estimate.p_urad2 = state.p_heading_urad2 + process_variance;
+    gyro_advanced_heading.p_urad2 = state.p_heading_urad2 + process_variance;
 
-    return predicted_estimate;
+    return gyro_advanced_heading;
   }
 
-  heading_estimate correct_predicted_heading_with_encoder(const motion_model_encoders::motion_model_snapshot &encoder_motion, const sensorfusion_rotation::rotation_snapshot &out, sensorfusion_rotation::rotation_state &state, const heading_estimate &predicted_estimate)
+  heading_state_estimate apply_encoder_heading_correction(const motion_model_encoders::motion_model_snapshot &encoder_motion, const sensorfusion_rotation::rotation_snapshot &out, sensorfusion_rotation::rotation_state &state, double previous_fused_heading_urad, const heading_state_estimate &gyro_advanced_heading)
   {
-    heading_estimate corrected_estimate = predicted_estimate;
+    heading_state_estimate encoder_corrected_heading = gyro_advanced_heading;
 
     if (out.has_encoder_rotation)
     {
-      state.theta_encoder_accumulated_urad = state.theta_encoder_accumulated_urad + static_cast<double>(encoder_motion.rotation);
+      const double encoder_measured_theta_urad = previous_fused_heading_urad + static_cast<double>(encoder_motion.rotation);
       const double measurement_variance = map_encoder_confidence_to_measurement_variance(out.encoder_confidence_rotation_final);
-      const double measurement_residual = state.theta_encoder_accumulated_urad - predicted_estimate.theta_urad;
-      const double innovation_variance = predicted_estimate.p_urad2 + measurement_variance;
-      const double kalman_gain = predicted_estimate.p_urad2 / innovation_variance;
+      const double measurement_residual = encoder_measured_theta_urad - gyro_advanced_heading.theta_urad;
+      const double innovation_variance = gyro_advanced_heading.p_urad2 + measurement_variance;
+      const double kalman_gain = gyro_advanced_heading.p_urad2 / innovation_variance;
 
-      corrected_estimate.theta_urad = predicted_estimate.theta_urad + kalman_gain * measurement_residual;
-      corrected_estimate.p_urad2 = (1.0 - kalman_gain) * predicted_estimate.p_urad2;
+      encoder_corrected_heading.theta_urad = gyro_advanced_heading.theta_urad + kalman_gain * measurement_residual;
+      encoder_corrected_heading.p_urad2 = (1.0 - kalman_gain) * gyro_advanced_heading.p_urad2;
+      state.theta_encoder_accumulated_urad = encoder_measured_theta_urad;
     }
 
-    return corrected_estimate;
+    return encoder_corrected_heading;
   }
 
-  void write_rotation_output(const heading_estimate &corrected_estimate, double previous_theta_estimate_urad, sensorfusion_rotation::rotation_state &state, sensorfusion_rotation::rotation_snapshot &out)
+  void write_fused_rotation_output(const heading_state_estimate &encoder_corrected_heading, double previous_fused_heading_urad, sensorfusion_rotation::rotation_state &state, sensorfusion_rotation::rotation_snapshot &out)
   {
-    state.theta_estimate_urad = corrected_estimate.theta_urad;
-    state.p_heading_urad2 = corrected_estimate.p_urad2;
+    state.theta_estimate_urad = encoder_corrected_heading.theta_urad;
+    state.p_heading_urad2 = encoder_corrected_heading.p_urad2;
 
-    const double fused_rotation_urad = corrected_estimate.theta_urad - previous_theta_estimate_urad;
+    const double fused_rotation_urad = encoder_corrected_heading.theta_urad - previous_fused_heading_urad;
 
     out.rotation = static_cast<std::int64_t>(fused_rotation_urad);
-    out.confidence_rotation = map_heading_variance_to_fused_confidence(corrected_estimate.p_urad2);
+    out.confidence_rotation = map_heading_variance_to_fused_confidence(encoder_corrected_heading.p_urad2);
 
     out.has_fused_rotation = true;
   }
@@ -193,11 +213,13 @@ namespace sensorfusion_rotation
     if (encoder_motion.has_motion_model && encoder_motion.confidence_rotation > 0)
     {
       out.has_encoder_rotation = true;
+      out.encoder_rotation = encoder_motion.rotation;
     }
 
     if (imu_motion.has_motion_model && imu_motion.confidence_rotation > 0)
     {
       out.has_gyro_rotation = true;
+      out.gyro_rotation = imu_motion.rotation;
     }
 
     if (!out.has_encoder_rotation && !out.has_gyro_rotation)
@@ -205,19 +227,19 @@ namespace sensorfusion_rotation
       return false;
     }
 
-    initialize_state_if_needed(state);
-    update_sensor_confidences(encoder_motion, imu_motion, out);
+    initialize_heading_state_if_needed(state);
+    update_rotation_sensor_confidences(encoder_motion, imu_motion, out);
 
     if (!out.has_encoder_rotation && !out.has_gyro_rotation)
     {
       return false;
     }
 
-    const double previous_theta_estimate_urad = state.theta_estimate_urad;
-    const heading_estimate predicted_estimate = predict_with_gyro(imu_motion, out, state);
-    const heading_estimate corrected_estimate = correct_predicted_heading_with_encoder(encoder_motion, out, state, predicted_estimate);
+    const double previous_fused_heading_urad = state.theta_estimate_urad;
+    const heading_state_estimate gyro_advanced_heading = build_gyro_advanced_heading(imu_motion, out, state);
+    const heading_state_estimate encoder_corrected_heading = apply_encoder_heading_correction(encoder_motion, out, state, previous_fused_heading_urad, gyro_advanced_heading);
 
-    write_rotation_output(corrected_estimate, previous_theta_estimate_urad, state, out);
+    write_fused_rotation_output(encoder_corrected_heading, previous_fused_heading_urad, state, out);
     return true;
   }
 }

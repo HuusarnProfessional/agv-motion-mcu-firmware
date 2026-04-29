@@ -1,7 +1,7 @@
-#include "core/middleware/incoming_payloads/trailer_status_payload.hpp"
+#include "core/middleware/incoming_payloads/service/trailer_status_payload.hpp"
 
-#include "core/middleware/binary_packing.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -29,7 +29,7 @@ namespace middleware_incoming_payloads
 {
   const incoming_payload_definition trailer_status_payload_definition = {
     "trailer_status",
-    0x25u,
+
     apply_payload_bytes
   };
 }

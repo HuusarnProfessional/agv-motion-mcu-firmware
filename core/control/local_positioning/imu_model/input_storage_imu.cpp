@@ -2,6 +2,39 @@
 
 namespace imu_input_storage
 {
+  namespace
+  {
+    bool has_fresh_gyro_sample(const imu_sample_snapshot &state, const imu_api::imu_sample &sample)
+    {
+      if (!state.has_input)
+      {
+        return true;
+      }
+
+      if (sample.gyroscope_sample_id == state.current_sample.gyroscope_sample_id)
+      {
+        return false;
+      }
+
+      return true;
+    }
+
+    bool has_fresh_accelerometer_sample(const imu_sample_snapshot &state, const imu_api::imu_sample &sample)
+    {
+      if (!state.has_input)
+      {
+        return true;
+      }
+
+      if (sample.accelerometer_sample_id == state.current_sample.accelerometer_sample_id)
+      {
+        return false;
+      }
+
+      return true;
+    }
+  }
+
   void reset(imu_sample_snapshot &state)
   {
     state = {};
@@ -11,8 +44,15 @@ namespace imu_input_storage
   {
     imu_api::imu_sample sample = {};
     const bool read_ok = imu_api::read_sample(imu_id, sample);
+    const bool has_fresh_gyro = has_fresh_gyro_sample(state, sample);
+    const bool has_fresh_accelerometer = has_fresh_accelerometer_sample(state, sample);
 
     if (!read_ok)
+    {
+      return false;
+    }
+
+    if (!has_fresh_gyro && !has_fresh_accelerometer)
     {
       return false;
     }
@@ -31,7 +71,7 @@ namespace imu_input_storage
     state.current_sample = sample;
     state.has_input = true;
 
-    if (sample.gyroscope_state == imu_api::gyroscope_status::ok)
+    if (sample.gyroscope_state == imu_api::gyroscope_status::ok && has_fresh_gyro)
     {
       state.can_use_gyro = true;
     }
@@ -40,7 +80,7 @@ namespace imu_input_storage
       state.can_use_gyro = false;
     }
 
-    if (sample.accelerometer_state == imu_api::accelerometer_status::ok)
+    if (sample.accelerometer_state == imu_api::accelerometer_status::ok && has_fresh_accelerometer)
     {
       state.can_use_accelerometer = true;
     }

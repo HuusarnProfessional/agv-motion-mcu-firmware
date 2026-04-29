@@ -1,12 +1,12 @@
-#include "core/middleware/outgoing_middleware_pipeline.hpp"
+#include "core/middleware/outgoing_payloads/outgoing_middleware_pipeline.hpp"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 
 #include "core/api/comm_uart_api.hpp"
-#include "core/middleware/middleware_streams.hpp"
-#include "core/middleware/middleware_shared_state.hpp"
+#include "core/middleware/middleware_routes.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -41,7 +41,7 @@ namespace
     while (has_time_elapsed(now_ms, runtime.next_send_time_ms));
   }
 
-  send_result send_stream_payload(const middleware_streams::outgoing_stream_definition &stream)
+  send_result send_stream_payload(const middleware_routes::outgoing_route_definition &stream)
   {
     std::array<std::uint8_t, k_max_payload_length> payload_bytes = {};
     std::array<std::uint8_t, k_max_packet_length> packet_bytes = {};
@@ -63,7 +63,7 @@ namespace
     }
 
     packet_bytes[0] = k_sync_byte;
-    packet_bytes[1] = stream.payload->payload_id;
+    packet_bytes[1] = stream.payload_id;
     packet_bytes[2] = static_cast<std::uint8_t>(payload_length);
 
     for (std::size_t byte_index = 0U; byte_index < payload_length; ++byte_index)
@@ -86,10 +86,10 @@ namespace outgoing_middleware_pipeline
 {
   void init(void)
   {
-    for (std::size_t stream_index = 0U; stream_index < middleware_streams::outgoing_stream_count; ++stream_index)
+    for (std::size_t stream_index = 0U; stream_index < middleware_routes::outgoing_route_count; ++stream_index)
     {
-      middleware::g_outgoing_stream_runtime[stream_index].enabled = middleware_streams::outgoing_streams[stream_index].enabled_by_default;
-      middleware::g_outgoing_stream_runtime[stream_index].next_send_time_ms = middleware_streams::outgoing_streams[stream_index].phase_offset_ms;
+      middleware::g_outgoing_stream_runtime[stream_index].enabled = middleware_routes::outgoing_routes[stream_index].enabled_by_default;
+      middleware::g_outgoing_stream_runtime[stream_index].next_send_time_ms = middleware_routes::outgoing_routes[stream_index].phase_offset_ms;
     }
   }
 
@@ -104,10 +104,10 @@ namespace outgoing_middleware_pipeline
       middleware::g_middleware_state.pending_debug_stream_control = {};
     }
 
-    for (std::size_t stream_index = 0U; stream_index < middleware_streams::outgoing_stream_count; ++stream_index)
+    for (std::size_t stream_index = 0U; stream_index < middleware_routes::outgoing_route_count; ++stream_index)
     {
       middleware::outgoing_stream_runtime &runtime = middleware::g_outgoing_stream_runtime[stream_index];
-      const middleware_streams::outgoing_stream_definition &stream = middleware_streams::outgoing_streams[stream_index];
+      const middleware_routes::outgoing_route_definition &stream = middleware_routes::outgoing_routes[stream_index];
 
       if (!runtime.enabled || !has_time_elapsed(now_ms, runtime.next_send_time_ms))
       {
@@ -129,9 +129,9 @@ namespace outgoing_middleware_pipeline
   {
     bool found_stream = false;
 
-    for (std::size_t stream_index = 0U; stream_index < middleware_streams::outgoing_stream_count; ++stream_index)
+    for (std::size_t stream_index = 0U; stream_index < middleware_routes::outgoing_route_count; ++stream_index)
     {
-      if (middleware_streams::outgoing_streams[stream_index].payload == nullptr || middleware_streams::outgoing_streams[stream_index].payload->payload_id != payload_id)
+      if (middleware_routes::outgoing_routes[stream_index].payload == nullptr || middleware_routes::outgoing_routes[stream_index].payload_id != payload_id)
       {
         continue;
       }
@@ -151,9 +151,9 @@ namespace outgoing_middleware_pipeline
 
   bool read_stream_enabled(std::uint8_t payload_id, bool &is_enabled_out)
   {
-    for (std::size_t stream_index = 0U; stream_index < middleware_streams::outgoing_stream_count; ++stream_index)
+    for (std::size_t stream_index = 0U; stream_index < middleware_routes::outgoing_route_count; ++stream_index)
     {
-      if (middleware_streams::outgoing_streams[stream_index].payload == nullptr || middleware_streams::outgoing_streams[stream_index].payload->payload_id != payload_id)
+      if (middleware_routes::outgoing_routes[stream_index].payload == nullptr || middleware_routes::outgoing_routes[stream_index].payload_id != payload_id)
       {
         continue;
       }

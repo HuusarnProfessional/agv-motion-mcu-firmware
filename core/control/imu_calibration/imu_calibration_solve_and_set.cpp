@@ -66,10 +66,11 @@ bool solve_alignment_matrix(const imu_drive_sample_mean_values &forward_mean_val
     return false;
   }
 
+  // minus from testing, to get same coordinate as encoders.
   vector3 z_axis_imu = {};
-  z_axis_imu.x = static_cast<double>(io_tare_values.accelerometer_x_mg);
-  z_axis_imu.y = static_cast<double>(io_tare_values.accelerometer_y_mg);
-  z_axis_imu.z = static_cast<double>(io_tare_values.accelerometer_z_mg);
+  z_axis_imu.x = -static_cast<double>(io_tare_values.accelerometer_x_mg);
+  z_axis_imu.y = -static_cast<double>(io_tare_values.accelerometer_y_mg);
+  z_axis_imu.z = -static_cast<double>(io_tare_values.accelerometer_z_mg);
 
   vector3 x_axis_imu = {};
   x_axis_imu.x = static_cast<double>(forward_mean_values.accelerometer_x_raw - backward_mean_values.accelerometer_x_raw);

@@ -1,8 +1,8 @@
-#include "core/middleware/outgoing_payloads/encoder_debug_payload.hpp"
+#include "core/middleware/outgoing_payloads/debug/encoder_debug_payload.hpp"
 
 #include "core/api/encoder_api.hpp"
-#include "core/middleware/binary_packing.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -61,7 +61,7 @@ namespace middleware_outgoing_payloads
 {
   const outgoing_payload_definition encoder_debug_payload_definition = {
     "encoder_debug",
-    0x11U,
+
     build_payload_bytes
   };
 }

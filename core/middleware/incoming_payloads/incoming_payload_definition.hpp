@@ -15,7 +15,6 @@ namespace middleware_incoming_payloads
   struct incoming_payload_definition
   {
     const char *name;
-    std::uint8_t payload_id;
     apply_payload_bytes_fn apply_payload_bytes;
   };
 }

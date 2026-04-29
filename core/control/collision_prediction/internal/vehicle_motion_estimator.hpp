@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "core/control/local_positioning/local_positioning.hpp"
-#include "core/middleware/incoming_payloads/motion_command_payload.hpp"
+#include "core/middleware/incoming_payloads/runtime/motion_command_payload.hpp"
 
 namespace vehicle_motion_estimator
 {

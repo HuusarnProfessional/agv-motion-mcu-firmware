@@ -1,8 +1,8 @@
-#include "core/middleware/incoming_payloads/motion_command_payload.hpp"
+#include "core/middleware/incoming_payloads/runtime/motion_command_payload.hpp"
 
 #include "core/control/drive_control/drive_control_pipeline.hpp"
-#include "core/middleware/binary_packing.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -40,9 +40,10 @@ namespace
 
 namespace middleware_incoming_payloads
 {
-  const incoming_payload_definition motion_command_payload_definition = {
+  const incoming_payload_definition motion_command_payload_definition = 
+  {
     "motion_command",
-    0x21U,
+
     apply_payload_bytes
   };
 }

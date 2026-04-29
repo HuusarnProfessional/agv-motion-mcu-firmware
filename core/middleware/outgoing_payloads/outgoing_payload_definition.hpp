@@ -15,7 +15,6 @@ namespace middleware_outgoing_payloads
   struct outgoing_payload_definition
   {
     const char *name;
-    std::uint8_t payload_id;
     build_payload_bytes_fn build_payload_bytes;
   };
 }

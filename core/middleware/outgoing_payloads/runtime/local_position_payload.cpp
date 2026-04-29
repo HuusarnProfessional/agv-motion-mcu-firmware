@@ -1,8 +1,8 @@
-#include "core/middleware/outgoing_payloads/local_position_payload.hpp"
+#include "core/middleware/outgoing_payloads/runtime/local_position_payload.hpp"
 
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
-#include "core/middleware/binary_packing.hpp"
-#include "core/middleware/middleware_state.hpp"
+#include "core/middleware/payload_helper_functions.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace
 {
@@ -75,7 +75,7 @@ namespace middleware_outgoing_payloads
 {
   const outgoing_payload_definition local_position_payload_definition = {
     "local_position",
-    0x01U,
+
     build_payload_bytes
   };
 }

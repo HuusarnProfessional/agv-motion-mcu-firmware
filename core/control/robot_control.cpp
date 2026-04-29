@@ -6,8 +6,8 @@
 #include "core/control/imu_calibration/imu_calibration_pipeline.hpp"
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
 #include "core/control/safe_guard/safe_guard_pipeline.hpp"
-#include "core/middleware/incoming_middleware_pipeline.hpp"
-#include "core/middleware/outgoing_middleware_pipeline.hpp"
+#include "core/middleware/incoming_payloads/incoming_middleware_pipeline.hpp"
+#include "core/middleware/outgoing_payloads/outgoing_middleware_pipeline.hpp"
 
 namespace robot_control
 {

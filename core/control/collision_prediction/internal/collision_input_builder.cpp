@@ -2,7 +2,7 @@
 
 #include "core/control/drive_control/drive_control_pipeline.hpp"
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
-#include "core/middleware/middleware_shared_state.hpp"
+#include "core/middleware/middleware_runtime.hpp"
 
 namespace collision_input_builder
 {

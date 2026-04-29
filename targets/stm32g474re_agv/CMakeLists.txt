@@ -63,30 +63,30 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/motor_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/obstacle_api.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/api/voltage_monitor_api.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/middleware_shared_state.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_middleware_pipeline.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_middleware_pipeline.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/local_position_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/safety_status_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/power_status_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/encoder_debug_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/imu_debug_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/obstacle_debug_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/voltage_debug_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/motion_command_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/start_imu_calibration_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/clear_imu_calibration_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/debug_stream_control_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/trailer_status_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/unlock_safe_guard_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/lock_safe_guard_payload.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/obstacle_safety_control_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/middleware_runtime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/incoming_middleware_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/outgoing_middleware_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/local_position_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/safety_status_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/power_status_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/encoder_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/imu_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/obstacle_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/voltage_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/runtime/motion_command_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/start_imu_calibration_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/clear_imu_calibration_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/debug/debug_stream_control_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/trailer_status_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/unlock_safe_guard_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/lock_safe_guard_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/obstacle_safety_control_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_logic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/vehicle_motion_estimator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/collision_input_builder.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/obstacle_sensor_logic.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/AI_drive_control.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/wheel_drive_controller.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/drive_control_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp
