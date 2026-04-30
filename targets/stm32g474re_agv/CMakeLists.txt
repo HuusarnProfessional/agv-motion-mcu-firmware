@@ -81,6 +81,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/unlock_safe_guard_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/lock_safe_guard_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/obstacle_safety_control_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/position_correction_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_logic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/vehicle_motion_estimator.cpp

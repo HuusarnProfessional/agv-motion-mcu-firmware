@@ -11,6 +11,7 @@ namespace local_positioning_pipeline
 {
   void init(void);
   void tick(std::uint32_t now_ms);
+  bool request_position_correction(const local_positioning::external_correction_request &request);
   void read_snapshot(local_positioning::snapshot &out);
   void read_encoder_motion_state(encoder_motion::state &out);
   std::uint8_t read_imu_id(void);

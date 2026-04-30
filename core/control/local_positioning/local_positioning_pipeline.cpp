@@ -39,6 +39,11 @@ namespace local_positioning_pipeline
     local_positioning::tick(g_pipeline_state.local_positioning_state, g_pipeline_state.local_positioning_sensorfusion_state);
   }
 
+  bool request_position_correction(const local_positioning::external_correction_request &request)
+  {
+    return local_positioning::request_external_correction(g_pipeline_state.local_positioning_state, request);
+  }
+
   void read_snapshot(local_positioning::snapshot &out)
   {
     out = g_pipeline_state.local_positioning_state.output_snapshot;

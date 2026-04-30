@@ -9,6 +9,7 @@
 #include "core/middleware/incoming_payloads/service/lock_safe_guard_payload.hpp"
 #include "core/middleware/incoming_payloads/runtime/motion_command_payload.hpp"
 #include "core/middleware/incoming_payloads/service/obstacle_safety_control_payload.hpp"
+#include "core/middleware/incoming_payloads/service/position_correction_payload.hpp"
 #include "core/middleware/incoming_payloads/service/start_imu_calibration_payload.hpp"
 #include "core/middleware/incoming_payloads/service/trailer_status_payload.hpp"
 #include "core/middleware/incoming_payloads/service/unlock_safe_guard_payload.hpp"
@@ -61,6 +62,7 @@ namespace middleware_routes
     { "unlock_safe_guard", 0x26U, &middleware_incoming_payloads::unlock_safe_guard_payload_definition },
     { "lock_safe_guard", 0x27U, &middleware_incoming_payloads::lock_safe_guard_payload_definition },
     { "obstacle_safety_control", 0x28U, &middleware_incoming_payloads::obstacle_safety_control_payload_definition },
+    { "position_correction", 0x30U, &middleware_incoming_payloads::position_correction_payload_definition },
   };
 
   inline constexpr std::size_t incoming_route_count = sizeof(incoming_routes) / sizeof(incoming_routes[0]);
