@@ -16,12 +16,12 @@ namespace
       return false;
     }
 
-    if (!reader.read_i16(payload.linear_velocity_mm_s))
+    if (!reader.read_i32(payload.linear_velocity_mm_s))
     {
       return false;
     }
 
-    if (!reader.read_i16(payload.yaw_rate_mdeg_s))
+    if (!reader.read_i32(payload.yaw_rate_mdeg_s))
     {
       return false;
     }

@@ -263,7 +263,7 @@ namespace
     return static_cast<std::int32_t>(std::lround(measured_yaw_rate_mdeg_s));
   }
 
-  std::int16_t compute_corrected_yaw_rate_mdeg_s(wheel_drive_controller::state &controller_state, std::uint32_t now_ms, const middleware_incoming_payloads::motion_command_payload_data &motion_command, const local_positioning::snapshot &local_position_snapshot)
+  std::int32_t compute_corrected_yaw_rate_mdeg_s(wheel_drive_controller::state &controller_state, std::uint32_t now_ms, const middleware_incoming_payloads::motion_command_payload_data &motion_command, const local_positioning::snapshot &local_position_snapshot)
   {
     const std::int32_t commanded_yaw_rate_mdeg_s = motion_command.yaw_rate_mdeg_s;
 
@@ -274,7 +274,7 @@ namespace
 
     if (!local_position_snapshot.has_pose || local_position_snapshot.confidence_heading < wheel_drive_controller_tuning::k_outer_yaw_min_heading_confidence)
     {
-      return static_cast<std::int16_t>(commanded_yaw_rate_mdeg_s);
+      return commanded_yaw_rate_mdeg_s;
     }
 
     const std::int32_t measured_yaw_rate_mdeg_s = compute_measured_yaw_rate_mdeg_s(controller_state, now_ms, local_position_snapshot);
@@ -284,10 +284,10 @@ namespace
                                                               -wheel_drive_controller_tuning::k_outer_yaw_rate_limit_mdeg_s,
                                                               wheel_drive_controller_tuning::k_outer_yaw_rate_limit_mdeg_s);
 
-    return static_cast<std::int16_t>(corrected_yaw_rate_mdeg_s);
+    return corrected_yaw_rate_mdeg_s;
   }
 
-  std::int32_t compute_yaw_component_mm_s(std::int16_t yaw_rate_mdeg_s)
+  std::int32_t compute_yaw_component_mm_s(std::int32_t yaw_rate_mdeg_s)
   {
     const mechanical_config::drivetrain drivetrain = {};
     const double yaw_rate_rad_s = static_cast<double>(yaw_rate_mdeg_s) * k_pi / 180000.0;
@@ -295,7 +295,7 @@ namespace
     return static_cast<std::int32_t>(std::lround(yaw_component_mm_s));
   }
 
-  void compute_wheel_targets(const middleware_incoming_payloads::motion_command_payload_data &motion_command, std::int16_t corrected_yaw_rate_mdeg_s, std::array<std::int32_t, 4u> &out)
+  void compute_wheel_targets(const middleware_incoming_payloads::motion_command_payload_data &motion_command, std::int32_t corrected_yaw_rate_mdeg_s, std::array<std::int32_t, 4u> &out)
   {
     const std::int32_t linear_target_mm_s = motion_command.linear_velocity_mm_s;
     const std::int32_t yaw_component_mm_s = compute_yaw_component_mm_s(corrected_yaw_rate_mdeg_s);
@@ -410,7 +410,7 @@ namespace wheel_drive_controller
     bool has_not_ready_feedback = false;
     bool has_invalid_feedback = false;
     const bool use_rotation_override = is_rotation_only_command(motion_command);
-    const std::int16_t corrected_yaw_rate_mdeg_s = compute_corrected_yaw_rate_mdeg_s(controller_state, now_ms, motion_command, local_position_snapshot);
+    const std::int32_t corrected_yaw_rate_mdeg_s = compute_corrected_yaw_rate_mdeg_s(controller_state, now_ms, motion_command, local_position_snapshot);
 
     if (safe_guard::is_latched())
     {

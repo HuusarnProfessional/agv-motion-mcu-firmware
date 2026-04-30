@@ -20,6 +20,7 @@ extern "C" void board_init(void)
 {
   board_stm32g474re_agv_init_motors();
   board_stm32g474re_agv_init_encoders();
+  HAL_Delay(50);
   board_stm32g474re_agv_init_imu();
   board_stm32g474re_agv_init_voltage_monitor();
   board_stm32g474re_agv_init_obstacle();

@@ -20,7 +20,7 @@ namespace motion_primitives_common
     return value;
   }
 
-  void send_motion_command(bool drive_enabled, std::int16_t linear_velocity_mm_s, std::int16_t yaw_rate_mdeg_s, std::uint32_t now_ms)
+  void send_motion_command(bool drive_enabled, std::int32_t linear_velocity_mm_s, std::int32_t yaw_rate_mdeg_s, std::uint32_t now_ms)
   {
     middleware_incoming_payloads::motion_command_payload_data command = {};
     command.drive_enabled = drive_enabled;

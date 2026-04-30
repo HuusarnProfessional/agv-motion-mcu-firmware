@@ -23,14 +23,14 @@ namespace motion_primitives
 
   struct drive_forward_request
   {
-    std::int16_t velocity_mm_s = 0;
+    std::int32_t velocity_mm_s = 0;
     std::int64_t target_distance_um = 0;
   };
 
   struct rotate_delta_request
   {
-    std::int16_t linear_velocity_mm_s = 0;
-    std::int16_t yaw_rate_mdeg_s = 0;
+    std::int32_t linear_velocity_mm_s = 0;
+    std::int32_t yaw_rate_mdeg_s = 0;
     std::int64_t target_rotation_urad = 0;
     bool has_rotation_drive_tuning = false;
     std::int32_t rotation_min_drive_u = 0;
