@@ -14,6 +14,8 @@ namespace local_positioning
     std::int32_t heading_urad = 0;
     std::uint32_t uncertainty_position_um2 = 0;
     std::uint32_t uncertainty_heading_urad2 = 0;
+    std::uint32_t update_id = 0;
+    std::uint32_t time_ms = 0;
     std::uint8_t pose_id = 0;
     std::uint8_t branch_id = 0;
   };
@@ -48,6 +50,8 @@ namespace local_positioning
     std::int32_t heading_urad = 0;
     std::uint16_t confidence_position = 0;
     std::uint16_t confidence_heading = 0;
+    std::uint32_t update_id = 0;
+    std::uint32_t time_ms = 0;
     std::uint8_t pose_id = 0;
     std::uint8_t branch_id = 0;
   };
@@ -68,6 +72,6 @@ namespace local_positioning
   };
 
   void reset(state &local_positioning_state);
-  void tick(state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state);
+  void tick(state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state, std::uint32_t now_ms);
   bool request_external_correction(state &local_positioning_state, const external_correction_request &request);
 }

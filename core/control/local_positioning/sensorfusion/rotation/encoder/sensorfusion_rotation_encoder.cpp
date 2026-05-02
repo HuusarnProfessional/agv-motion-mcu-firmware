@@ -15,6 +15,12 @@ namespace
     const double translation_um = std::abs(static_cast<double>(encoder_motion.translation));
     const double rotation_urad = std::abs(static_cast<double>(encoder_motion.rotation));
     const double radius_cm = 100.0 * translation_um / rotation_urad;
+
+    if (radius_cm <= sensorfusion_tuning::k_encoder_rotation_zero_confidence_radius_cm)
+    {
+      return 0;
+    }
+
     const double denominator = radius_cm + sensorfusion_tuning::k_encoder_rotation_radius_offset_cm;
     const double exponent_argument = -sensorfusion_tuning::k_encoder_rotation_radius_gain / denominator;
     const double confidence_percent = 100.0 * std::exp(exponent_argument);

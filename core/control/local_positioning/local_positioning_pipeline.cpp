@@ -8,6 +8,7 @@ namespace
     local_positioning_imu::state local_positioning_imu_state = {};
     local_positioning_sensorfusion::state local_positioning_sensorfusion_state = {};
     local_positioning::state local_positioning_state = {};
+    local_position_model_debug::state local_position_model_debug_state = {};
     std::uint32_t tick_id = 0U;
     std::uint8_t imu_id = 0U;
   };
@@ -24,6 +25,7 @@ namespace local_positioning_pipeline
     local_positioning_imu::reset(g_pipeline_state.local_positioning_imu_state);
     local_positioning_sensorfusion::reset(g_pipeline_state.local_positioning_sensorfusion_state);
     local_positioning::reset(g_pipeline_state.local_positioning_state);
+    local_position_model_debug::reset(g_pipeline_state.local_position_model_debug_state);
   }
 
   void tick(std::uint32_t now_ms)
@@ -36,12 +38,25 @@ namespace local_positioning_pipeline
       g_pipeline_state.local_positioning_sensorfusion_state,
       g_pipeline_state.encoder_motion_state.encoder_motion_snapshot,
       g_pipeline_state.local_positioning_imu_state.motion_snapshot);
-    local_positioning::tick(g_pipeline_state.local_positioning_state, g_pipeline_state.local_positioning_sensorfusion_state);
+    local_positioning::tick(g_pipeline_state.local_positioning_state, g_pipeline_state.local_positioning_sensorfusion_state, now_ms);
+    local_position_model_debug::tick(g_pipeline_state.local_position_model_debug_state,
+                                     g_pipeline_state.encoder_motion_state.encoder_motion_snapshot,
+                                     g_pipeline_state.local_positioning_imu_state.motion_snapshot,
+                                     g_pipeline_state.local_positioning_sensorfusion_state,
+                                     g_pipeline_state.local_positioning_state,
+                                     now_ms);
   }
 
   bool request_position_correction(const local_positioning::external_correction_request &request)
   {
-    return local_positioning::request_external_correction(g_pipeline_state.local_positioning_state, request);
+    const bool accepted = local_positioning::request_external_correction(g_pipeline_state.local_positioning_state, request);
+
+    if (accepted)
+    {
+      local_position_model_debug::reset(g_pipeline_state.local_position_model_debug_state);
+    }
+
+    return accepted;
   }
 
   void read_snapshot(local_positioning::snapshot &out)
@@ -49,9 +64,19 @@ namespace local_positioning_pipeline
     out = g_pipeline_state.local_positioning_state.output_snapshot;
   }
 
+  void read_model_debug_snapshot(local_position_model_debug::snapshot &out)
+  {
+    out = g_pipeline_state.local_position_model_debug_state.output_snapshot;
+  }
+
   void read_encoder_motion_state(encoder_motion::state &out)
   {
     out = g_pipeline_state.encoder_motion_state;
+  }
+
+  void read_imu_state(local_positioning_imu::state &out)
+  {
+    out = g_pipeline_state.local_positioning_imu_state;
   }
 
   std::uint8_t read_imu_id(void)

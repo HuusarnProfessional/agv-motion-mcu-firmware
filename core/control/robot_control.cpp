@@ -5,6 +5,7 @@
 #include "core/control/drive_control/drive_control_pipeline.hpp"
 #include "core/control/imu_calibration/imu_calibration_pipeline.hpp"
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
+#include "core/control/motion_primitives/motion_primitives_pipeline.hpp"
 #include "core/control/safe_guard/safe_guard_pipeline.hpp"
 #include "core/middleware/incoming_payloads/incoming_middleware_pipeline.hpp"
 #include "core/middleware/outgoing_payloads/outgoing_middleware_pipeline.hpp"
@@ -47,6 +48,7 @@ namespace robot_control
     safe_guard::init();
     drive_control::init();
     imu_calibration::init();
+    motion_primitives_pipeline::init();
   }
 
   void tick(std::uint32_t now_ms)
@@ -82,11 +84,17 @@ namespace robot_control
 
     if (controller == active_controller::imu_calibration)
     {
+      motion_primitives_pipeline::stop(now_ms);
       imu_calibration::tick(encoder_motion_state, imu_id);
     }
     else if (controller == active_controller::drive)
     {
+      motion_primitives_pipeline::tick(now_ms);
       drive_control::tick(now_ms);
+    }
+    else
+    {
+      motion_primitives_pipeline::stop(now_ms);
     }
 
     outgoing_middleware_pipeline::tick(now_ms);

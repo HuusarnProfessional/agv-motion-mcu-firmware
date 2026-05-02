@@ -13,6 +13,7 @@ namespace encoder_input_storage
   struct wheel_encoder_sample
   {
     std::uint16_t angle_raw_12bit;
+    std::uint32_t sample_id;
     encoder_api::encoder_status status;
     std::uint32_t time_ms;
   };
@@ -29,7 +30,7 @@ namespace encoder_input_storage
   };
 
   void reset(encoder_snapshot &state);
-  void sample_from_encoder_api(encoder_snapshot &state, std::uint32_t tick_id);
+  bool sample_from_encoder_api(encoder_snapshot &state, std::uint32_t tick_id);
   bool read_previous(const encoder_snapshot &state, wheel_sample_array &out_wheels, std::uint32_t &out_tick_id);
   bool read_current(const encoder_snapshot &state, wheel_sample_array &out_wheels, std::uint32_t &out_tick_id);
 }

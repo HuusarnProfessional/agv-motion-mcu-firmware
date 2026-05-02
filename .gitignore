@@ -11,3 +11,4 @@ targets/**/_build*
 *.bin
 *.hex
 compile_commands.json
+docs/stm_coordinate_frame_migration_plan.md

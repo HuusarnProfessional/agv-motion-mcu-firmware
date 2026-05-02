@@ -29,6 +29,9 @@ namespace motion_primitives_common
     motion_primitives::snapshot snapshot = {};
     motion_primitives::request active_request = {};
     phase active_phase = phase::idle;
+    bool has_latest_pose = false;
+    local_positioning::snapshot latest_pose = {};
+    std::uint32_t latest_pose_received_time_ms = 0u;
   };
 
   bool has_elapsed(std::uint32_t now_ms, std::uint32_t target_ms);
@@ -39,6 +42,8 @@ namespace motion_primitives_common
   bool has_reached_forward_target(const local_positioning::snapshot &start_pose, const local_positioning::snapshot &current_pose, std::int64_t target_distance_um);
   bool has_reached_rotation_target(const local_positioning::snapshot &start_pose, const local_positioning::snapshot &current_pose, std::int64_t target_rotation_urad);
   bool is_settled(const encoder_motion::state &encoder_state, const local_positioning_imu::state &imu_state);
+  bool update_latest_pose_if_fresh(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms);
+  bool has_latest_pose_timed_out(const state &primitive_state, std::uint32_t now_ms);
   void begin_settling(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms);
   void finish(state &primitive_state, bool success, bool timed_out, std::uint32_t now_ms);
   void begin_active_phase(state &primitive_state, const local_positioning::snapshot &current_pose);

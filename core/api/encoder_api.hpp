@@ -27,12 +27,13 @@ namespace encoder_api
     std::uint16_t angle_raw_12bit;
     std::uint32_t angle_mdeg; //single turn 0 -> 360
     std::uint32_t angle_mrad; //single turn 0 -> 2*pi
+    std::uint32_t sample_id;
     std::uint32_t time_ms;
     encoder_status status;
 
   };
 
-  using read_capture_fn = bool (*)(void *platform_handle, std::uint8_t channel, std::uint32_t &high_ticks, std::uint32_t &period_ticks, std::uint32_t &time_ms);
+  using read_capture_fn = bool (*)(void *platform_handle, std::uint8_t channel, std::uint32_t &high_ticks, std::uint32_t &period_ticks, std::uint32_t &sample_id, std::uint32_t &time_ms);
 
 
   struct capture_operations

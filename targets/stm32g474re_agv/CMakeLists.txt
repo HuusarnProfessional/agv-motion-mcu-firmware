@@ -71,17 +71,22 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/power_status_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/encoder_debug_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/imu_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/local_position_model_debug_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/motion_debug_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/obstacle_debug_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/voltage_debug_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/runtime/motion_command_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/start_imu_calibration_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/clear_imu_calibration_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/debug/debug_stream_control_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/drive_forward_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/trailer_status_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/unlock_safe_guard_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/lock_safe_guard_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/obstacle_safety_control_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/pause_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/position_correction_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/rotate_delta_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/collision_prediction_logic.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/vehicle_motion_estimator.cpp
@@ -93,6 +98,12 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_drive_and_sample_alignment.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_solve_and_set.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_stop_and_sample_tare.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/motion_primitives/motion_primitives.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/motion_primitives/motion_primitives_pipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/motion_primitives/motion_primitives_common.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/motion_primitives/motion_primitive_drive_forward.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/motion_primitives/motion_primitive_pause.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/motion_primitives/motion_primitive_rotate_delta.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/encoder_model_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/confidence_estimation_encoders.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/encoder_model/delta_estimation_encoders.cpp
@@ -105,6 +116,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/imu_model/imu_model_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/sensorfusion_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/local_positioning.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/test/local_position_model_debug.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/local_positioning_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/rotation/sensorfusion_rotation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/local_positioning/sensorfusion/rotation/encoder/sensorfusion_rotation_encoder.cpp

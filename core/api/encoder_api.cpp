@@ -59,6 +59,7 @@ namespace encoder_api
       out.angle_raw_12bit = 0U;
       out.angle_mdeg = 0U;
       out.angle_mrad = 0U;
+      out.sample_id = 0U;
       out.time_ms = 0U;
       out.status = encoder_status::stale;
       return false;

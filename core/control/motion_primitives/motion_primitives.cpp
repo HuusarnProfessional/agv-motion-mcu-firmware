@@ -118,18 +118,29 @@ namespace motion_primitives
       return false;
     }
 
-    if (!current_pose.has_pose)
+    if (primitive_request.primitive_id_value != primitive_id::pause)
     {
-      return false;
+      if (!current_pose.has_pose)
+      {
+        return false;
+      }
     }
 
     g_state = {};
     g_state.snapshot.running = true;
     g_state.snapshot.active_primitive_id = primitive_request.primitive_id_value;
     g_state.snapshot.start_time_ms = now_ms;
-    g_state.snapshot.start_pose = current_pose;
-    g_state.snapshot.phase_start_pose = current_pose;
     g_state.active_request = primitive_request;
+
+    if (current_pose.has_pose)
+    {
+      g_state.snapshot.start_pose = current_pose;
+      g_state.snapshot.phase_start_pose = current_pose;
+      g_state.has_latest_pose = true;
+      g_state.latest_pose = current_pose;
+      g_state.latest_pose_received_time_ms = now_ms;
+    }
+
     motion_primitives_common::begin_active_phase(g_state, current_pose);
     apply_rotation_drive_tuning_if_needed(primitive_request);
 

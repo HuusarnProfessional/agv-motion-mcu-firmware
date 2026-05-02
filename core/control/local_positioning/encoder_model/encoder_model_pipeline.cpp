@@ -13,7 +13,15 @@ namespace encoder_motion
   void tick(state &local_positioning_state, std::uint32_t tick_id)
   {
     // step 1: sample and store encoder current/previous
-    encoder_input_storage::sample_from_encoder_api(local_positioning_state.encoder_input_snapshot, tick_id);
+    const bool has_fresh_encoder_sample = encoder_input_storage::sample_from_encoder_api(local_positioning_state.encoder_input_snapshot, tick_id);
+
+    if (!has_fresh_encoder_sample)
+    {
+      delta_estimation_encoders::reset(local_positioning_state.encoder_delta_snapshot);
+      confidence_estimation_encoders::reset(local_positioning_state.encoder_confidence_snapshot);
+      motion_model_encoders::reset(local_positioning_state.encoder_motion_snapshot);
+      return;
+    }
 
     // step 2: estimate per-wheel delta from previous/current input samples
     delta_estimation_encoders::estimate_from_encoder_snapshot(local_positioning_state.encoder_input_snapshot, local_positioning_state.encoder_delta_snapshot);

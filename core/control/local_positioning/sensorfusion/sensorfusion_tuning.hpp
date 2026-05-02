@@ -8,6 +8,7 @@ namespace sensorfusion_tuning
 
   inline constexpr double k_encoder_rotation_radius_gain = 40.0;
   inline constexpr double k_encoder_rotation_radius_offset_cm = 1.65;
+  inline constexpr double k_encoder_rotation_zero_confidence_radius_cm = 22.0;
 
   inline constexpr double k_gyro_rotation_observability_degps = 3.0;
 

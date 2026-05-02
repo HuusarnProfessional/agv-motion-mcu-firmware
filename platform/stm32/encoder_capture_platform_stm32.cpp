@@ -10,6 +10,7 @@ namespace
     std::uint32_t fall_ticks;
     std::uint32_t high_ticks;
     std::uint32_t period_ticks;
+    std::uint32_t sample_id;
     std::uint32_t time_ms;
     bool started;
     bool waiting_for_falling;
@@ -83,6 +84,7 @@ namespace
     state.fall_ticks = 0U;
     state.high_ticks = 0U;
     state.period_ticks = 0U;
+    state.sample_id = 0U;
     state.time_ms = 0U;
     state.started = false;
     state.waiting_for_falling = false;
@@ -145,6 +147,7 @@ extern "C" void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
       {
         state.period_ticks = period;
         state.high_ticks = high;
+        state.sample_id += 1U;
         state.time_ms = HAL_GetTick();
         state.valid = true;
       }
@@ -167,10 +170,11 @@ extern "C" void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 namespace platform_stm32_hal
 {
-  static bool encoder_read_capture(void *ctx, std::uint8_t channel, std::uint32_t &high_ticks, std::uint32_t &period_ticks, std::uint32_t &time_ms)
+  static bool encoder_read_capture(void *ctx, std::uint8_t channel, std::uint32_t &high_ticks, std::uint32_t &period_ticks, std::uint32_t &sample_id, std::uint32_t &time_ms)
   {
     high_ticks = 0U;
     period_ticks = 0U;
+    sample_id = 0U;
     time_ms = HAL_GetTick();
 
     if (ctx == nullptr)
@@ -211,12 +215,14 @@ namespace platform_stm32_hal
     bool valid = false;
     std::uint32_t high = 0U;
     std::uint32_t period = 0U;
+    std::uint32_t latest_sample_id = 0U;
     std::uint32_t sample_time = 0U;
 
     __disable_irq();
     valid = state.valid;
     high = state.high_ticks;
     period = state.period_ticks;
+    latest_sample_id = state.sample_id;
     sample_time = state.time_ms;
     __enable_irq();
 
@@ -227,6 +233,7 @@ namespace platform_stm32_hal
 
     high_ticks = high;
     period_ticks = period;
+    sample_id = latest_sample_id;
     time_ms = sample_time;
     return true;
   }

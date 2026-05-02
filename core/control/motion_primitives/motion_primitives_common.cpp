@@ -52,7 +52,13 @@ namespace motion_primitives_common
   bool has_reached_rotation_target(const local_positioning::snapshot &start_pose, const local_positioning::snapshot &current_pose, std::int64_t target_rotation_urad)
   {
     const std::int64_t heading_delta_urad = static_cast<std::int64_t>(current_pose.heading_urad) - static_cast<std::int64_t>(start_pose.heading_urad);
-    return heading_delta_urad >= target_rotation_urad;
+
+    if (target_rotation_urad >= 0)
+    {
+      return heading_delta_urad >= target_rotation_urad;
+    }
+
+    return heading_delta_urad <= target_rotation_urad;
   }
 
   bool is_settled(const encoder_motion::state &encoder_state, const local_positioning_imu::state &imu_state)
@@ -64,6 +70,37 @@ namespace motion_primitives_common
     return encoder_translation_abs <= motion_primitives_tuning::k_settling_encoder_translation_threshold_um &&
            imu_translation_abs <= motion_primitives_tuning::k_settling_imu_translation_threshold_um &&
            imu_yaw_abs <= motion_primitives_tuning::k_settling_imu_yaw_threshold_urad;
+  }
+
+  bool update_latest_pose_if_fresh(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms)
+  {
+    if (!current_pose.has_pose)
+    {
+      return false;
+    }
+
+    if (primitive_state.has_latest_pose)
+    {
+      if (current_pose.update_id == primitive_state.latest_pose.update_id)
+      {
+        return false;
+      }
+    }
+
+    primitive_state.has_latest_pose = true;
+    primitive_state.latest_pose = current_pose;
+    primitive_state.latest_pose_received_time_ms = now_ms;
+    return true;
+  }
+
+  bool has_latest_pose_timed_out(const state &primitive_state, std::uint32_t now_ms)
+  {
+    if (!primitive_state.has_latest_pose)
+    {
+      return true;
+    }
+
+    return has_elapsed(now_ms, primitive_state.latest_pose_received_time_ms + motion_primitives_tuning::k_pose_freshness_timeout_ms);
   }
 
   void begin_settling(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms)

@@ -6,6 +6,7 @@ namespace
 {
     constexpr std::size_t k_max_imu_count = 4u;
     constexpr std::int64_t k_matrix_scale = 1000000LL;
+    constexpr std::int32_t k_gyro_z_axis_sign = -1;
     imu_api::backend_operation g_backend = {};
     bool g_backend_ready = false;
     std::array<imu_api::imu_calibration_profile, k_max_imu_count> g_calibration_profiles = {};
@@ -29,7 +30,7 @@ namespace
 
         sample.gyroscope_x_calibrated_mdps = static_cast<std::int32_t>(gyro_x_mapped / k_matrix_scale);
         sample.gyroscope_y_calibrated_mdps = static_cast<std::int32_t>(gyro_y_mapped / k_matrix_scale);
-        sample.gyroscope_z_calibrated_mdps = static_cast<std::int32_t>(gyro_z_mapped / k_matrix_scale);
+        sample.gyroscope_z_calibrated_mdps = k_gyro_z_axis_sign * static_cast<std::int32_t>(gyro_z_mapped / k_matrix_scale);
         sample.accelerometer_x_calibrated_mg = static_cast<std::int32_t>(acc_x_mapped / k_matrix_scale);
         sample.accelerometer_y_calibrated_mg = static_cast<std::int32_t>(acc_y_mapped / k_matrix_scale);
         sample.accelerometer_z_calibrated_mg = static_cast<std::int32_t>(acc_z_mapped / k_matrix_scale);
@@ -80,7 +81,7 @@ namespace imu_api
 
         out.gyroscope_x_calibrated_mdps = out.gyroscope_x_mdps;
         out.gyroscope_y_calibrated_mdps = out.gyroscope_y_mdps;
-        out.gyroscope_z_calibrated_mdps = out.gyroscope_z_mdps;
+        out.gyroscope_z_calibrated_mdps = k_gyro_z_axis_sign * out.gyroscope_z_mdps;
         out.accelerometer_x_calibrated_mg = out.accelerometer_x_mg;
         out.accelerometer_y_calibrated_mg = out.accelerometer_y_mg;
         out.accelerometer_z_calibrated_mg = out.accelerometer_z_mg;

@@ -105,7 +105,7 @@ namespace
     return static_cast<std::uint16_t>(confidence);
   }
 
-  void apply_pose_delta(local_positioning::pose_state &pose, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation)
+  void apply_pose_delta(local_positioning::pose_state &pose, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation, std::uint32_t now_ms)
   {
     const double previous_heading_urad = static_cast<double>(pose.heading_urad);
     // use the average heading during this tick for x/y translation
@@ -116,12 +116,14 @@ namespace
     pose.x_um += static_cast<std::int64_t>(delta_x_um);
     pose.y_um += static_cast<std::int64_t>(delta_y_um);
     pose.heading_urad += delta_rotation_urad;
+    pose.update_id += 1u;
+    pose.time_ms = now_ms;
     pose.pose_id += 1;
     pose.uncertainty_position_um2 += map_translation_confidence_to_position_uncertainty(confidence_translation);
     pose.uncertainty_heading_urad2 += map_rotation_confidence_to_heading_uncertainty(confidence_rotation);
   }
 
-  void update_live_pose_from_sensorfusion(local_positioning::state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state)
+  void update_live_pose_from_sensorfusion(local_positioning::state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state, std::uint32_t now_ms)
   {
     const sensorfusion_translation::translation_snapshot &translation_snapshot = sensorfusion_state.translation_snapshot;
     const sensorfusion_rotation::rotation_snapshot &rotation_snapshot = sensorfusion_state.rotation_snapshot;
@@ -157,7 +159,7 @@ namespace
       confidence_rotation = static_cast<std::uint16_t>(rotation_snapshot.confidence_rotation);
     }
 
-    apply_pose_delta(local_positioning_state.live_pose, delta_translation_um, delta_rotation_urad, confidence_translation, confidence_rotation);
+    apply_pose_delta(local_positioning_state.live_pose, delta_translation_um, delta_rotation_urad, confidence_translation, confidence_rotation, now_ms);
 
     write_live_history_entry(local_positioning_state, delta_translation_um, delta_rotation_urad, confidence_translation, confidence_rotation);
 
@@ -167,6 +169,8 @@ namespace
     local_positioning_state.output_snapshot.heading_urad = local_positioning_state.live_pose.heading_urad;
     local_positioning_state.output_snapshot.confidence_position = map_position_uncertainty_to_confidence(local_positioning_state.live_pose.uncertainty_position_um2);
     local_positioning_state.output_snapshot.confidence_heading = map_heading_uncertainty_to_confidence(local_positioning_state.live_pose.uncertainty_heading_urad2);
+    local_positioning_state.output_snapshot.update_id = local_positioning_state.live_pose.update_id;
+    local_positioning_state.output_snapshot.time_ms = local_positioning_state.live_pose.time_ms;
     local_positioning_state.output_snapshot.pose_id = local_positioning_state.live_pose.pose_id;
     local_positioning_state.output_snapshot.branch_id = local_positioning_state.live_pose.branch_id;
   }
@@ -219,7 +223,7 @@ namespace
         return;
       }
 
-      apply_pose_delta(local_positioning_state.replay.replay_pose, entry->delta_translation_um, entry->delta_rotation_urad, entry->confidence_translation, entry->confidence_rotation);
+      apply_pose_delta(local_positioning_state.replay.replay_pose, entry->delta_translation_um, entry->delta_rotation_urad, entry->confidence_translation, entry->confidence_rotation, local_positioning_state.live_pose.time_ms);
 
       local_positioning_state.replay.next_replay_pose_id += 1;
 
@@ -259,10 +263,10 @@ namespace local_positioning
     local_positioning_state = {};
   }
 
-  void tick(state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state)
+  void tick(state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state, std::uint32_t now_ms)
   {
     local_positioning_state.output_snapshot = {};
-    update_live_pose_from_sensorfusion(local_positioning_state, sensorfusion_state);
+    update_live_pose_from_sensorfusion(local_positioning_state, sensorfusion_state, now_ms);
     process_replay_steps(local_positioning_state);
     switch_to_replay_branch_if_ready(local_positioning_state);
   }
@@ -292,6 +296,8 @@ namespace local_positioning
     local_positioning_state.replay.replay_pose.heading_urad = 0;
     local_positioning_state.replay.replay_pose.uncertainty_position_um2 = 0;
     local_positioning_state.replay.replay_pose.uncertainty_heading_urad2 = 0;
+    local_positioning_state.replay.replay_pose.update_id = local_positioning_state.live_pose.update_id;
+    local_positioning_state.replay.replay_pose.time_ms = local_positioning_state.live_pose.time_ms;
     local_positioning_state.replay.replay_pose.pose_id = request.pose_id;
     local_positioning_state.replay.replay_pose.branch_id = local_positioning_state.replay.replay_branch_id;
 

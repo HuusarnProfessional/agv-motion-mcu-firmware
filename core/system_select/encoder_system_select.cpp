@@ -35,10 +35,10 @@ namespace
     const bool ok = encoder_as5600_pwm_impl::read_sample(encoder_id, impl_sample);
 
     out.angle_raw_12bit = impl_sample.angle_raw_12bit;
+    out.sample_id = impl_sample.sample_id;
     out.time_ms = impl_sample.time_ms;
     out.status = map_encoder_status(impl_sample.status);
     return ok;
   }
 }
-
 

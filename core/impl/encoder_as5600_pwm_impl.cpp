@@ -29,6 +29,7 @@ namespace encoder_as5600_pwm_impl
     if(global_encoders == nullptr || global_encoders_count == 0U) //check if we have any encoders
     {
       out.angle_raw_12bit = 0U;
+      out.sample_id = 0U;
       out.time_ms = 0U;
       out.status = sample_status::no_signal;
       return false;
@@ -37,6 +38,7 @@ namespace encoder_as5600_pwm_impl
     if(encoder_id >= global_encoders_count) // if you ask for more encoders then we have on the agv
     {
       out.angle_raw_12bit = 0U;
+      out.sample_id = 0U;
       out.time_ms = 0U;
       out.status = sample_status::invalid_id;
       return false;
@@ -49,6 +51,7 @@ namespace encoder_as5600_pwm_impl
     if (encoder.platform_operations == nullptr)
     {
       out.angle_raw_12bit = 0U;
+      out.sample_id = 0U;
       out.time_ms = 0U;
       out.status = sample_status::no_signal;
       return false;
@@ -56,6 +59,7 @@ namespace encoder_as5600_pwm_impl
     if (encoder.platform_operations->read_capture == nullptr)
     {
       out.angle_raw_12bit = 0U;
+      out.sample_id = 0U;
       out.time_ms = 0U;
       out.status = sample_status::no_signal;
       return false;
@@ -63,13 +67,15 @@ namespace encoder_as5600_pwm_impl
 
     std::uint32_t high_ticks = 0U;
     std::uint32_t period_ticks = 0U;
+    std::uint32_t sample_id = 0U;
     std::uint32_t time_ms = 0U;
 
-    const bool got_capture = encoder.platform_operations->read_capture(encoder.platform_handle, encoder.channel, high_ticks, period_ticks, time_ms);
+    const bool got_capture = encoder.platform_operations->read_capture(encoder.platform_handle, encoder.channel, high_ticks, period_ticks, sample_id, time_ms);
 
 
     if(got_capture == false)
     {
+      out.sample_id = 0U;
       out.time_ms = 0U;
       out.angle_raw_12bit = 0U;
       out.status = sample_status::no_signal;
@@ -78,6 +84,7 @@ namespace encoder_as5600_pwm_impl
     if(period_ticks == 0U || high_ticks > period_ticks) 
     {
       out.angle_raw_12bit = 0U;
+      out.sample_id = sample_id;
       out.time_ms = time_ms;
       out.status = sample_status::invalid_duty;
       return false;
@@ -85,6 +92,7 @@ namespace encoder_as5600_pwm_impl
 
     const std::uint32_t raw =(high_ticks * 4095U) / period_ticks; //calculate duty cycle, scaled to 4095(12bit)
     out.angle_raw_12bit = static_cast<std::uint16_t>(raw);
+    out.sample_id = sample_id;
     out.time_ms = time_ms;
     out.status = sample_status::ok;
     return true;

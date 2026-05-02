@@ -51,6 +51,7 @@ namespace
                                   std::uint8_t channel,
                                   std::uint32_t &high_ticks,
                                   std::uint32_t &period_ticks,
+                                  std::uint32_t &sample_id,
                                   std::uint32_t &time_ms)
   {
     const encoder_api::capture_operations *platform_ops = platform_stm32_hal::get_encoder_capture_ops();
@@ -58,16 +59,17 @@ namespace
     {
       return false;
     }
-    return platform_ops->read_capture(platform_handle, channel, high_ticks, period_ticks, time_ms);
+    return platform_ops->read_capture(platform_handle, channel, high_ticks, period_ticks, sample_id, time_ms);
   }
 
   static bool read_capture_inverted(void *platform_handle,
                                     std::uint8_t channel,
                                     std::uint32_t &high_ticks,
                                     std::uint32_t &period_ticks,
+                                    std::uint32_t &sample_id,
                                     std::uint32_t &time_ms)
   {
-    if (!read_capture_normal(platform_handle, channel, high_ticks, period_ticks, time_ms))
+    if (!read_capture_normal(platform_handle, channel, high_ticks, period_ticks, sample_id, time_ms))
     {
       return false;
     }

@@ -144,6 +144,11 @@ namespace delta_estimation_encoders
       return false;
     }
 
+    if (encoder_snapshot.current_tick_id == encoder_snapshot.previous_tick_id)
+    {
+      return false;
+    }
+
     out.previous_tick_id = encoder_snapshot.previous_tick_id;
     out.current_tick_id = encoder_snapshot.current_tick_id;
 
