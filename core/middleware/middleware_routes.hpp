@@ -6,6 +6,7 @@
 #include "core/middleware/incoming_payloads/service/clear_imu_calibration_payload.hpp"
 #include "core/middleware/incoming_payloads/debug/debug_stream_control_payload.hpp"
 #include "core/middleware/incoming_payloads/service/drive_forward_payload.hpp"
+#include "core/middleware/incoming_payloads/service/heartbeat_payload.hpp"
 #include "core/middleware/incoming_payloads/incoming_payload_definition.hpp"
 #include "core/middleware/incoming_payloads/service/lock_safe_guard_payload.hpp"
 #include "core/middleware/incoming_payloads/runtime/motion_command_payload.hpp"
@@ -29,6 +30,7 @@
 
 namespace middleware_routes
 {
+  // note: uart packets use 0xA5 as a sync byte in the middleware pipelines.
   struct outgoing_route_definition
   {
     const char *name;
@@ -72,6 +74,7 @@ namespace middleware_routes
     { "rotate_delta", 0x29U, &middleware_incoming_payloads::rotate_delta_payload_definition },
     { "drive_forward", 0x2AU, &middleware_incoming_payloads::drive_forward_payload_definition },
     { "pause", 0x2BU, &middleware_incoming_payloads::pause_payload_definition },
+    { "heartbeat", 0x2CU, &middleware_incoming_payloads::heartbeat_payload_definition },
     { "position_correction", 0x30U, &middleware_incoming_payloads::position_correction_payload_definition },
   };
 

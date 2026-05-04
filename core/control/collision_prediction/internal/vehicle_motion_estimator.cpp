@@ -1,10 +1,13 @@
 #include "core/control/collision_prediction/internal/vehicle_motion_estimator.hpp"
+#include "core/control/drive_control/wheel_drive_controller_tuning.hpp"
 
 #include <cmath>
 #include <limits>
 
 namespace
 {
+  constexpr std::uint32_t k_obstacle_coverage_arm_speed_mm_s = 25u;
+
   std::int32_t clamp_to_i32(double value)
   {
     if (value > static_cast<double>(std::numeric_limits<std::int32_t>::max()))
@@ -20,9 +23,29 @@ namespace
     return static_cast<std::int32_t>(std::lround(value));
   }
 
-  std::int32_t compute_commanded_forward_mm_s(const vehicle_motion_estimator::input &estimation_input)
+  bool is_motion_command_fresh(const vehicle_motion_estimator::input &estimation_input)
   {
     if (!estimation_input.has_motion_command)
+    {
+      return false;
+    }
+
+    if (estimation_input.now_ms < estimation_input.motion_command.received_time_ms)
+    {
+      return false;
+    }
+
+    if (estimation_input.now_ms - estimation_input.motion_command.received_time_ms > wheel_drive_controller_tuning::k_motion_command_timeout_ms)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  std::int32_t compute_commanded_forward_mm_s(const vehicle_motion_estimator::input &estimation_input)
+  {
+    if (!is_motion_command_fresh(estimation_input))
     {
       return 0;
     }
@@ -108,6 +131,16 @@ namespace vehicle_motion_estimator
     if (negative_component(out.measured_forward_mm_s) > out.rear_approach_mm_s)
     {
       out.rear_approach_mm_s = negative_component(out.measured_forward_mm_s);
+    }
+
+    if (positive_component(out.measured_forward_mm_s) <= k_obstacle_coverage_arm_speed_mm_s)
+    {
+      out.front_approach_mm_s = 0u;
+    }
+
+    if (negative_component(out.measured_forward_mm_s) <= k_obstacle_coverage_arm_speed_mm_s)
+    {
+      out.rear_approach_mm_s = 0u;
     }
 
     estimator_state.previous_local_positioning_snapshot = estimation_input.local_positioning_snapshot;

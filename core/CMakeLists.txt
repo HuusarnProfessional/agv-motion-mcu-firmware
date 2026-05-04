@@ -20,6 +20,7 @@ add_library(agv_core STATIC
   middleware/incoming_payloads/service/clear_imu_calibration_payload.cpp
   middleware/incoming_payloads/debug/debug_stream_control_payload.cpp
   middleware/incoming_payloads/service/drive_forward_payload.cpp
+  middleware/incoming_payloads/service/heartbeat_payload.cpp
   middleware/incoming_payloads/service/trailer_status_payload.cpp
   middleware/incoming_payloads/service/unlock_safe_guard_payload.cpp
   middleware/incoming_payloads/service/lock_safe_guard_payload.cpp
@@ -52,6 +53,7 @@ add_library(agv_core STATIC
   control/imu_calibration/imu_calibration_stop_and_sample_tare.cpp
   control/collision_prediction/collision_prediction_pipeline.cpp
   control/drive_control/drive_control_pipeline.cpp
+  control/heartbeat/heartbeat_pipeline.cpp
   control/motion_primitives/motion_primitives.cpp
   control/motion_primitives/motion_primitives_pipeline.cpp
   control/motion_primitives/motion_primitives_common.cpp

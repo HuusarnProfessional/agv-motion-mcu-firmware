@@ -80,6 +80,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/clear_imu_calibration_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/debug/debug_stream_control_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/drive_forward_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/heartbeat_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/trailer_status_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/unlock_safe_guard_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/incoming_payloads/service/lock_safe_guard_payload.cpp
@@ -92,6 +93,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/vehicle_motion_estimator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/collision_input_builder.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/collision_prediction/internal/obstacle_sensor_logic.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/control/heartbeat/heartbeat_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/wheel_drive_controller.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/drive_control/drive_control_pipeline.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/control/imu_calibration/imu_calibration_pipeline.cpp

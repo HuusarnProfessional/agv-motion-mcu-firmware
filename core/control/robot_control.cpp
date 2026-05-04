@@ -4,6 +4,7 @@
 #include "core/control/collision_prediction/collision_prediction_pipeline.hpp"
 #include "core/control/drive_control/drive_control_pipeline.hpp"
 #include "core/control/imu_calibration/imu_calibration_pipeline.hpp"
+#include "core/control/heartbeat/heartbeat_pipeline.hpp"
 #include "core/control/local_positioning/local_positioning_pipeline.hpp"
 #include "core/control/motion_primitives/motion_primitives_pipeline.hpp"
 #include "core/control/safe_guard/safe_guard_pipeline.hpp"
@@ -45,6 +46,7 @@ namespace robot_control
     outgoing_middleware_pipeline::init();
     local_positioning_pipeline::init();
     collision_prediction::init();
+    heartbeat::init();
     safe_guard::init();
     drive_control::init();
     imu_calibration::init();
@@ -72,9 +74,15 @@ namespace robot_control
     local_positioning_pipeline::tick(now_ms);
     local_positioning_pipeline::read_encoder_motion_state(encoder_motion_state);
     collision_prediction::tick(now_ms);
+    heartbeat::tick(now_ms);
     collision_prediction::read_snapshot(collision_prediction_snapshot);
 
     if (collision_prediction_snapshot.collision_blocked)
+    {
+      safe_guard::trip();
+    }
+
+    if (heartbeat::is_timed_out())
     {
       safe_guard::trip();
     }

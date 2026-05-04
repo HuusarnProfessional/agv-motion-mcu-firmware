@@ -16,6 +16,11 @@ namespace
 
   bool role_requires_coverage(const collision_input_builder::collision_prediction_input &input, collision_tuning::obstacle_sensor_role role)
   {
+    if (!collision_tuning::k_require_sensor_coverage)
+    {
+      return false;
+    }
+
     if (!input.obstacle_safety_enabled)
     {
       return false;
@@ -31,7 +36,6 @@ namespace
 
     return select_approach_speed_mm_s(input, role) > static_cast<std::uint32_t>(collision_tuning::k_velocity_arm_mm_s);
   }
-
 }
 
 namespace collision_prediction_logic

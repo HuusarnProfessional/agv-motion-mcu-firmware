@@ -26,6 +26,7 @@ namespace collision_tuning
     obstacle_sensor_config{ 1u, obstacle_sensor_role::rear, true, false }
   }};
 
+  inline constexpr bool k_require_sensor_coverage = false;
   inline constexpr std::int32_t k_velocity_arm_mm_s = 25;
   inline constexpr std::uint32_t k_sample_stale_timeout_ms = 250u;
   inline constexpr std::uint32_t k_static_margin_mm = 150u;
