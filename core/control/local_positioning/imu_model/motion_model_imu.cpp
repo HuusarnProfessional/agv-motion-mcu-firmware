@@ -44,6 +44,7 @@ namespace
 
     out.gyroscope_z_calibrated_mdps = delta_snapshot.gyroscope_z_calibrated_mdps;
     out.rotation = delta_snapshot.delta_rotation_urad;
+    out.has_rotation_model = true;
     out.has_motion_model = true;
   }
 
@@ -69,6 +70,7 @@ namespace
         previous_velocity_um_per_s +
         (acceleration_x_um_per_s2 * dt_ms) / 1000;
 
+    out.has_translation_model = true;
     out.has_motion_model = true;
   }
 }
@@ -136,6 +138,31 @@ namespace motion_model_imu
     if (delta_snapshot.has_rotation_delta)
     {
       out.confidence_rotation = compute_signal_confidence(delta_snapshot.gyroscope_z_calibrated_mdps, gyro_z_noise_limit_mdps);
+    }
+
+    if (delta_snapshot.is_stationary)
+    {
+      if (out.has_translation_model)
+      {
+        out.translation = 0;
+        out.confidence_translation = imu_model_tuning::k_stationary_motion_confidence;
+      }
+
+      if (out.has_rotation_model)
+      {
+        out.rotation = 0;
+        out.confidence_rotation = imu_model_tuning::k_stationary_motion_confidence;
+      }
+    }
+
+    if (!delta_snapshot.is_stationary && out.has_translation_model && out.confidence_translation == 0)
+    {
+      out.confidence_translation = imu_model_tuning::k_min_active_motion_confidence;
+    }
+
+    if (!delta_snapshot.is_stationary && out.has_rotation_model && out.confidence_rotation == 0)
+    {
+      out.confidence_rotation = imu_model_tuning::k_min_active_motion_confidence;
     }
 
     return out.has_motion_model;

@@ -32,5 +32,7 @@ namespace imu_model_tuning
   inline constexpr std::int64_t k_motion_confidence_max = 1000;
   inline constexpr std::int32_t k_motion_gyro_z_noise_floor_mdps = 1;
   inline constexpr std::int32_t k_motion_acc_x_noise_floor_mg = 1;
+  inline constexpr std::int64_t k_stationary_motion_confidence = 900;
+  inline constexpr std::int64_t k_min_active_motion_confidence = 1;
   inline constexpr std::int64_t k_um_per_mg_per_s2 = 9807;
 }

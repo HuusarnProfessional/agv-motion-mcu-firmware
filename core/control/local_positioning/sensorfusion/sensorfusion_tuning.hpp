@@ -5,6 +5,7 @@
 namespace sensorfusion_tuning
 {
   inline constexpr std::int64_t k_confidence_max = 1000;
+  inline constexpr std::int64_t k_min_active_sensor_confidence = 1;
 
   inline constexpr double k_encoder_rotation_radius_gain = 40.0;
   inline constexpr double k_encoder_rotation_radius_offset_cm = 1.65;

@@ -214,19 +214,22 @@ namespace motion_model_encoders
 
     if (!confidence_snapshot.can_estimate_rotation)
     {
+      out.has_translation_model = true;
       out.rotation = 0;
       out.confidence_rotation = 0;
+      out.has_rotation_model = false;
       out.has_motion_model = true;
       return true;
     }
+
     if (wheel_separation_um == 0u)
     {
       return false;
     }
 
-    
-
+    out.has_translation_model = true;
     out.rotation = ((delta_right - delta_left) * 1000000LL) / wheel_separation_um;
+    out.has_rotation_model = true;
     out.has_motion_model = true;
     return true;
   }

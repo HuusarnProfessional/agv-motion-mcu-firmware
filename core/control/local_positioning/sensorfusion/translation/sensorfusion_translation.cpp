@@ -114,16 +114,16 @@ namespace
 
     if (out.has_encoder_translation && out.encoder_confidence_translation_final == 0)
     {
-      out.has_encoder_translation = false;
+      out.encoder_confidence_translation_final = sensorfusion_tuning::k_min_active_sensor_confidence;
     }
 
     if (out.has_imu_translation && out.imu_confidence_translation_final == 0)
     {
-      out.has_imu_translation = false;
+      out.imu_confidence_translation_final = sensorfusion_tuning::k_min_active_sensor_confidence;
     }
   }
 
-  translation_state_estimate build_imu_advanced_translation(const motion_model_encoders::motion_model_snapshot &encoder_motion, const motion_model_imu::motion_model_snapshot &imu_motion, const sensorfusion_translation::translation_snapshot &out, const sensorfusion_translation::translation_state &state)
+  translation_state_estimate build_imu_advanced_translation(const motion_model_imu::motion_model_snapshot &imu_motion, const sensorfusion_translation::translation_snapshot &out, const sensorfusion_translation::translation_state &state)
   {
     const double process_variance = map_imu_confidence_to_process_variance(out.imu_confidence_translation_final);
     translation_state_estimate imu_advanced_translation;
@@ -136,21 +136,6 @@ namespace
       imu_advanced_translation.s_um =
           state.s_estimate_um +
           static_cast<double>(imu_motion.translation);
-    }
-
-    if (imu_motion.is_stationary)
-    {
-      std::int64_t encoder_translation_abs = encoder_motion.translation;
-
-      if (encoder_translation_abs < 0)
-      {
-        encoder_translation_abs = -encoder_translation_abs;
-      }
-
-      if (encoder_translation_abs <= 1)
-      {
-        imu_advanced_translation.s_um = state.s_estimate_um;
-      }
     }
 
     imu_advanced_translation.p_um2 =
@@ -226,12 +211,12 @@ namespace sensorfusion_translation
   {
     out = {};
 
-    if (encoder_motion.has_motion_model && encoder_motion.confidence_translation > 0)
+    if (encoder_motion.has_translation_model)
     {
       out.has_encoder_translation = true;
     }
 
-    if (imu_motion.has_motion_model && imu_motion.confidence_translation > 0)
+    if (imu_motion.has_translation_model && !imu_motion.is_stationary)
     {
       out.has_imu_translation = true;
     }
@@ -251,7 +236,7 @@ namespace sensorfusion_translation
 
     const double previous_fused_translation_sum_um = state.s_estimate_um;
     const translation_state_estimate imu_advanced_translation =
-        build_imu_advanced_translation(encoder_motion, imu_motion, out, state);
+        build_imu_advanced_translation(imu_motion, out, state);
     const translation_state_estimate encoder_corrected_translation =
         apply_encoder_translation_correction(encoder_motion, out, state, imu_advanced_translation);
 

@@ -18,7 +18,7 @@ namespace
 
     if (radius_cm <= sensorfusion_tuning::k_encoder_rotation_zero_confidence_radius_cm)
     {
-      return 0;
+      return static_cast<std::int32_t>(sensorfusion_tuning::k_min_active_sensor_confidence);
     }
 
     const double denominator = radius_cm + sensorfusion_tuning::k_encoder_rotation_radius_offset_cm;

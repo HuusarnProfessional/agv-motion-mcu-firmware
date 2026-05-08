@@ -8,6 +8,8 @@ namespace motion_model_encoders
   struct motion_model_snapshot
   {
     bool has_motion_model = false;
+    bool has_translation_model = false;
+    bool has_rotation_model = false;
     bool rotate_in_spot_flag = false;
     std::int64_t translation = 0;
     std::int64_t rotation = 0;

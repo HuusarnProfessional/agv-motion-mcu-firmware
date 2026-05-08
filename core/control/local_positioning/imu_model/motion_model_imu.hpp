@@ -9,6 +9,8 @@ namespace motion_model_imu
   struct motion_model_snapshot
   {
     bool has_motion_model = false;
+    bool has_translation_model = false;
+    bool has_rotation_model = false;
     std::int32_t gyroscope_z_calibrated_mdps = 0;
     std::int64_t translation = 0;
     std::int64_t rotation = 0;

@@ -116,12 +116,12 @@ namespace
 
     if (out.has_encoder_rotation && out.encoder_confidence_rotation_final == 0)
     {
-      out.has_encoder_rotation = false;
+      out.encoder_confidence_rotation_final = sensorfusion_tuning::k_min_active_sensor_confidence;
     }
 
     if (out.has_gyro_rotation && out.gyro_confidence_rotation_final == 0)
     {
-      out.has_gyro_rotation = false;
+      out.gyro_confidence_rotation_final = sensorfusion_tuning::k_min_active_sensor_confidence;
     }
 
     if (out.has_encoder_rotation &&
@@ -210,13 +210,13 @@ namespace sensorfusion_rotation
   {
     out = {};
 
-    if (encoder_motion.has_motion_model && encoder_motion.confidence_rotation > 0)
+    if (encoder_motion.has_rotation_model)
     {
       out.has_encoder_rotation = true;
       out.encoder_rotation = encoder_motion.rotation;
     }
 
-    if (imu_motion.has_motion_model && imu_motion.confidence_rotation > 0)
+    if (imu_motion.has_rotation_model && !imu_motion.is_stationary)
     {
       out.has_gyro_rotation = true;
       out.gyro_rotation = imu_motion.rotation;
