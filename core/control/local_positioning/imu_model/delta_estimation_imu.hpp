@@ -10,15 +10,20 @@ namespace delta_estimation_imu
   struct delta_snapshot
   {
     std::uint8_t imu_id = 0u;
-    std::uint32_t previous_tick_id = 0u;
-    std::uint32_t current_tick_id = 0u;
-    std::uint32_t dt_ms = 0u;
+    std::uint32_t previous_gyro_tick_id = 0u;
+    std::uint32_t current_gyro_tick_id = 0u;
+    std::uint32_t previous_accelerometer_tick_id = 0u;
+    std::uint32_t current_accelerometer_tick_id = 0u;
+    std::uint32_t gyro_dt_ms = 0u;
+    std::uint32_t accelerometer_dt_ms = 0u;
     std::int32_t gyroscope_z_calibrated_mdps = 0;
     std::int32_t accelerometer_x_calibrated_mg = 0;
     std::int32_t accelerometer_y_calibrated_mg = 0;
     std::int32_t accelerometer_z_calibrated_mg = 0;
     std::int64_t delta_rotation_urad = 0;
     bool is_stationary = false;
+    bool has_rotation_delta = false;
+    bool has_translation_delta = false;
     bool has_delta = false;
   };
 

@@ -42,44 +42,47 @@ namespace stationary_detection_imu
     out.is_stationary = false;
     out.has_stationary_detection = false;
 
-    if (!imu_sample_snapshot.has_input)
+    if (!imu_sample_snapshot.gyro.has_current_sample)
     {
       return false;
     }
 
-    if (!imu_sample_snapshot.can_use_gyro)
+    if (!imu_sample_snapshot.accelerometer.has_current_sample)
     {
       return false;
     }
 
-    if (!imu_sample_snapshot.can_use_accelerometer)
-    {
-      return false;
-    }
-
-    const imu_api::imu_sample &sample = imu_sample_snapshot.current_sample;
     imu_api::imu_calibration_profile calibration_profile = {};
+    const std::int32_t current_gyroscope_z_calibrated_mdps = imu_sample_snapshot.gyro.current_gyroscope_z_calibrated_mdps;
+    const std::int32_t current_accelerometer_x_calibrated_mg = imu_sample_snapshot.accelerometer.current_accelerometer_x_calibrated_mg;
+    const std::int32_t current_accelerometer_y_calibrated_mg = imu_sample_snapshot.accelerometer.current_accelerometer_y_calibrated_mg;
 
     if (!out.has_filter_state)
     {
-      out.filtered_gyroscope_z_mdps = sample.gyroscope_z_calibrated_mdps;
-      out.filtered_accelerometer_x_mg = sample.accelerometer_x_calibrated_mg;
-      out.filtered_accelerometer_y_mg = sample.accelerometer_y_calibrated_mg;
+      out.filtered_gyroscope_z_mdps = current_gyroscope_z_calibrated_mdps;
+      out.filtered_accelerometer_x_mg = current_accelerometer_x_calibrated_mg;
+      out.filtered_accelerometer_y_mg = current_accelerometer_y_calibrated_mg;
       out.has_filter_state = true;
     }
     else
     {
-      out.filtered_gyroscope_z_mdps = low_pass_filter(out.filtered_gyroscope_z_mdps, sample.gyroscope_z_calibrated_mdps);
-      out.filtered_accelerometer_x_mg = low_pass_filter(out.filtered_accelerometer_x_mg, sample.accelerometer_x_calibrated_mg);
-      out.filtered_accelerometer_y_mg = low_pass_filter(out.filtered_accelerometer_y_mg, sample.accelerometer_y_calibrated_mg);
+      if (imu_sample_snapshot.gyro.has_fresh_sample)
+      {
+        out.filtered_gyroscope_z_mdps = low_pass_filter(out.filtered_gyroscope_z_mdps, current_gyroscope_z_calibrated_mdps);
+      }
+
+      if (imu_sample_snapshot.accelerometer.has_fresh_sample)
+      {
+        out.filtered_accelerometer_x_mg = low_pass_filter(out.filtered_accelerometer_x_mg, current_accelerometer_x_calibrated_mg);
+        out.filtered_accelerometer_y_mg = low_pass_filter(out.filtered_accelerometer_y_mg, current_accelerometer_y_calibrated_mg);
+      }
     }
 
     std::int32_t gyro_z_limit_mdps = imu_model_tuning::k_stationary_gyro_z_min_limit_mdps;
     std::int32_t acc_x_limit_mg = imu_model_tuning::k_stationary_acc_x_min_limit_mg;
     std::int32_t acc_y_limit_mg = imu_model_tuning::k_stationary_acc_y_min_limit_mg;
 
-    if (imu_api::get_calibration(imu_sample_snapshot.imu_id, calibration_profile) &&
-        calibration_profile.noise.has_noise_profile)
+    if (imu_api::get_calibration(imu_sample_snapshot.imu_id, calibration_profile) && calibration_profile.noise.has_noise_profile)
     {
       gyro_z_limit_mdps = scale_noise_limit(calibration_profile.noise.gyroscope_z_p_proc_mdps, gyro_z_limit_mdps);
       acc_x_limit_mg = scale_noise_limit(calibration_profile.noise.accelerometer_x_p_proc_mg, acc_x_limit_mg);

@@ -10,7 +10,7 @@
 namespace
 {
   motion_primitives_common::state g_state = {};
-  void finish_current_primitive(bool success, bool timed_out, std::uint32_t now_ms);
+  void finish_current_primitive(bool success, bool timed_out, motion_primitives::error_code failure_code, std::uint32_t now_ms);
 
   motion_primitives_common::tick_result tick_active_primitive(const motion_primitives::input_snapshot &input, std::uint32_t now_ms)
   {
@@ -38,7 +38,7 @@ namespace
 
     if (motion_primitives_common::has_elapsed(now_ms, g_state.snapshot.stop_time_ms))
     {
-      finish_current_primitive(true, false, now_ms);
+      finish_current_primitive(true, false, motion_primitives::error_code::none, now_ms);
       return;
     }
 
@@ -59,7 +59,7 @@ namespace
       return;
     }
 
-    finish_current_primitive(true, false, now_ms);
+    finish_current_primitive(true, false, motion_primitives::error_code::none, now_ms);
   }
 
   void apply_rotation_drive_tuning_if_needed(const motion_primitives::request &primitive_request)
@@ -69,12 +69,13 @@ namespace
       return;
     }
 
-    if (!primitive_request.rotate_delta.has_rotation_drive_tuning)
+    if (primitive_request.rotate_delta.has_rotation_drive_tuning)
     {
+      drive_control::set_rotation_drive_tuning_override(primitive_request.rotate_delta.rotation_min_drive_u, primitive_request.rotate_delta.rotation_startup_drive_u);
       return;
     }
 
-    drive_control::set_rotation_drive_tuning_override(primitive_request.rotate_delta.rotation_min_drive_u, primitive_request.rotate_delta.rotation_startup_drive_u);
+    drive_control::set_rotation_drive_tuning_override(motion_primitives_tuning::k_rotate_delta_default_rotation_min_drive_u, motion_primitives_tuning::k_rotate_delta_default_rotation_startup_drive_u);
   }
 
   void clear_rotation_drive_tuning_if_needed(void)
@@ -84,18 +85,13 @@ namespace
       return;
     }
 
-    if (!g_state.active_request.rotate_delta.has_rotation_drive_tuning)
-    {
-      return;
-    }
-
     drive_control::clear_rotation_drive_tuning_override();
   }
 
-  void finish_current_primitive(bool success, bool timed_out, std::uint32_t now_ms)
+  void finish_current_primitive(bool success, bool timed_out, motion_primitives::error_code failure_code, std::uint32_t now_ms)
   {
     clear_rotation_drive_tuning_if_needed();
-    motion_primitives_common::finish(g_state, success, timed_out, now_ms);
+    motion_primitives_common::finish(g_state, success, timed_out, failure_code, now_ms);
   }
 }
 
@@ -127,9 +123,11 @@ namespace motion_primitives
     }
 
     g_state = {};
+    g_state.snapshot.command_id = primitive_request.command_id;
     g_state.snapshot.running = true;
     g_state.snapshot.active_primitive_id = primitive_request.primitive_id_value;
     g_state.snapshot.start_time_ms = now_ms;
+    g_state.snapshot.status_time_ms = now_ms;
     g_state.active_request = primitive_request;
 
     if (current_pose.has_pose)
@@ -185,17 +183,17 @@ namespace motion_primitives
 
       if (result == motion_primitives_common::tick_result::complete_success)
       {
-        finish_current_primitive(true, false, now_ms);
+        finish_current_primitive(true, false, motion_primitives::error_code::none, now_ms);
         return;
       }
 
       if (result == motion_primitives_common::tick_result::complete_timeout)
       {
-        finish_current_primitive(false, true, now_ms);
+        finish_current_primitive(false, true, motion_primitives::error_code::timeout, now_ms);
         return;
       }
 
-      finish_current_primitive(false, false, now_ms);
+      finish_current_primitive(false, false, motion_primitives::error_code::failure, now_ms);
       return;
     }
 
@@ -205,7 +203,7 @@ namespace motion_primitives
       return;
     }
 
-    finish_current_primitive(false, false, now_ms);
+    finish_current_primitive(false, false, motion_primitives::error_code::failure, now_ms);
   }
 
   void stop(std::uint32_t now_ms)
@@ -215,7 +213,7 @@ namespace motion_primitives
       return;
     }
 
-    finish_current_primitive(false, false, now_ms);
+    finish_current_primitive(false, false, motion_primitives::error_code::stopped, now_ms);
   }
 
   void read_snapshot(snapshot &out)

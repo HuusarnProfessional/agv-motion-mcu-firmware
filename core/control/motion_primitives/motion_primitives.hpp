@@ -8,6 +8,22 @@
 
 namespace motion_primitives
 {
+  enum class execution_state : std::uint8_t
+  {
+    none = 0u,
+    active,
+    settling,
+    complete
+  };
+
+  enum class error_code : std::uint8_t
+  {
+    none = 0u,
+    timeout,
+    failure,
+    stopped
+  };
+
   enum class primitive_id : std::uint8_t
   {
     none = 0u,
@@ -39,6 +55,7 @@ namespace motion_primitives
 
   struct request
   {
+    std::uint32_t command_id = 0u;
     primitive_id primitive_id_value = primitive_id::none;
     pause_request pause = {};
     drive_forward_request drive_forward = {};
@@ -54,13 +71,17 @@ namespace motion_primitives
 
   struct snapshot
   {
+    std::uint32_t command_id = 0u;
     bool running = false;
     bool complete = false;
     bool success = false;
     bool timed_out = false;
     primitive_id active_primitive_id = primitive_id::none;
+    execution_state state = execution_state::none;
+    error_code failure_code = error_code::none;
     std::uint32_t start_time_ms = 0u;
     std::uint32_t end_time_ms = 0u;
+    std::uint32_t status_time_ms = 0u;
     std::uint32_t stop_time_ms = 0u;
     std::uint32_t still_since_ms = 0u;
     local_positioning::snapshot start_pose = {};

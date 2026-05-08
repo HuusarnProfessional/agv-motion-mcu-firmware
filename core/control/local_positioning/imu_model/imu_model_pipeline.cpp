@@ -23,10 +23,9 @@ namespace local_positioning_imu
       return;
     }
 
-    if (!stationary_detection_imu::estimate_from_imu_snapshot(local_positioning_imu_state.input_snapshot, local_positioning_imu_state.stationary_snapshot))
-    {
-      return;
-    }
+    stationary_detection_imu::estimate_from_imu_snapshot(
+        local_positioning_imu_state.input_snapshot,
+        local_positioning_imu_state.stationary_snapshot);
 
     if (!delta_estimation_imu::estimate_from_imu_snapshot(
             local_positioning_imu_state.input_snapshot,

@@ -21,6 +21,7 @@
 #include "core/middleware/outgoing_payloads/debug/imu_debug_payload.hpp"
 #include "core/middleware/outgoing_payloads/debug/local_position_model_debug_payload.hpp"
 #include "core/middleware/outgoing_payloads/debug/motion_debug_payload.hpp"
+#include "core/middleware/outgoing_payloads/runtime/motion_primitive_status_payload.hpp"
 #include "core/middleware/outgoing_payloads/runtime/local_position_payload.hpp"
 #include "core/middleware/outgoing_payloads/debug/obstacle_debug_payload.hpp"
 #include "core/middleware/outgoing_payloads/outgoing_payload_definition.hpp"
@@ -45,6 +46,7 @@ namespace middleware_routes
     { "local_position", 0x01U, &middleware_outgoing_payloads::local_position_payload_definition, 10u, 0u, true },
     { "safety_status", 0x02U, &middleware_outgoing_payloads::safety_status_payload_definition, 10u, 5u, true },
     { "power_status", 0x03U, &middleware_outgoing_payloads::power_status_payload_definition, 5000u, 0u, true },
+    { "motion_primitive_status", 0x04U, &middleware_outgoing_payloads::motion_primitive_status_payload_definition, 50u, 0u, true },
     { "encoder_debug", 0x11U, &middleware_outgoing_payloads::encoder_debug_payload_definition, 100u, 0u, false },
     { "imu_debug", 0x12U, &middleware_outgoing_payloads::imu_debug_payload_definition, 100u, 25u, false },
     { "obstacle_debug", 0x13U, &middleware_outgoing_payloads::obstacle_debug_payload_definition, 100u, 50u, false },

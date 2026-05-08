@@ -7,6 +7,7 @@ namespace
 {
   struct pipeline_state
   {
+    std::uint32_t next_command_id = 1u;
     bool has_pending_start_request = false;
     motion_primitives::request pending_start_request = {};
     std::uint32_t pending_start_request_time_ms = 0u;
@@ -64,6 +65,8 @@ namespace motion_primitives_pipeline
 
     g_pipeline_state.has_pending_start_request = true;
     g_pipeline_state.pending_start_request = primitive_request;
+    g_pipeline_state.pending_start_request.command_id = g_pipeline_state.next_command_id;
+    g_pipeline_state.next_command_id += 1u;
     g_pipeline_state.pending_start_request_time_ms = now_ms;
     return true;
   }

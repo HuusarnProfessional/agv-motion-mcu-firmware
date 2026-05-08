@@ -69,6 +69,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/local_position_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/safety_status_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/power_status_payload.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/runtime/motion_primitive_status_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/encoder_debug_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/imu_debug_payload.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../../core/middleware/outgoing_payloads/debug/local_position_model_debug_payload.cpp

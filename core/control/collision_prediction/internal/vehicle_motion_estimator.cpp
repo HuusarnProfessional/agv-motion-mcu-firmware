@@ -1,4 +1,5 @@
 #include "core/control/collision_prediction/internal/vehicle_motion_estimator.hpp"
+#include "core/control/collision_prediction/collision_tuning.hpp"
 #include "core/control/drive_control/wheel_drive_controller_tuning.hpp"
 
 #include <cmath>
@@ -6,8 +7,6 @@
 
 namespace
 {
-  constexpr std::uint32_t k_obstacle_coverage_arm_speed_mm_s = 25u;
-
   std::int32_t clamp_to_i32(double value)
   {
     if (value > static_cast<double>(std::numeric_limits<std::int32_t>::max()))
@@ -133,12 +132,12 @@ namespace vehicle_motion_estimator
       out.rear_approach_mm_s = negative_component(out.measured_forward_mm_s);
     }
 
-    if (positive_component(out.measured_forward_mm_s) <= k_obstacle_coverage_arm_speed_mm_s)
+    if (positive_component(out.measured_forward_mm_s) <= static_cast<std::uint32_t>(collision_tuning::k_min_approach_speed_for_obstacle_check_mm_s))
     {
       out.front_approach_mm_s = 0u;
     }
 
-    if (negative_component(out.measured_forward_mm_s) <= k_obstacle_coverage_arm_speed_mm_s)
+    if (negative_component(out.measured_forward_mm_s) <= static_cast<std::uint32_t>(collision_tuning::k_min_approach_speed_for_obstacle_check_mm_s))
     {
       out.rear_approach_mm_s = 0u;
     }

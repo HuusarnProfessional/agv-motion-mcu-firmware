@@ -34,7 +34,7 @@ namespace
       }
     }
 
-    return select_approach_speed_mm_s(input, role) > static_cast<std::uint32_t>(collision_tuning::k_velocity_arm_mm_s);
+    return select_approach_speed_mm_s(input, role) > static_cast<std::uint32_t>(collision_tuning::k_min_approach_speed_for_obstacle_check_mm_s);
   }
 }
 

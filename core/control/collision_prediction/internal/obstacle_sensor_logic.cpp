@@ -28,7 +28,7 @@ namespace
       return false;
     }
 
-    if (evaluation_input.approach_speed_mm_s > static_cast<std::uint32_t>(collision_tuning::k_velocity_arm_mm_s))
+    if (evaluation_input.approach_speed_mm_s > static_cast<std::uint32_t>(collision_tuning::k_min_approach_speed_for_obstacle_check_mm_s))
     {
       out.is_relevant = true;
     }
@@ -94,7 +94,7 @@ namespace
 
   std::uint32_t compute_required_distance_mm(std::uint32_t approach_speed_mm_s)
   {
-    const std::uint64_t latency_distance_mm = (static_cast<std::uint64_t>(approach_speed_mm_s) * collision_tuning::k_total_latency_ms + 999u) / 1000u;
+    const std::uint64_t latency_distance_mm = (static_cast<std::uint64_t>(approach_speed_mm_s) * collision_tuning::k_total_system_latency_ms + 999u) / 1000u;
     const std::uint64_t brake_distance_mm = (static_cast<std::uint64_t>(approach_speed_mm_s) * approach_speed_mm_s + static_cast<std::uint64_t>(2u) * collision_tuning::k_min_brake_mm_s2 - 1u) / (static_cast<std::uint64_t>(2u) * collision_tuning::k_min_brake_mm_s2);
     return static_cast<std::uint32_t>(collision_tuning::k_static_margin_mm + latency_distance_mm + brake_distance_mm);
   }

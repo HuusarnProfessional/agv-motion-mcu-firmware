@@ -18,6 +18,6 @@ namespace wheel_drive_controller_tuning
   inline constexpr std::int64_t k_integral_limit_mm_s_ms = 160000;
   inline constexpr std::int32_t k_speed_deadband_mm_s = 10;
   inline constexpr std::int32_t k_outer_yaw_feedback_per_mdeg_s_divisor = 2;
-  inline constexpr std::int32_t k_outer_yaw_rate_limit_mdeg_s = 32767;
+  inline constexpr std::int32_t k_outer_yaw_rate_limit_mdeg_s = 60000;
   inline constexpr std::uint16_t k_outer_yaw_min_heading_confidence = 300u;
 }

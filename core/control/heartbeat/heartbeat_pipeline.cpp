@@ -2,7 +2,7 @@
 
 namespace
 {
-  constexpr std::uint32_t k_heartbeat_timeout_ms = 350u;
+  constexpr std::uint32_t k_heartbeat_timeout_ms = 2000u;
 
   struct pipeline_state
   {

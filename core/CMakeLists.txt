@@ -9,6 +9,7 @@ add_library(agv_core STATIC
   middleware/outgoing_payloads/runtime/local_position_payload.cpp
   middleware/outgoing_payloads/runtime/safety_status_payload.cpp
   middleware/outgoing_payloads/runtime/power_status_payload.cpp
+  middleware/outgoing_payloads/runtime/motion_primitive_status_payload.cpp
   middleware/outgoing_payloads/debug/encoder_debug_payload.cpp
   middleware/outgoing_payloads/debug/imu_debug_payload.cpp
   middleware/outgoing_payloads/debug/local_position_model_debug_payload.cpp

@@ -34,6 +34,43 @@ namespace
   {
     return static_cast<std::int64_t>(accelerometer_x_calibrated_mg) * imu_model_tuning::k_um_per_mg_per_s2;
   }
+
+  void update_rotation_motion(const delta_estimation_imu::delta_snapshot &delta_snapshot, motion_model_imu::motion_model_snapshot &out)
+  {
+    if (!delta_snapshot.has_rotation_delta)
+    {
+      return;
+    }
+
+    out.gyroscope_z_calibrated_mdps = delta_snapshot.gyroscope_z_calibrated_mdps;
+    out.rotation = delta_snapshot.delta_rotation_urad;
+    out.has_motion_model = true;
+  }
+
+  void update_translation_motion(
+      const delta_estimation_imu::delta_snapshot &delta_snapshot,
+      motion_model_imu::motion_model_state &state,
+      motion_model_imu::motion_model_snapshot &out)
+  {
+    if (!delta_snapshot.has_translation_delta)
+    {
+      return;
+    }
+
+    const std::int64_t acceleration_x_um_per_s2 = convert_acceleration_to_um_per_s2(delta_snapshot.accelerometer_x_calibrated_mg);
+    const std::int64_t previous_velocity_um_per_s = state.forward_velocity_um_per_s;
+    const std::int64_t dt_ms = static_cast<std::int64_t>(delta_snapshot.accelerometer_dt_ms);
+
+    out.translation =
+        (previous_velocity_um_per_s * dt_ms) / 1000 +
+        (acceleration_x_um_per_s2 * dt_ms * dt_ms) / 2000000;
+
+    state.forward_velocity_um_per_s =
+        previous_velocity_um_per_s +
+        (acceleration_x_um_per_s2 * dt_ms) / 1000;
+
+    out.has_motion_model = true;
+  }
 }
 
 namespace motion_model_imu
@@ -75,27 +112,33 @@ namespace motion_model_imu
     if (delta_snapshot.is_stationary)
     {
       state.forward_velocity_um_per_s = 0;
-      out.has_motion_model = true;
-      return true;
     }
 
-    const std::int64_t acceleration_x_um_per_s2 = convert_acceleration_to_um_per_s2(delta_snapshot.accelerometer_x_calibrated_mg);
-    const std::int64_t previous_velocity_um_per_s = state.forward_velocity_um_per_s;
-    const std::int64_t dt_ms = static_cast<std::int64_t>(delta_snapshot.dt_ms);
+    update_rotation_motion(delta_snapshot, out);
 
-    out.translation =
-        (previous_velocity_um_per_s * dt_ms) / 1000 +
-        (acceleration_x_um_per_s2 * dt_ms * dt_ms) / 2000000;
+    if (delta_snapshot.is_stationary)
+    {
+      out.rotation = 0;
+    }
 
-    state.forward_velocity_um_per_s =
-        previous_velocity_um_per_s +
-        (acceleration_x_um_per_s2 * dt_ms) / 1000;
+    update_translation_motion(delta_snapshot, state, out);
 
-    out.rotation = delta_snapshot.delta_rotation_urad;
-    out.confidence_translation = compute_signal_confidence(delta_snapshot.accelerometer_x_calibrated_mg, acc_x_noise_limit_mg);
-    out.confidence_rotation = compute_signal_confidence(delta_snapshot.gyroscope_z_calibrated_mdps, gyro_z_noise_limit_mdps);
-    out.has_motion_model = true;
-    return true;
+    if (delta_snapshot.is_stationary)
+    {
+      out.translation = 0;
+    }
+
+    if (delta_snapshot.has_translation_delta)
+    {
+      out.confidence_translation = compute_signal_confidence(delta_snapshot.accelerometer_x_calibrated_mg, acc_x_noise_limit_mg);
+    }
+
+    if (delta_snapshot.has_rotation_delta)
+    {
+      out.confidence_rotation = compute_signal_confidence(delta_snapshot.gyroscope_z_calibrated_mdps, gyro_z_noise_limit_mdps);
+    }
+
+    return out.has_motion_model;
   }
 }
 
