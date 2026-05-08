@@ -1,4 +1,5 @@
 build/
+build_check/
 targets/**/build/
 targets/**/_build*
 .vscode/

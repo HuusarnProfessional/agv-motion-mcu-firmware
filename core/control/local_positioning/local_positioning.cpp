@@ -7,12 +7,14 @@ namespace
 {
   constexpr std::uint8_t k_replay_steps_per_tick = 8u;
 
-  void write_live_history_entry(local_positioning::state &local_positioning_state, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation)
+  void write_live_history_entry(local_positioning::state &local_positioning_state, bool has_fused_translation, bool has_fused_rotation, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation)
   {
     local_positioning::history_entry &entry = local_positioning_state.history[local_positioning_state.live_pose.pose_id];
 
     entry = {};
     entry.is_valid = true;
+    entry.has_fused_translation = has_fused_translation;
+    entry.has_fused_rotation = has_fused_rotation;
     entry.pose_id = local_positioning_state.live_pose.pose_id;
     entry.branch_id = local_positioning_state.live_pose.branch_id;
     entry.delta_translation_um = delta_translation_um;
@@ -105,7 +107,7 @@ namespace
     return static_cast<std::uint16_t>(confidence);
   }
 
-  void apply_pose_delta(local_positioning::pose_state &pose, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation, std::uint32_t now_ms)
+  void apply_pose_delta(local_positioning::pose_state &pose, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, bool has_fused_translation, bool has_fused_rotation, std::uint16_t confidence_translation, std::uint16_t confidence_rotation, std::uint32_t now_ms)
   {
     const double previous_heading_urad = static_cast<double>(pose.heading_urad);
     // use the average heading during this tick for x/y translation
@@ -119,8 +121,16 @@ namespace
     pose.update_id += 1u;
     pose.time_ms = now_ms;
     pose.pose_id += 1;
-    pose.uncertainty_position_um2 += map_translation_confidence_to_position_uncertainty(confidence_translation);
-    pose.uncertainty_heading_urad2 += map_rotation_confidence_to_heading_uncertainty(confidence_rotation);
+
+    if (has_fused_translation)
+    {
+      pose.uncertainty_position_um2 += map_translation_confidence_to_position_uncertainty(confidence_translation);
+    }
+
+    if (has_fused_rotation)
+    {
+      pose.uncertainty_heading_urad2 += map_rotation_confidence_to_heading_uncertainty(confidence_rotation);
+    }
   }
 
   void update_live_pose_from_sensorfusion(local_positioning::state &local_positioning_state, const local_positioning_sensorfusion::state &sensorfusion_state, std::uint32_t now_ms)
@@ -159,9 +169,9 @@ namespace
       confidence_rotation = static_cast<std::uint16_t>(rotation_snapshot.confidence_rotation);
     }
 
-    apply_pose_delta(local_positioning_state.live_pose, delta_translation_um, delta_rotation_urad, confidence_translation, confidence_rotation, now_ms);
+    apply_pose_delta(local_positioning_state.live_pose, delta_translation_um, delta_rotation_urad, translation_snapshot.has_fused_translation, rotation_snapshot.has_fused_rotation, confidence_translation, confidence_rotation, now_ms);
 
-    write_live_history_entry(local_positioning_state, delta_translation_um, delta_rotation_urad, confidence_translation, confidence_rotation);
+    write_live_history_entry(local_positioning_state, translation_snapshot.has_fused_translation, rotation_snapshot.has_fused_rotation, delta_translation_um, delta_rotation_urad, confidence_translation, confidence_rotation);
 
     local_positioning_state.output_snapshot.has_pose = true;
     local_positioning_state.output_snapshot.x_um = local_positioning_state.live_pose.x_um;
@@ -223,7 +233,7 @@ namespace
         return;
       }
 
-      apply_pose_delta(local_positioning_state.replay.replay_pose, entry->delta_translation_um, entry->delta_rotation_urad, entry->confidence_translation, entry->confidence_rotation, local_positioning_state.live_pose.time_ms);
+      apply_pose_delta(local_positioning_state.replay.replay_pose, entry->delta_translation_um, entry->delta_rotation_urad, entry->has_fused_translation, entry->has_fused_rotation, entry->confidence_translation, entry->confidence_rotation, local_positioning_state.live_pose.time_ms);
 
       local_positioning_state.replay.next_replay_pose_id += 1;
 

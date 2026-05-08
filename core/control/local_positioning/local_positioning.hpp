@@ -23,6 +23,8 @@ namespace local_positioning
   struct history_entry
   {
     bool is_valid = false;
+    bool has_fused_translation = false;
+    bool has_fused_rotation = false;
     std::uint8_t pose_id = 0;
     std::uint8_t branch_id = 0;
     std::int32_t delta_translation_um = 0;
