@@ -1,4 +1,5 @@
 #include "core/control/local_positioning/local_positioning.hpp"
+#include "core/control/local_positioning/local_positioning_tuning.hpp"
 
 #include <cmath>
 
@@ -6,13 +7,6 @@
 namespace
 {
   constexpr std::uint8_t k_replay_steps_per_tick = 8u;
-  constexpr std::uint32_t k_position_uncertainty_update_divider = 100u;
-  constexpr std::uint32_t k_heading_uncertainty_update_divider = 100u;
-  constexpr std::int32_t k_position_no_motion_translation_um = 5;
-  constexpr std::int32_t k_heading_no_motion_rotation_urad = 20;
-  constexpr std::int32_t k_position_reference_translation_um = 1000;
-  constexpr std::int32_t k_heading_reference_rotation_urad = 10000;
-  constexpr std::uint32_t k_uncertainty_scale_max = 1000u;
 
   void write_live_history_entry(local_positioning::state &local_positioning_state, bool has_fused_translation, bool has_fused_rotation, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation)
   {
@@ -82,16 +76,16 @@ namespace
   {
     if (reference_movement == 0u)
     {
-      return k_uncertainty_scale_max;
+      return local_positioning_tuning::k_uncertainty_scale_max;
     }
 
     if (movement_abs >= reference_movement)
     {
-      return k_uncertainty_scale_max;
+      return local_positioning_tuning::k_uncertainty_scale_max;
     }
 
     const std::uint64_t scaled_movement =
-      static_cast<std::uint64_t>(movement_abs) * static_cast<std::uint64_t>(k_uncertainty_scale_max);
+      static_cast<std::uint64_t>(movement_abs) * static_cast<std::uint64_t>(local_positioning_tuning::k_uncertainty_scale_max);
 
     return static_cast<std::uint32_t>(scaled_movement / static_cast<std::uint64_t>(reference_movement));
   }
@@ -112,7 +106,7 @@ namespace
 
     std::uint64_t scaled_uncertainty =
       static_cast<std::uint64_t>(raw_uncertainty_cost) * static_cast<std::uint64_t>(movement_scale);
-    scaled_uncertainty = scaled_uncertainty / static_cast<std::uint64_t>(k_uncertainty_scale_max);
+    scaled_uncertainty = scaled_uncertainty / static_cast<std::uint64_t>(local_positioning_tuning::k_uncertainty_scale_max);
     scaled_uncertainty = scaled_uncertainty / static_cast<std::uint64_t>(safe_update_divider);
 
     if (raw_uncertainty_cost > 0u && movement_scale > 0u && scaled_uncertainty == 0u)
@@ -127,32 +121,32 @@ namespace
   {
     const std::uint32_t translation_abs = abs_i32_to_u32(delta_translation_um);
 
-    if (translation_abs < static_cast<std::uint32_t>(k_position_no_motion_translation_um))
+    if (translation_abs < static_cast<std::uint32_t>(local_positioning_tuning::k_position_no_motion_translation_um))
     {
       return 0u;
     }
 
     const std::uint32_t raw_cost = map_translation_confidence_to_position_uncertainty(confidence_translation);
     const std::uint32_t movement_scale =
-      calculate_movement_scale(translation_abs, static_cast<std::uint32_t>(k_position_reference_translation_um));
+      calculate_movement_scale(translation_abs, static_cast<std::uint32_t>(local_positioning_tuning::k_position_reference_translation_um));
 
-    return scale_uncertainty_cost(raw_cost, movement_scale, k_position_uncertainty_update_divider);
+    return scale_uncertainty_cost(raw_cost, movement_scale, local_positioning_tuning::k_position_uncertainty_update_divider);
   }
 
   std::uint32_t calculate_heading_uncertainty_increment(std::int32_t delta_rotation_urad, std::uint16_t confidence_rotation)
   {
     const std::uint32_t rotation_abs = abs_i32_to_u32(delta_rotation_urad);
 
-    if (rotation_abs < static_cast<std::uint32_t>(k_heading_no_motion_rotation_urad))
+    if (rotation_abs < static_cast<std::uint32_t>(local_positioning_tuning::k_heading_no_motion_rotation_urad))
     {
       return 0u;
     }
 
     const std::uint32_t raw_cost = map_rotation_confidence_to_heading_uncertainty(confidence_rotation);
     const std::uint32_t movement_scale =
-      calculate_movement_scale(rotation_abs, static_cast<std::uint32_t>(k_heading_reference_rotation_urad));
+      calculate_movement_scale(rotation_abs, static_cast<std::uint32_t>(local_positioning_tuning::k_heading_reference_rotation_urad));
 
-    return scale_uncertainty_cost(raw_cost, movement_scale, k_heading_uncertainty_update_divider);
+    return scale_uncertainty_cost(raw_cost, movement_scale, local_positioning_tuning::k_heading_uncertainty_update_divider);
   }
 
   std::uint16_t map_position_uncertainty_to_confidence(std::uint32_t uncertainty_position_um2)
