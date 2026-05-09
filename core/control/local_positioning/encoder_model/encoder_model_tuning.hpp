@@ -4,6 +4,15 @@
 
 namespace encoder_model_tuning
 {
+  struct stationary_detection_tuning
+  {
+    std::int64_t start_motion_translation_threshold_um = 40;
+    std::int64_t start_motion_rotation_threshold_urad = 150;
+    std::int64_t stay_motion_translation_threshold_um = 15;
+    std::int64_t stay_motion_rotation_threshold_urad = 60;
+    std::uint8_t stationary_ticks_required = 5u;
+  };
+
   struct motion_model_tuning
   {
     // status-based weighting

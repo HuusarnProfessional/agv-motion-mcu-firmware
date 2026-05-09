@@ -6,6 +6,7 @@
 #include "core/control/local_positioning/encoder_model/delta_estimation_encoders.hpp"
 #include "core/control/local_positioning/encoder_model/input_storage_encoders.hpp"
 #include "core/control/local_positioning/encoder_model/motion_model_encoders.hpp"
+#include "core/control/local_positioning/encoder_model/stationary_detection_encoders.hpp"
 
 namespace encoder_motion
 {
@@ -13,6 +14,7 @@ namespace encoder_motion
   {
     encoder_input_storage::encoder_snapshot encoder_input_snapshot;
     delta_estimation_encoders::delta_snapshot encoder_delta_snapshot;
+    stationary_detection_encoders::state encoder_stationary_detection_state = {};
     confidence_estimation_encoders::confidence_snapshot encoder_confidence_snapshot;
     motion_model_encoders::motion_model_snapshot encoder_motion_snapshot;
   };

@@ -34,6 +34,7 @@ add_library(agv_core STATIC
   control/local_positioning/encoder_model/delta_estimation_encoders.cpp
   control/local_positioning/encoder_model/input_storage_encoders.cpp
   control/local_positioning/encoder_model/motion_model_encoders.cpp
+  control/local_positioning/encoder_model/stationary_detection_encoders.cpp
   control/local_positioning/imu_model/delta_estimation_imu.cpp
   control/local_positioning/imu_model/input_storage_imu.cpp
   control/local_positioning/imu_model/stationary_detection_imu.cpp
@@ -86,6 +87,7 @@ add_executable(encoder_model_pipeline_regression_test
   control/local_positioning/encoder_model/delta_estimation_encoders.cpp
   control/local_positioning/encoder_model/input_storage_encoders.cpp
   control/local_positioning/encoder_model/motion_model_encoders.cpp
+  control/local_positioning/encoder_model/stationary_detection_encoders.cpp
 )
 
 target_include_directories(encoder_model_pipeline_regression_test PUBLIC
