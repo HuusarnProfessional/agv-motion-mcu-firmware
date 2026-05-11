@@ -4,7 +4,7 @@ namespace
 {
   constexpr std::size_t k_max_sensors = 16U;
   constexpr std::uint32_t k_trigger_pulse_width_us = 10U;
-  constexpr std::uint32_t k_default_echo_timeout_us = 30000U;
+  constexpr std::uint32_t k_default_echo_timeout_us = 60000U;
   constexpr std::uint32_t k_min_measurement_interval_us = 60000U;
   constexpr std::uint32_t k_min_distance_mm = 20U;
   constexpr std::uint32_t k_min_valid_pulse_us = (2U * k_min_distance_mm * 1000U) / 343U;
