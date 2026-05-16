@@ -11,7 +11,7 @@ namespace
     middleware::binary_packing::reader reader(payload_data, payload_length);
     middleware_incoming_payloads::position_correction_payload_data payload = {};
 
-    if (!reader.read_u8(payload.pose_id))
+    if (!reader.read_u16(payload.pose_id))
     {
       return false;
     }

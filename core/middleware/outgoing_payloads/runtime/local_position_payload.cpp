@@ -56,7 +56,7 @@ namespace
       return false;
     }
 
-    if (!writer.write_u8(payload.pose_id))
+    if (!writer.write_u16(payload.pose_id))
     {
       return false;
     }

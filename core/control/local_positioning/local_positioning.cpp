@@ -6,11 +6,16 @@
 
 namespace
 {
-  constexpr std::uint8_t k_replay_steps_per_tick = 8u;
+  constexpr std::uint8_t k_replay_steps_per_tick = 32u;
+
+  std::size_t compute_history_index(std::uint16_t pose_id)
+  {
+    return static_cast<std::size_t>(pose_id) % local_positioning::k_history_entry_count;
+  }
 
   void write_live_history_entry(local_positioning::state &local_positioning_state, bool has_fused_translation, bool has_fused_rotation, std::int32_t delta_translation_um, std::int32_t delta_rotation_urad, std::uint16_t confidence_translation, std::uint16_t confidence_rotation)
   {
-    local_positioning::history_entry &entry = local_positioning_state.history[local_positioning_state.live_pose.pose_id];
+    local_positioning::history_entry &entry = local_positioning_state.history[compute_history_index(local_positioning_state.live_pose.pose_id)];
 
     entry = {};
     entry.is_valid = true;
@@ -273,9 +278,9 @@ namespace
     local_positioning_state.output_snapshot.branch_id = local_positioning_state.live_pose.branch_id;
   }
 
-  local_positioning::history_entry *find_history_entry(local_positioning::state &local_positioning_state, std::uint8_t pose_id, std::uint8_t branch_id)
+  local_positioning::history_entry *find_history_entry(local_positioning::state &local_positioning_state, std::uint16_t pose_id, std::uint8_t branch_id)
   {
-    local_positioning::history_entry &entry = local_positioning_state.history[pose_id];
+    local_positioning::history_entry &entry = local_positioning_state.history[compute_history_index(pose_id)];
 
     if (!entry.is_valid)
     {
@@ -325,7 +330,7 @@ namespace
 
       local_positioning_state.replay.next_replay_pose_id += 1;
 
-      if (local_positioning_state.replay.next_replay_pose_id == static_cast<std::uint8_t>(local_positioning_state.live_pose.pose_id + 1u))
+      if (local_positioning_state.replay.next_replay_pose_id == static_cast<std::uint16_t>(local_positioning_state.live_pose.pose_id + 1u))
       {
         local_positioning_state.replay.ready_to_switch = true;
         return;
@@ -386,7 +391,7 @@ namespace local_positioning
     local_positioning_state.replay.active = true;
     local_positioning_state.replay.ready_to_switch = false;
     local_positioning_state.replay.target_pose_id = request.pose_id;
-    local_positioning_state.replay.next_replay_pose_id = static_cast<std::uint8_t>(request.pose_id + 1u);
+    local_positioning_state.replay.next_replay_pose_id = static_cast<std::uint16_t>(request.pose_id + 1u);
     local_positioning_state.replay.source_branch_id = request.branch_id;
     local_positioning_state.replay.replay_branch_id = get_other_branch_id(request.branch_id);
     local_positioning_state.replay.replay_pose.x_um = 0;

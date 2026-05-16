@@ -7,6 +7,8 @@
 
 namespace local_positioning
 {
+  inline constexpr std::size_t k_history_entry_count = 2048u;
+
   struct pose_state
   {
     std::int64_t x_um = 0;
@@ -16,7 +18,7 @@ namespace local_positioning
     std::uint32_t uncertainty_heading_urad2 = 0;
     std::uint32_t update_id = 0;
     std::uint32_t time_ms = 0;
-    std::uint8_t pose_id = 0;
+    std::uint16_t pose_id = 0;
     std::uint8_t branch_id = 0;
   };
 
@@ -25,7 +27,7 @@ namespace local_positioning
     bool is_valid = false;
     bool has_fused_translation = false;
     bool has_fused_rotation = false;
-    std::uint8_t pose_id = 0;
+    std::uint16_t pose_id = 0;
     std::uint8_t branch_id = 0;
     std::int32_t delta_translation_um = 0;
     std::int32_t delta_rotation_urad = 0;
@@ -37,8 +39,8 @@ namespace local_positioning
   {
     bool active = false;
     bool ready_to_switch = false;
-    std::uint8_t target_pose_id = 0;
-    std::uint8_t next_replay_pose_id = 0;
+    std::uint16_t target_pose_id = 0;
+    std::uint16_t next_replay_pose_id = 0;
     std::uint8_t source_branch_id = 0;
     std::uint8_t replay_branch_id = 0;
     pose_state replay_pose = {};
@@ -54,14 +56,14 @@ namespace local_positioning
     std::uint16_t confidence_heading = 0;
     std::uint32_t update_id = 0;
     std::uint32_t time_ms = 0;
-    std::uint8_t pose_id = 0;
+    std::uint16_t pose_id = 0;
     std::uint8_t branch_id = 0;
   };
 
   struct state
   {
     pose_state live_pose = {};
-    std::array<history_entry, 256u> history = {};
+    std::array<history_entry, k_history_entry_count> history = {};
     replay_job replay = {};
     snapshot output_snapshot = {};
   };
@@ -69,7 +71,7 @@ namespace local_positioning
   struct external_correction_request
   {
     bool has_request = false;
-    std::uint8_t pose_id = 0;
+    std::uint16_t pose_id = 0;
     std::uint8_t branch_id = 0;
   };
 
