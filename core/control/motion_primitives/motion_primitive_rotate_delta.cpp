@@ -63,10 +63,32 @@ namespace motion_primitive_rotate_delta
       return static_cast<std::int32_t>((value_urad * 180000) / k_pi_scaled);
     }
 
+    std::int64_t compute_remaining_rotation_from_pose(const local_positioning::snapshot &start_pose, const local_positioning::snapshot &current_pose, std::int64_t target_rotation_urad)
+    {
+      const std::int64_t heading_delta_urad = static_cast<std::int64_t>(current_pose.heading_urad) - static_cast<std::int64_t>(start_pose.heading_urad);
+      return target_rotation_urad - heading_delta_urad;
+    }
+
     std::int64_t compute_remaining_rotation_urad(const motion_primitives_common::state &primitive_state)
     {
-      const std::int64_t heading_delta_urad = static_cast<std::int64_t>(primitive_state.latest_pose.heading_urad) - static_cast<std::int64_t>(primitive_state.snapshot.phase_start_pose.heading_urad);
-      return primitive_state.active_request.rotate_delta.target_rotation_urad - heading_delta_urad;
+      return compute_remaining_rotation_from_pose(primitive_state.snapshot.phase_start_pose, primitive_state.latest_pose, primitive_state.active_request.rotate_delta.target_rotation_urad);
+    }
+
+    void reanchor_after_branch_change(motion_primitives_common::state &primitive_state)
+    {
+      if (!primitive_state.has_previous_latest_pose)
+      {
+        return;
+      }
+
+      const std::int64_t remaining_rotation_urad =
+        compute_remaining_rotation_from_pose(
+          primitive_state.snapshot.phase_start_pose,
+          primitive_state.previous_latest_pose,
+          primitive_state.active_request.rotate_delta.target_rotation_urad);
+
+      primitive_state.snapshot.phase_start_pose = primitive_state.latest_pose;
+      primitive_state.active_request.rotate_delta.target_rotation_urad = remaining_rotation_urad;
     }
 
     std::int32_t compute_measured_yaw_rate_mdps(const motion_primitives_common::state &primitive_state)
@@ -174,6 +196,11 @@ namespace motion_primitive_rotate_delta
     if (motion_primitives_common::has_latest_pose_timed_out(primitive_state, now_ms))
     {
       return motion_primitives_common::tick_result::complete_timeout;
+    }
+
+    if (motion_primitives_common::did_latest_pose_branch_change(primitive_state))
+    {
+      reanchor_after_branch_change(primitive_state);
     }
 
     const std::int64_t remaining_rotation_urad = compute_remaining_rotation_urad(primitive_state);

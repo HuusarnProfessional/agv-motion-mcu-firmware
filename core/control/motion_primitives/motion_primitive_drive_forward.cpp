@@ -5,6 +5,23 @@ namespace motion_primitive_drive_forward
 {
   namespace
   {
+    void reanchor_after_branch_change(motion_primitives_common::state &primitive_state)
+    {
+      if (!primitive_state.has_previous_latest_pose)
+      {
+        return;
+      }
+
+      const std::int64_t remaining_distance_um =
+        motion_primitives_common::compute_remaining_forward_distance_um(
+          primitive_state.snapshot.phase_start_pose,
+          primitive_state.previous_latest_pose,
+          primitive_state.active_request.drive_forward.target_distance_um);
+
+      primitive_state.snapshot.phase_start_pose = primitive_state.latest_pose;
+      primitive_state.active_request.drive_forward.target_distance_um = remaining_distance_um;
+    }
+
     std::int32_t absolute_i32(std::int32_t value)
     {
       if (value < 0)
@@ -116,6 +133,11 @@ namespace motion_primitive_drive_forward
     if (motion_primitives_common::has_latest_pose_timed_out(primitive_state, now_ms))
     {
       return motion_primitives_common::tick_result::complete_timeout;
+    }
+
+    if (motion_primitives_common::did_latest_pose_branch_change(primitive_state))
+    {
+      reanchor_after_branch_change(primitive_state);
     }
 
     const std::int64_t remaining_distance_um = motion_primitives_common::compute_remaining_forward_distance_um(primitive_state.snapshot.phase_start_pose, primitive_state.latest_pose, primitive_state.active_request.drive_forward.target_distance_um);

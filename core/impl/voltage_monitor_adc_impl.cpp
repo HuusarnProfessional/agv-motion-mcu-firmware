@@ -6,11 +6,11 @@ namespace
   std::size_t g_input_count = 0u;
 
   //measured divider resistor values
-  constexpr std::uint32_t k_divider_r_top_ohm = 99600u;
-  constexpr std::uint32_t k_divider_r_bottom_ohm = 22070u;
+  constexpr std::uint32_t k_divider_r_top_ohm = 99900u;
+  constexpr std::uint32_t k_divider_r_bottom_ohm = 22110u;
 
   //hardware adc configuration
-  constexpr std::uint32_t k_adc_reference_mv = 3300u;
+  constexpr std::uint32_t k_adc_reference_mv = 3400u;
   constexpr std::uint32_t k_adc_max_count = 4095u;
 
   std::uint32_t raw_to_adc_mv(std::uint16_t raw_adc)

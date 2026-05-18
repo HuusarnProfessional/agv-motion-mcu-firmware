@@ -94,6 +94,8 @@ namespace motion_primitives_common
 
   bool update_latest_pose_if_fresh(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms)
   {
+    primitive_state.latest_pose_branch_changed = false;
+
     if (!current_pose.has_pose)
     {
       return false;
@@ -109,6 +111,7 @@ namespace motion_primitives_common
 
     if (primitive_state.has_latest_pose)
     {
+      primitive_state.latest_pose_branch_changed = current_pose.branch_id != primitive_state.latest_pose.branch_id;
       primitive_state.previous_latest_pose = primitive_state.latest_pose;
       primitive_state.has_previous_latest_pose = true;
     }
@@ -127,6 +130,11 @@ namespace motion_primitives_common
     }
 
     return has_elapsed(now_ms, primitive_state.latest_pose_received_time_ms + motion_primitives_tuning::k_pose_freshness_timeout_ms);
+  }
+
+  bool did_latest_pose_branch_change(const state &primitive_state)
+  {
+    return primitive_state.latest_pose_branch_changed;
   }
 
   void begin_settling(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms)

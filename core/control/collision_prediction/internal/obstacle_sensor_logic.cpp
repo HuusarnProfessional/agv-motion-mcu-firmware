@@ -4,17 +4,30 @@ namespace
 {
   bool is_sample_fresh(std::uint32_t now_ms, const obstacle_api::obstacle_sample &sample);
   std::uint32_t compute_required_distance_mm(std::uint32_t approach_speed_mm_s);
+  bool is_raw_distance_hazard(const obstacle_sensor_logic::input &evaluation_input, const obstacle_sensor_logic::output &out);
+  bool is_filtered_distance_hazard(const obstacle_sensor_logic::output &out);
+  void update_hazard_confirmation(obstacle_sensor_logic::state &sensor_state, bool has_raw_hazard, bool has_filtered_hazard);
 
-  bool is_valid_sample_status(obstacle_api::obstacle_status status)
+  bool is_valid_sample(const obstacle_api::obstacle_sample &sample)
   {
-    return status == obstacle_api::obstacle_status::ok;
+    if (sample.status != obstacle_api::obstacle_status::ok)
+    {
+      return false;
+    }
+
+    if (sample.distance_mm == 0u)
+    {
+      return false;
+    }
+
+    return true;
   }
 
   bool prepare_evaluation(const obstacle_sensor_logic::input &evaluation_input, obstacle_sensor_logic::output &out)
   {
     out = {};
     out.is_relevant = false;
-    out.has_valid_sample = is_valid_sample_status(evaluation_input.sample.status);
+    out.has_valid_sample = is_valid_sample(evaluation_input.sample);
     out.is_sample_fresh = false;
     out.required_distance_mm = compute_required_distance_mm(evaluation_input.approach_speed_mm_s);
 
@@ -64,16 +77,47 @@ namespace
     return true;
   }
 
-  void update_hazard_detected(obstacle_sensor_logic::output &out)
+  bool is_raw_distance_hazard(const obstacle_sensor_logic::input &evaluation_input, const obstacle_sensor_logic::output &out)
   {
     if (!out.is_relevant)
     {
-      return;
+      return false;
+    }
+
+    if (evaluation_input.sample.distance_mm <= out.required_distance_mm)
+    {
+      return true;
+    }
+
+    return false;
+  }
+
+  bool is_filtered_distance_hazard(const obstacle_sensor_logic::output &out)
+  {
+    if (!out.is_relevant)
+    {
+      return false;
     }
 
     if (out.filtered_distance_mm <= out.required_distance_mm)
     {
-      out.hazard_detected = true;
+      return true;
+    }
+
+    return false;
+  }
+
+  void update_hazard_confirmation(obstacle_sensor_logic::state &sensor_state, bool has_raw_hazard, bool has_filtered_hazard)
+  {
+    if (!has_raw_hazard || !has_filtered_hazard)
+    {
+      sensor_state.consecutive_hazard_sample_count = 0u;
+      return;
+    }
+
+    if (sensor_state.consecutive_hazard_sample_count < collision_tuning::k_required_consecutive_hazard_samples)
+    {
+      sensor_state.consecutive_hazard_sample_count += 1u;
     }
   }
 
@@ -111,6 +155,7 @@ namespace obstacle_sensor_logic
   {
     if (!prepare_evaluation(evaluation_input, out))
     {
+      sensor_state.consecutive_hazard_sample_count = 0u;
       return;
     }
 
@@ -119,6 +164,13 @@ namespace obstacle_sensor_logic
     sensor_state.has_seen_valid_sample = true;
     sensor_state.last_valid_sample_time_ms = evaluation_input.sample.time_ms;
     out.filtered_distance_mm = sensor_state.filtered_distance_mm;
-    update_hazard_detected(out);
+    const bool has_raw_hazard = is_raw_distance_hazard(evaluation_input, out);
+    const bool has_filtered_hazard = is_filtered_distance_hazard(out);
+    update_hazard_confirmation(sensor_state, has_raw_hazard, has_filtered_hazard);
+
+    if (sensor_state.consecutive_hazard_sample_count >= collision_tuning::k_required_consecutive_hazard_samples)
+    {
+      out.hazard_detected = true;
+    }
   }
 }

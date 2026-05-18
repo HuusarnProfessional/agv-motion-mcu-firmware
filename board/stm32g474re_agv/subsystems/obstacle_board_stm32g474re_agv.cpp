@@ -15,8 +15,8 @@ namespace
 
   static const platform_stm32_hal::obstacle_pin_map k_obstacle_pin_map[] =
   {
-    { { static_cast<void *>(hc_f_trig__GPIO_OUTPUT_GPIO_Port), hc_f_trig__GPIO_OUTPUT_Pin }, { static_cast<void *>(hc_f_echo__GPIO_EXTI0_GPIO_Port), hc_f_echo__GPIO_EXTI0_Pin } },
-    { { static_cast<void *>(hc_b_trig__GPIO_OUTPUT_GPIO_Port), hc_b_trig__GPIO_OUTPUT_Pin }, { static_cast<void *>(hc_b_echo_GPIO_EXTI11_GPIO_Port), hc_b_echo_GPIO_EXTI11_Pin } }
+    { { static_cast<void *>(hc_b_trig__GPIO_OUTPUT_GPIO_Port), hc_b_trig__GPIO_OUTPUT_Pin }, { static_cast<void *>(hc_b_echo_GPIO_EXTI11_GPIO_Port), hc_b_echo_GPIO_EXTI11_Pin } },
+    { { static_cast<void *>(hc_f_trig__GPIO_OUTPUT_GPIO_Port), hc_f_trig__GPIO_OUTPUT_Pin }, { static_cast<void *>(hc_f_echo__GPIO_EXTI0_GPIO_Port), hc_f_echo__GPIO_EXTI0_Pin } }
   };
 
   static platform_stm32_hal::obstacle_hcsr04_handle k_obstacle_handle = { k_obstacle_pin_map, sizeof(k_obstacle_pin_map) / sizeof(k_obstacle_pin_map[0]), static_cast<void *>(&htim6) };

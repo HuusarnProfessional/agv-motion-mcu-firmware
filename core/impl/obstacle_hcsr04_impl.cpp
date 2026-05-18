@@ -168,15 +168,11 @@ namespace
 
   void store_no_signal(sensor_runtime &selected_sensor_runtime)
   {
-    selected_sensor_runtime.latest_distance_mm = 0U;
-    selected_sensor_runtime.latest_time_ms = 0U;
     selected_sensor_runtime.latest_status = obstacle_hcsr04_impl::sample_status::no_signal;
-    selected_sensor_runtime.has_completed_measurement = false;
   }
 
   void store_timeout(sensor_runtime &selected_sensor_runtime, std::uint32_t current_time_ms)
   {
-    selected_sensor_runtime.latest_distance_mm = 0U;
     selected_sensor_runtime.latest_time_ms = current_time_ms;
     selected_sensor_runtime.latest_status = obstacle_hcsr04_impl::sample_status::timeout;
     selected_sensor_runtime.has_completed_measurement = true;
@@ -191,7 +187,6 @@ namespace
 
     if (!convert_pulse_us_to_distance_mm(pulse_width_us, distance_mm))
     {
-      selected_sensor_runtime.latest_distance_mm = 0U;
       selected_sensor_runtime.latest_status = obstacle_hcsr04_impl::sample_status::out_of_range;
       return;
     }

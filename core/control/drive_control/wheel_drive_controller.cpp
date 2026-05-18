@@ -489,6 +489,16 @@ namespace
       }
       else if (local_position_snapshot.update_id != controller_state.previous_local_position_snapshot.update_id)
       {
+        if (local_position_snapshot.branch_id != controller_state.previous_local_position_snapshot.branch_id)
+        {
+          controller_state.previous_local_position_snapshot = local_position_snapshot;
+          controller_state.latched_measured_yaw_rate_mdeg_s = 0;
+          controller_state.outer_correction_mdeg_s = 0;
+          controller_state.heading_feedback_active = false;
+          controller_state.latched_corrected_yaw_rate_mdeg_s = motion_command.yaw_rate_mdeg_s;
+          return;
+        }
+
         controller_state.latched_measured_yaw_rate_mdeg_s = compute_measured_yaw_rate_mdeg_s(controller_state.previous_local_position_snapshot, local_position_snapshot);
         controller_state.previous_local_position_snapshot = local_position_snapshot;
 

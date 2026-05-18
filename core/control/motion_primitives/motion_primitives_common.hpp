@@ -33,6 +33,7 @@ namespace motion_primitives_common
     local_positioning::snapshot previous_latest_pose = {};
     bool has_latest_pose = false;
     local_positioning::snapshot latest_pose = {};
+    bool latest_pose_branch_changed = false;
     std::uint32_t latest_pose_received_time_ms = 0u;
   };
 
@@ -47,6 +48,7 @@ namespace motion_primitives_common
   bool is_settled(const encoder_motion::state &encoder_state, const local_positioning_imu::state &imu_state);
   bool update_latest_pose_if_fresh(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms);
   bool has_latest_pose_timed_out(const state &primitive_state, std::uint32_t now_ms);
+  bool did_latest_pose_branch_change(const state &primitive_state);
   void begin_settling(state &primitive_state, const local_positioning::snapshot &current_pose, std::uint32_t now_ms);
   void finish(state &primitive_state, bool success, bool timed_out, motion_primitives::error_code failure_code, std::uint32_t now_ms);
   void begin_active_phase(state &primitive_state, const local_positioning::snapshot &current_pose);

@@ -21,6 +21,7 @@ namespace obstacle_sensor_logic
     bool has_seen_valid_sample = false;
     std::uint32_t filtered_distance_mm = 0u;
     std::uint32_t last_valid_sample_time_ms = 0u;
+    std::uint32_t consecutive_hazard_sample_count = 0u;
   };
 
   struct output
