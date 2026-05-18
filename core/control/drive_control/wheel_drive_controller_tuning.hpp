@@ -9,6 +9,7 @@ namespace wheel_drive_controller_tuning
   inline constexpr std::uint32_t k_feedback_not_ready_grace_ms = 300u;
   inline constexpr std::uint32_t k_encoder_feedback_stale_timeout_ms = 40u;
   inline constexpr std::uint32_t k_pose_feedback_stale_timeout_ms = 100u;
+  inline constexpr std::int32_t k_drive_pwm_scale_percent = 105;
   inline constexpr std::int32_t k_min_drive_u = 225;
   inline constexpr std::int32_t k_startup_drive_u = 325;
   inline constexpr std::int32_t k_max_drive_u = 1000;

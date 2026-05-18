@@ -9,10 +9,10 @@ namespace motion_primitives_tuning
   constexpr std::uint32_t k_default_rotate_delta_timeout_ms = 30000u;
   constexpr std::uint32_t k_pose_freshness_timeout_ms = 1000u;
   constexpr std::int64_t k_drive_forward_target_tolerance_um = 5000;
-  constexpr std::int64_t k_drive_forward_final_window_um = 100000;
+  constexpr std::int64_t k_drive_forward_final_window_um = 60000;
   constexpr std::int64_t k_drive_forward_settle_translation_threshold_um = 500;
   constexpr std::int32_t k_drive_forward_min_velocity_mm_s = 20;
-  constexpr std::int32_t k_drive_forward_final_max_velocity_mm_s = 40;
+  constexpr std::int32_t k_drive_forward_final_max_velocity_mm_s = 55;
   constexpr std::int32_t k_drive_forward_p_um_per_s_divisor = 4000;
   constexpr std::int64_t k_rotate_delta_target_tolerance_urad = 35000;
   constexpr std::int64_t k_rotate_delta_final_window_urad = 261799;

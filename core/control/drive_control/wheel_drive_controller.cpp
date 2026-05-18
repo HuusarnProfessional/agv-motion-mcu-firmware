@@ -54,6 +54,12 @@ namespace
     return 0;
   }
 
+  std::int32_t scale_drive_pwm_u(std::int32_t drive_u)
+  {
+    const std::int64_t scaled_drive_u = static_cast<std::int64_t>(drive_u) * static_cast<std::int64_t>(wheel_drive_controller_tuning::k_drive_pwm_scale_percent);
+    return static_cast<std::int32_t>(scaled_drive_u / 100);
+  }
+
   std::int64_t clamp_i64(std::int64_t value, std::int64_t low, std::int64_t high)
   {
     if (value < low)
@@ -316,13 +322,15 @@ namespace
       return 0;
     }
 
-    std::int32_t u = wheel_drive_controller_tuning::k_feedforward_per_mm_s * target_speed_mm_s;
+    std::int32_t u = scale_drive_pwm_u(wheel_drive_controller_tuning::k_feedforward_per_mm_s * target_speed_mm_s);
     std::int32_t startup_drive_u = wheel_drive_controller_tuning::k_startup_drive_u;
 
     if (use_rotation_override && g_rotation_drive_tuning_override.has_override)
     {
       startup_drive_u = g_rotation_drive_tuning_override.startup_drive_u;
     }
+
+    startup_drive_u = scale_drive_pwm_u(startup_drive_u);
 
     if (absolute_i32(u) < startup_drive_u)
     {
@@ -357,7 +365,7 @@ namespace
         continue;
       }
 
-      const std::int32_t feedforward_u = wheel_drive_controller_tuning::k_feedforward_per_mm_s * absolute_i32(target_speed_mm_s);
+      const std::int32_t feedforward_u = scale_drive_pwm_u(wheel_drive_controller_tuning::k_feedforward_per_mm_s * absolute_i32(target_speed_mm_s));
       if (feedforward_u > max_feedforward_u)
       {
         max_feedforward_u = feedforward_u;
@@ -373,7 +381,7 @@ namespace
     std::int32_t scale_denominator = max_feedforward_u;
     if (max_feedforward_u < startup_drive_u)
     {
-      scale_numerator = startup_drive_u;
+      scale_numerator = scale_drive_pwm_u(startup_drive_u);
     }
 
     for (std::uint8_t wheel_id = 0u; wheel_id < wheel_drive_controller_tuning::k_wheel_count; ++wheel_id)
@@ -385,7 +393,7 @@ namespace
         continue;
       }
 
-      std::int32_t u = wheel_drive_controller_tuning::k_feedforward_per_mm_s * target_speed_mm_s;
+      std::int32_t u = scale_drive_pwm_u(wheel_drive_controller_tuning::k_feedforward_per_mm_s * target_speed_mm_s);
       u = static_cast<std::int32_t>((static_cast<std::int64_t>(u) * static_cast<std::int64_t>(scale_numerator)) / static_cast<std::int64_t>(scale_denominator));
       u = clamp_i32(u, -wheel_drive_controller_tuning::k_max_drive_u, wheel_drive_controller_tuning::k_max_drive_u);
       out[wheel_id] = static_cast<std::int16_t>(u);
@@ -405,7 +413,7 @@ namespace
     wheel_state.integral_error_mm_s_ms += error_area_mm_s_ms;
     wheel_state.integral_error_mm_s_ms = clamp_i64(wheel_state.integral_error_mm_s_ms, -wheel_drive_controller_tuning::k_integral_limit_mm_s_ms, wheel_drive_controller_tuning::k_integral_limit_mm_s_ms);
 
-    const std::int32_t feedforward_u = wheel_drive_controller_tuning::k_feedforward_per_mm_s * target_speed_mm_s;
+    const std::int32_t feedforward_u = scale_drive_pwm_u(wheel_drive_controller_tuning::k_feedforward_per_mm_s * target_speed_mm_s);
     const std::int32_t proportional_u = wheel_drive_controller_tuning::k_feedback_per_mm_s * error_mm_s;
     const std::int32_t integral_u = static_cast<std::int32_t>(wheel_state.integral_error_mm_s_ms / wheel_drive_controller_tuning::k_integral_divisor);
     std::int32_t u = feedforward_u + proportional_u + integral_u;
@@ -415,6 +423,8 @@ namespace
     {
       min_drive_u = g_rotation_drive_tuning_override.min_drive_u;
     }
+
+    min_drive_u = scale_drive_pwm_u(min_drive_u);
 
     const bool output_pushes_toward_target = sign_i32(u) == sign_i32(target_speed_mm_s);
     if (output_pushes_toward_target && absolute_i32(u) < min_drive_u)
