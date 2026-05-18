@@ -103,8 +103,8 @@ void Error_Handler(void);
 #define pwm_r2_a___TIM3_CH3_GPIO_Port GPIOC
 #define pwm_r2_b___TIM3_CH4_Pin GPIO_PIN_9
 #define pwm_r2_b___TIM3_CH4_GPIO_Port GPIOC
-#define pwm_l2_a___TIM1_CH3_Pin GPIO_PIN_10
-#define pwm_l2_a___TIM1_CH3_GPIO_Port GPIOA
+#define pwm_l2_a___TIM1_CH3_Pin GPIO_PIN_2
+#define pwm_l2_a___TIM1_CH3_GPIO_Port GPIOC
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
